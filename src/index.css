@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.App {
+  @apply w-10/12 mx-auto text-center p-4 bg-gray-200;
+}
+
+.container {
+  @apply mx-auto px-4;
+}
