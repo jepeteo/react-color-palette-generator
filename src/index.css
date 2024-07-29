@@ -10,10 +10,10 @@
 
 @layer components {
   .App {
-    @apply grid grid-cols-1 gap-8 bg-slate-100 p-8 lg:grid-cols-4;
+    @apply grid grid-cols-1 gap-8 bg-slate-100 p-8 md:grid-cols-2 xl:grid-cols-4;
   }
   .title {
-    @apply mb-12 text-center text-4xl font-bold md:col-span-4;
+    @apply mb-12 text-center text-4xl font-bold md:col-span-2 xl:col-span-4;
   }
   .containerGenerator {
     @apply rounded-xl border bg-white p-4;
