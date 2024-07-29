@@ -19,15 +19,19 @@ function AccessibilityChecker({ palette }) {
   return (
     <div className="mt-4">
       <h3 className="containerTitle">Accessibility Checks</h3>
-      <div>
-        <p>
-          Text Contrast: {textContrast.toFixed(2)} (
-          {getContrastLevel(textContrast)})
-        </p>
-        <p>
-          Primary Color Contrast: {primaryContrast.toFixed(2)} (
-          {getContrastLevel(primaryContrast)})
-        </p>
+      <div className="accessibilityChecks">
+        <div className="flex w-full gap-2 text-sm">
+          Text Contrast:
+          <span className="ml-auto">
+            {textContrast.toFixed(2)} ({getContrastLevel(textContrast)})
+          </span>
+        </div>
+        <div className="flex w-full gap-2 text-sm">
+          Primary Color Contrast:
+          <span className="ml-auto">
+            {primaryContrast.toFixed(2)} ({getContrastLevel(primaryContrast)})
+          </span>
+        </div>
       </div>
     </div>
   );

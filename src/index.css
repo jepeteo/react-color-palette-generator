@@ -81,6 +81,11 @@
   .colorLegend {
     @apply grid grid-cols-1 gap-4;
   }
+
+  /* Accessibility Checks */
+  .accessibilityChecks {
+    @apply grid gap-2 py-4;
+  }
 }
 
 @layer utilities {

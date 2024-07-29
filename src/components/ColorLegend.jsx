@@ -10,9 +10,8 @@ const ColorLegend = ({ palette }) => {
             className="mr-2 h-8 w-8 rounded-full border"
             style={{ backgroundColor: color }}
           ></div>
-          <span>
-            {name}: {color}
-          </span>
+          <span> {name}: </span>
+          <span className="ml-auto"> {color}</span>
         </div>
       ))}
     </div>
