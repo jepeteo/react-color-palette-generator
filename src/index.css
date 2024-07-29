@@ -86,6 +86,11 @@
   .accessibilityChecks {
     @apply grid gap-2 py-4;
   }
+
+  /* imageUpload */
+  .imageUpload {
+    @apply flex flex-wrap items-center overflow-hidden rounded-md border p-2;
+  }
 }
 
 @layer utilities {

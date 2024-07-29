@@ -7,6 +7,7 @@ import PaletteCustomizer from './components/PaletteCustomizer';
 import HarmonySelector from './components/HarmonySelector';
 import ThemeToggle from './components/ThemeToggle';
 import AccessibilityChecker from './components/AccessibilityChecker';
+import ImageUpload from './components/ImageUpload';
 import {
   generatePalette,
   generateComplementaryPalette,
@@ -16,6 +17,8 @@ import {
   generateTetradicPalette,
   generateMonochromaticPalette,
 } from './utils/colorUtils';
+
+import { extractColors } from 'extract-colors';
 import './index.css';
 
 function App() {
@@ -23,10 +26,23 @@ function App() {
   const [palette, setPalette] = useState(null);
   const [harmony, setHarmony] = useState('default');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [imageColors, setImageColors] = useState(null);
 
-  useEffect(
-    () => {
-      let newPalette;
+  const handleImageUpload = async (imageData) => {
+    setUploadedImage(imageData);
+    try {
+      const colors = await extractColors(imageData);
+      const primaryColor = colors[0].hex;
+      setPrimaryColor(primaryColor);
+    } catch (error) {
+      console.error('Error extracting colors:', error);
+    }
+  };
+
+  useEffect(() => {
+    let newPalette;
+    if (primaryColor) {
       switch (harmony) {
         case 'complementary':
           newPalette = generateComplementaryPalette(primaryColor, isDarkMode);
@@ -50,13 +66,11 @@ function App() {
           newPalette = generateMonochromaticPalette(primaryColor, isDarkMode);
           break;
         default:
-          newPalette = generatePalette(primaryColor, isDarkMode, isDarkMode);
+          newPalette = generatePalette(primaryColor, isDarkMode);
       }
-      setPalette(newPalette);
-    },
-    [primaryColor, harmony, isDarkMode],
-    isDarkMode,
-  );
+    }
+    setPalette(newPalette);
+  }, [primaryColor, harmony, isDarkMode]);
 
   return (
     <div className="App">
@@ -66,6 +80,7 @@ function App() {
           <h2>Color Palette</h2>
           <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
           <ColorInput setPrimaryColor={setPrimaryColor} />
+          <ImageUpload onImageUpload={handleImageUpload} />
         </div>
         <HarmonySelector currentHarmony={harmony} setHarmony={setHarmony} />
         {palette && (
@@ -80,7 +95,9 @@ function App() {
           </>
         )}
       </div>
-      <div className='containerPreview'>{palette && <Preview palette={palette} />}</div>
+      <div className="containerPreview">
+        {palette && <Preview palette={palette} />}
+      </div>
     </div>
   );
 }

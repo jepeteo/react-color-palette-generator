@@ -15,6 +15,16 @@ export function generatePalette(primaryColor, isDarkMode) {
   };
 }
 
+export function generatePaletteFromImage(imageColors, isDarkMode) {
+  return {
+    primary: imageColors[0],
+    secondary: imageColors[1],
+    accent: imageColors[2],
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
+  };
+}
+
 export function generateComplementaryPalette(primaryColor, isDarkMode) {
   const base = chroma(primaryColor);
   const complement = base.set('hsl.h', '+180');

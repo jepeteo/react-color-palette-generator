@@ -2,11 +2,21 @@
 import React, { useEffect } from 'react';
 import { generatePalette } from '../utils/colorUtils';
 
-function PaletteGenerator({ primaryColor, setPalette }) {
+function PaletteGenerator({
+  primaryColor,
+  setPalette,
+  isDarkMode,
+  imageColors,
+}) {
   useEffect(() => {
-    const newPalette = generatePalette(primaryColor);
+    let newPalette;
+    if (imageColors) {
+      newPalette = generatePaletteFromImage(imageColors, isDarkMode);
+    } else {
+      newPalette = generatePalette(primaryColor, isDarkMode);
+    }
     setPalette(newPalette);
-  }, [primaryColor, setPalette]);
+  }, [primaryColor, setPalette, isDarkMode, imageColors]);
 
   return null;
 }
