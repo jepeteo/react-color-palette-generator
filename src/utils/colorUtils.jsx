@@ -1,5 +1,7 @@
-// src/utils/colorUtils.js
 import chroma from 'chroma-js';
+
+const darkColor = '#121212';
+const lightColor = '#fcfcfc';
 
 export function generatePalette(primaryColor, isDarkMode) {
   const base = chroma(primaryColor);
@@ -8,8 +10,8 @@ export function generatePalette(primaryColor, isDarkMode) {
     primary: base.hex(),
     secondary: base.set('hsl.h', '+120').hex(),
     accent: base.set('hsl.h', '+180').hex(),
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
 
@@ -21,10 +23,8 @@ export function generateComplementaryPalette(primaryColor, isDarkMode) {
     primary: base.hex(),
     secondary: complement.hex(),
     accent: base.set('hsl.s', '+0.1').set('hsl.l', '-0.1').hex(),
-    // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
-    // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
 
@@ -37,10 +37,8 @@ export function generateTriadicPalette(primaryColor, isDarkMode) {
     primary: base.hex(),
     secondary: triad1.hex(),
     accent: triad2.hex(),
-    // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
-    // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
 
@@ -53,12 +51,11 @@ export function generateAnalogousPalette(primaryColor, isDarkMode) {
     primary: base.hex(),
     secondary: analog1.hex(),
     accent: analog2.hex(),
-    // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
-    // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
+
 export function generateSplitComplementaryPalette(primaryColor, isDarkMode) {
   const base = chroma(primaryColor);
   const complement = base.set('hsl.h', '+180');
@@ -69,10 +66,8 @@ export function generateSplitComplementaryPalette(primaryColor, isDarkMode) {
     primary: base.hex(),
     secondary: split1.hex(),
     accent: split2.hex(),
-    // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
-    // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
 
@@ -87,10 +82,8 @@ export function generateTetradicPalette(primaryColor, isDarkMode) {
     secondary: tetrad1.hex(),
     accent: tetrad2.hex(),
     highlight: tetrad3.hex(),
-    // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
-    // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
 
@@ -102,10 +95,8 @@ export function generateMonochromaticPalette(primaryColor, isDarkMode) {
     secondary: base.brighten(1).hex(),
     accent: base.darken(1).hex(),
     highlight: base.saturate(1).hex(),
-    // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
-    // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? '#FFFFFF' : '#000000',
-    background: isDarkMode ? '#000000' : '#FFFFFF',
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
   };
 }
 
