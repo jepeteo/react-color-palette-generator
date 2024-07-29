@@ -11,13 +11,6 @@ export function generatePalette(primaryColor, isDarkMode) {
     text: isDarkMode ? '#FFFFFF' : '#000000',
     background: isDarkMode ? '#000000' : '#FFFFFF',
   };
-  // Add more shades
-  palette.primaryLight = chroma.mix(palette.primary, '#ffffff', 0.3).hex();
-  palette.primaryDark = chroma.mix(palette.primary, '#000000', 0.3).hex();
-  palette.secondaryLight = chroma.mix(palette.secondary, '#ffffff', 0.3).hex();
-  palette.secondaryDark = chroma.mix(palette.secondary, '#000000', 0.3).hex();
-
-  return palette;
 }
 
 export function generateComplementaryPalette(primaryColor, isDarkMode) {

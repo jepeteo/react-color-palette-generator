@@ -18,7 +18,7 @@ function AccessibilityChecker({ palette }) {
 
   return (
     <div className="mt-4">
-      <h3 className="mb-2 text-lg font-semibold">Accessibility Checks</h3>
+      <h3 className="containerTitle">Accessibility Checks</h3>
       <div>
         <p>
           Text Contrast: {textContrast.toFixed(2)} (

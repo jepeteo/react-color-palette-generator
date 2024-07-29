@@ -20,7 +20,7 @@ function PaletteCustomizer({ palette, updatePalette }) {
               id={`color-${name}`}
               value={color}
               onChange={(e) => handleColorChange(name, e.target.value)}
-              className="h-8 w-8 "
+              className="h-8 w-8"
             />
           </div>
         ))}

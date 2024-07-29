@@ -24,12 +24,21 @@
   .containerColorPalette h2 {
     @apply border-b text-2xl font-bold;
   }
+
+  .containerInfo {
+    @apply rounded-xl border bg-white p-4;
+  }
+
+  .containerPreview {
+    @apply col-span-1 md:col-span-2;
+  }
+
   /* ThemeToggle*/
   .toggleSwitch {
     @apply flex items-center rounded-md border p-2;
   }
   .switch {
-    @apply flex;
+    @apply flex w-full items-center;
   }
   .switch input {
     @apply h-5 w-5;
@@ -66,6 +75,11 @@
   }
   .paletteItems input {
     @apply justify-self-end;
+  }
+
+  /* ColorLegend */
+  .colorLegend {
+    @apply grid grid-cols-1 gap-4;
   }
 }
 

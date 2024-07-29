@@ -10,12 +10,12 @@ function ThemeToggle({ isDarkMode, setIsDarkMode }) {
           checked={isDarkMode}
           onChange={() => setIsDarkMode(!isDarkMode)}
         />
+        {isDarkMode ? (
+          <span className="ml-2 block w-full">Uncheck for Light Theme</span>
+        ) : (
+          <span className="ml-2 block w-full">Check for Dark Theme</span>
+        )}
       </label>
-      {isDarkMode ? (
-        <span className="ml-2">Change to Light Theme</span>
-      ) : (
-        <span className="ml-2">Change to Dark Theme</span>
-      )}
     </div>
   );
 }

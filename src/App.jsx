@@ -1,6 +1,7 @@
 // src/App.js
 import { useState, useEffect } from 'react';
 import ColorInput from './components/ColorInput';
+import ColorLegend from './components/ColorLegend';
 import Preview from './components/Preview';
 import PaletteCustomizer from './components/PaletteCustomizer';
 import HarmonySelector from './components/HarmonySelector';
@@ -23,32 +24,39 @@ function App() {
   const [harmony, setHarmony] = useState('default');
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  useEffect(() => {
-    let newPalette;
-    switch (harmony) {
-      case 'complementary':
-        newPalette = generateComplementaryPalette(primaryColor, isDarkMode);
-        break;
-      case 'triadic':
-        newPalette = generateTriadicPalette(primaryColor);
-        break;
-      case 'analogous':
-        newPalette = generateAnalogousPalette(primaryColor);
-        break;
-      case 'split-complementary':
-        newPalette = generateSplitComplementaryPalette(primaryColor);
-        break;
-      case 'tetradic':
-        newPalette = generateTetradicPalette(primaryColor);
-        break;
-      case 'monochromatic':
-        newPalette = generateMonochromaticPalette(primaryColor);
-        break;
-      default:
-        newPalette = generatePalette(primaryColor, isDarkMode);
-    }
-    setPalette(newPalette);
-  }, [primaryColor, harmony, isDarkMode]);
+  useEffect(
+    () => {
+      let newPalette;
+      switch (harmony) {
+        case 'complementary':
+          newPalette = generateComplementaryPalette(primaryColor, isDarkMode);
+          break;
+        case 'triadic':
+          newPalette = generateTriadicPalette(primaryColor, isDarkMode);
+          break;
+        case 'analogous':
+          newPalette = generateAnalogousPalette(primaryColor, isDarkMode);
+          break;
+        case 'split-complementary':
+          newPalette = generateSplitComplementaryPalette(
+            primaryColor,
+            isDarkMode,
+          );
+          break;
+        case 'tetradic':
+          newPalette = generateTetradicPalette(primaryColor, isDarkMode);
+          break;
+        case 'monochromatic':
+          newPalette = generateMonochromaticPalette(primaryColor, isDarkMode);
+          break;
+        default:
+          newPalette = generatePalette(primaryColor, isDarkMode, isDarkMode);
+      }
+      setPalette(newPalette);
+    },
+    [primaryColor, harmony, isDarkMode],
+    isDarkMode,
+  );
 
   return (
     <div className="App">
@@ -64,14 +72,15 @@ function App() {
           <PaletteCustomizer palette={palette} updatePalette={setPalette} />
         )}
       </div>
-      <div className="col-span-1 md:col-span-3">
+      <div className="containerInfo">
         {palette && (
           <>
-            <Preview palette={palette} />
+            <ColorLegend palette={palette} />
             <AccessibilityChecker palette={palette} />
           </>
         )}
       </div>
+      <div className='containerPreview'>{palette && <Preview palette={palette} />}</div>
     </div>
   );
 }
