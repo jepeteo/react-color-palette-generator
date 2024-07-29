@@ -1,44 +1,44 @@
 // src/utils/colorUtils.js
-import chroma from "chroma-js"
+import chroma from 'chroma-js';
 
 export function generatePalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
+  const base = chroma(primaryColor);
 
   return {
     primary: base.hex(),
-    secondary: base.set("hsl.h", "+120").hex(),
-    accent: base.set("hsl.h", "+180").hex(),
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    secondary: base.set('hsl.h', '+120').hex(),
+    accent: base.set('hsl.h', '+180').hex(),
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
   // Add more shades
-  palette.primaryLight = chroma.mix(palette.primary, "#ffffff", 0.3).hex()
-  palette.primaryDark = chroma.mix(palette.primary, "#000000", 0.3).hex()
-  palette.secondaryLight = chroma.mix(palette.secondary, "#ffffff", 0.3).hex()
-  palette.secondaryDark = chroma.mix(palette.secondary, "#000000", 0.3).hex()
+  palette.primaryLight = chroma.mix(palette.primary, '#ffffff', 0.3).hex();
+  palette.primaryDark = chroma.mix(palette.primary, '#000000', 0.3).hex();
+  palette.secondaryLight = chroma.mix(palette.secondary, '#ffffff', 0.3).hex();
+  palette.secondaryDark = chroma.mix(palette.secondary, '#000000', 0.3).hex();
 
-  return palette
+  return palette;
 }
 
 export function generateComplementaryPalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
-  const complement = base.set("hsl.h", "+180")
+  const base = chroma(primaryColor);
+  const complement = base.set('hsl.h', '+180');
 
   return {
     primary: base.hex(),
     secondary: complement.hex(),
-    accent: base.set("hsl.s", "+0.1").set("hsl.l", "-0.1").hex(),
+    accent: base.set('hsl.s', '+0.1').set('hsl.l', '-0.1').hex(),
     // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
     // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
 }
 
 export function generateTriadicPalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
-  const triad1 = base.set("hsl.h", "+120")
-  const triad2 = base.set("hsl.h", "+240")
+  const base = chroma(primaryColor);
+  const triad1 = base.set('hsl.h', '+120');
+  const triad2 = base.set('hsl.h', '+240');
 
   return {
     primary: base.hex(),
@@ -46,15 +46,15 @@ export function generateTriadicPalette(primaryColor, isDarkMode) {
     accent: triad2.hex(),
     // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
     // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
 }
 
 export function generateAnalogousPalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
-  const analog1 = base.set("hsl.h", "+30")
-  const analog2 = base.set("hsl.h", "-30")
+  const base = chroma(primaryColor);
+  const analog1 = base.set('hsl.h', '+30');
+  const analog2 = base.set('hsl.h', '-30');
 
   return {
     primary: base.hex(),
@@ -62,15 +62,15 @@ export function generateAnalogousPalette(primaryColor, isDarkMode) {
     accent: analog2.hex(),
     // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
     // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
 }
 export function generateSplitComplementaryPalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
-  const complement = base.set("hsl.h", "+180")
-  const split1 = complement.set("hsl.h", "-30")
-  const split2 = complement.set("hsl.h", "+30")
+  const base = chroma(primaryColor);
+  const complement = base.set('hsl.h', '+180');
+  const split1 = complement.set('hsl.h', '-30');
+  const split2 = complement.set('hsl.h', '+30');
 
   return {
     primary: base.hex(),
@@ -78,16 +78,16 @@ export function generateSplitComplementaryPalette(primaryColor, isDarkMode) {
     accent: split2.hex(),
     // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
     // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
 }
 
 export function generateTetradicPalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
-  const tetrad1 = base.set("hsl.h", "+90")
-  const tetrad2 = base.set("hsl.h", "+180")
-  const tetrad3 = base.set("hsl.h", "+270")
+  const base = chroma(primaryColor);
+  const tetrad1 = base.set('hsl.h', '+90');
+  const tetrad2 = base.set('hsl.h', '+180');
+  const tetrad3 = base.set('hsl.h', '+270');
 
   return {
     primary: base.hex(),
@@ -96,13 +96,13 @@ export function generateTetradicPalette(primaryColor, isDarkMode) {
     highlight: tetrad3.hex(),
     // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
     // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
 }
 
 export function generateMonochromaticPalette(primaryColor, isDarkMode) {
-  const base = chroma(primaryColor)
+  const base = chroma(primaryColor);
 
   return {
     primary: base.hex(),
@@ -111,7 +111,15 @@ export function generateMonochromaticPalette(primaryColor, isDarkMode) {
     highlight: base.saturate(1).hex(),
     // text: base.luminance() > 0.5 ? "#000000" : "#FFFFFF",
     // background: base.luminance() > 0.5 ? "#FFFFFF" : "#000000",
-    text: isDarkMode ? "#FFFFFF" : "#000000",
-    background: isDarkMode ? "#000000" : "#FFFFFF",
-  }
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    background: isDarkMode ? '#000000' : '#FFFFFF',
+  };
+}
+
+export function calculateContrastRatio(color1, color2) {
+  const luminance1 = chroma(color1).luminance();
+  const luminance2 = chroma(color2).luminance();
+  const brightest = Math.max(luminance1, luminance2);
+  const darkest = Math.min(luminance1, luminance2);
+  return (brightest + 0.05) / (darkest + 0.05);
 }

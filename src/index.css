@@ -3,18 +3,69 @@
 @tailwind utilities;
 
 @layer base {
-  h1 {
-    @apply text-5xl;
+  :root {
+    @apply m-0 p-0;
   }
 }
 
 @layer components {
   .App {
-    @apply mx-auto w-10/12 bg-gray-200 p-4 text-center;
+    @apply grid grid-cols-1 gap-8 bg-slate-100 p-8 lg:grid-cols-4;
+  }
+  .title {
+    @apply mb-12 text-center text-4xl font-bold md:col-span-4;
+  }
+  .containerGenerator {
+    @apply rounded-xl border bg-white p-4;
+  }
+  .containerColorPalette {
+    @apply grid grid-cols-1 items-center gap-4;
+  }
+  .containerColorPalette h2 {
+    @apply border-b text-2xl font-bold;
+  }
+  /* ThemeToggle*/
+  .toggleSwitch {
+    @apply flex items-center rounded-md border p-2;
+  }
+  .switch {
+    @apply flex;
+  }
+  .switch input {
+    @apply h-5 w-5;
   }
 
-  .container {
-    @apply mx-auto px-4;
+  /* ColorInput*/
+  .colorInput {
+    @apply flex items-center justify-between rounded-md border p-2;
+  }
+
+  /* HarmonySelector */
+  .containerColorHarmony {
+    @apply mt-4 grid grid-cols-1 items-center gap-4;
+  }
+  .containerTitle {
+    @apply border-b text-2xl font-bold;
+  }
+  .containerHarmonies {
+    @apply grid grid-cols-1 gap-2 text-sm xl:grid-cols-2 2xl:grid-cols-3;
+  }
+  .harmony {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap rounded px-2 py-1;
+  }
+
+  /* PaletteCustomizer */
+  .containerCustomizePalette {
+    @apply mt-4 grid grid-cols-1 items-center gap-4;
+  }
+  .containerPalette {
+    @apply grid grid-cols-1 gap-4;
+  }
+  .paletteItems {
+    @apply grid grid-cols-2 items-center;
+  }
+  .paletteItems input {
+    @apply justify-self-end;
   }
 }
 

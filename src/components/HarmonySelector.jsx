@@ -1,29 +1,31 @@
 // src/components/HarmonySelector.js
-import React from "react"
+import React from 'react';
 
 function HarmonySelector({ currentHarmony, setHarmony }) {
   const harmonies = [
-    "Default",
-    "Complementary",
-    "Triadic",
-    "Analogous",
-    "Split Complementary",
-    "Tetradic",
-    "Monochromatic",
-  ]
+    'Default',
+    'Complementary',
+    'Triadic',
+    'Analogous',
+    'Split Complementary',
+    'Tetradic',
+    'Monochromatic',
+  ];
 
   return (
-    <div className="mt-4">
-      <h3 className="mb-2 text-lg font-semibold">Color Harmony</h3>
-      <div className="flex flex-wrap gap-2">
+    <div className="containerColorHarmony">
+      <h3 className="containerTitle">Color Harmony</h3>
+      <div className="containerHarmonies">
         {harmonies.map((harmony) => (
           <button
             key={harmony}
-            onClick={() => setHarmony(harmony.toLowerCase().replace(" ", "-"))}
-            className={`rounded px-3 py-1 ${
-              currentHarmony === harmony.toLowerCase().replace(" ", "-")
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-800"
+            title={harmony}
+            aria-label={harmony}
+            onClick={() => setHarmony(harmony.toLowerCase().replace(' ', '-'))}
+            className={`harmony ${
+              currentHarmony === harmony.toLowerCase().replace(' ', '-')
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-800'
             }`}
           >
             {harmony}
@@ -31,7 +33,7 @@ function HarmonySelector({ currentHarmony, setHarmony }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default HarmonySelector
+export default HarmonySelector;

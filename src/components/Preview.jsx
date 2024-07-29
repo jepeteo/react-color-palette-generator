@@ -1,5 +1,5 @@
 // src/components/Preview.js
-import React from "react"
+import React from 'react';
 
 function Preview({ palette }) {
   return (
@@ -34,7 +34,7 @@ function Preview({ palette }) {
 
           <nav className="mb-4">
             <ul className="flex space-x-4">
-              {["Home", "About", "Services", "Contact"].map((item) => (
+              {['Home', 'About', 'Services', 'Contact'].map((item) => (
                 <li key={item}>
                   <a
                     href="#"
@@ -83,7 +83,7 @@ function Preview({ palette }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Preview
+export default Preview;
