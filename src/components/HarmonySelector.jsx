@@ -6,10 +6,12 @@ function HarmonySelector({ currentHarmony, setHarmony }) {
     'Default',
     'Complementary',
     'Triadic',
+    'Square',
     'Analogous',
     'Split Complementary',
     'Tetradic',
     'Monochromatic',
+    'Double Split Complementary',
   ];
 
   return (
@@ -19,9 +21,9 @@ function HarmonySelector({ currentHarmony, setHarmony }) {
         {harmonies.map((harmony) => (
           <button
             key={harmony}
+            onClick={() => setHarmony(harmony.toLowerCase().replace(' ', '-'))}
             title={harmony}
             aria-label={harmony}
-            onClick={() => setHarmony(harmony.toLowerCase().replace(' ', '-'))}
             className={`harmony ${
               currentHarmony === harmony.toLowerCase().replace(' ', '-')
                 ? 'bg-blue-500 text-white'

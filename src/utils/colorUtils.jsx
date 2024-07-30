@@ -110,6 +110,44 @@ export function generateMonochromaticPalette(primaryColor, isDarkMode) {
   };
 }
 
+export function generateSquarePalette(primaryColor, isDarkMode) {
+  const base = chroma(primaryColor);
+  const square1 = base.set('hsl.h', '+90');
+  const square2 = base.set('hsl.h', '+180');
+  const square3 = base.set('hsl.h', '+270');
+
+  return {
+    primary: base.hex(),
+    secondary: square1.hex(),
+    accent: square2.hex(),
+    highlight: square3.hex(),
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
+  };
+}
+
+export function generateDoubleSplitComplementaryPalette(
+  primaryColor,
+  isDarkMode,
+) {
+  const base = chroma(primaryColor);
+  const complement = base.set('hsl.h', '+180');
+  const split1 = complement.set('hsl.h', '-30');
+  const split2 = complement.set('hsl.h', '+30');
+  const split3 = base.set('hsl.h', '-30');
+  const split4 = base.set('hsl.h', '+30');
+
+  return {
+    primary: base.hex(),
+    secondary: split1.hex(),
+    accent: split2.hex(),
+    highlight1: split3.hex(),
+    highlight2: split4.hex(),
+    text: isDarkMode ? lightColor : darkColor,
+    background: isDarkMode ? darkColor : lightColor,
+  };
+}
+
 export function calculateContrastRatio(color1, color2) {
   const luminance1 = chroma(color1).luminance();
   const luminance2 = chroma(color2).luminance();

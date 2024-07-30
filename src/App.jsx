@@ -17,6 +17,8 @@ import {
   generateSplitComplementaryPalette,
   generateTetradicPalette,
   generateMonochromaticPalette,
+  generateSquarePalette,
+  generateDoubleSplitComplementaryPalette,
 } from './utils/colorUtils';
 
 import { extractColors } from 'extract-colors';
@@ -66,6 +68,16 @@ function App() {
         case 'monochromatic':
           newPalette = generateMonochromaticPalette(primaryColor, isDarkMode);
           break;
+        case 'square':
+          newPalette = generateSquarePalette(primaryColor, isDarkMode);
+          break;
+        case 'double-split-complementary':
+          newPalette = generateDoubleSplitComplementaryPalette(
+            primaryColor,
+            isDarkMode,
+          );
+          break;
+
         default:
           newPalette = generatePalette(primaryColor, isDarkMode);
       }
