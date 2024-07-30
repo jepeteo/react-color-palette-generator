@@ -8,6 +8,7 @@ import HarmonySelector from './components/HarmonySelector';
 import ThemeToggle from './components/ThemeToggle';
 import AccessibilityChecker from './components/AccessibilityChecker';
 import ImageUpload from './components/ImageUpload';
+import Footer from './components/Footer';
 import {
   generatePalette,
   generateComplementaryPalette,
@@ -98,6 +99,7 @@ function App() {
       <div className="containerPreview">
         {palette && <Preview palette={palette} />}
       </div>
+      <Footer />
     </div>
   );
 }
