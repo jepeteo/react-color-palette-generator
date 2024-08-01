@@ -92,12 +92,19 @@ function App() {
         <div className="containerColorPalette">
           <h2>Color Palette</h2>
           <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-          <ColorInput setPrimaryColor={setPrimaryColor} />
+          <ColorInput
+            setPrimaryColor={setPrimaryColor}
+            primaryColor={primaryColor}
+          />
           <ImageUpload onImageUpload={handleImageUpload} />
         </div>
         <HarmonySelector currentHarmony={harmony} setHarmony={setHarmony} />
         {palette && (
-          <PaletteCustomizer palette={palette} updatePalette={setPalette} />
+          <PaletteCustomizer
+            palette={palette}
+            updatePalette={setPalette}
+            setPrimaryColor={setPrimaryColor}
+          />
         )}
       </div>
       <div className="containerInfo">

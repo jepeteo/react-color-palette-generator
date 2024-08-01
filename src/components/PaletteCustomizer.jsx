@@ -1,9 +1,13 @@
 // src/components/PaletteCustomizer.js
 import React from 'react';
 
-function PaletteCustomizer({ palette, updatePalette }) {
+function PaletteCustomizer({ palette, updatePalette, setPrimaryColor }) {
   const handleColorChange = (colorName, newValue) => {
+    console.log(`Changing ${colorName} to ${newValue}`);
     updatePalette({ ...palette, [colorName]: newValue });
+    if (colorName === 'primary') {
+      setPrimaryColor(newValue);
+    }
   };
 
   return (
