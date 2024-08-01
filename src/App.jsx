@@ -44,6 +44,8 @@ function App() {
   };
 
   useEffect(() => {
+    console.log('Primary Color:', primaryColor);
+    console.log('Harmony:', harmony);
     let newPalette;
     if (primaryColor) {
       switch (harmony) {
@@ -71,15 +73,17 @@ function App() {
         case 'square':
           newPalette = generateSquarePalette(primaryColor, isDarkMode);
           break;
-        case 'double-split-complementary':
+        case 'double-split complementary':
           newPalette = generateDoubleSplitComplementaryPalette(
             primaryColor,
             isDarkMode,
           );
+          console.log('Double Split Complementary Palette:', newPalette);
           break;
 
         default:
           newPalette = generatePalette(primaryColor, isDarkMode);
+          console.log('Default Palette:', newPalette);
       }
     }
     setPalette(newPalette);
