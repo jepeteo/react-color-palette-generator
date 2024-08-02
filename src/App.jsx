@@ -25,12 +25,19 @@ import { extractColors } from 'extract-colors';
 import './index.css';
 
 function App() {
+  const [initialPrimaryColor] = useState('#3490dc');
   const [primaryColor, setPrimaryColor] = useState('#3490dc');
   const [palette, setPalette] = useState(null);
   const [harmony, setHarmony] = useState('default');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageColors, setImageColors] = useState(null);
+
+  const handleReset = () => {
+    setPrimaryColor(initialPrimaryColor);
+    setHarmony('default');
+    setUploadedImage(null);
+  };
 
   const handleImageUpload = async (imageData) => {
     setUploadedImage(imageData);
@@ -44,8 +51,8 @@ function App() {
   };
 
   useEffect(() => {
-    console.log('Primary Color:', primaryColor);
-    console.log('Harmony:', harmony);
+    // console.log('Primary Color:', primaryColor);
+    // console.log('Harmony:', harmony);
     let newPalette;
     if (primaryColor) {
       switch (harmony) {
@@ -78,12 +85,9 @@ function App() {
             primaryColor,
             isDarkMode,
           );
-          console.log('Double Split Complementary Palette:', newPalette);
           break;
-
         default:
           newPalette = generatePalette(primaryColor, isDarkMode);
-          console.log('Default Palette:', newPalette);
       }
     }
     setPalette(newPalette);
@@ -102,6 +106,11 @@ function App() {
           />
           <ImageUpload onImageUpload={handleImageUpload} />
         </div>
+        {harmony !== 'default' && (
+          <button onClick={handleReset} className="buttonReset">
+            Reset
+          </button>
+        )}
         <HarmonySelector currentHarmony={harmony} setHarmony={setHarmony} />
         {palette && (
           <PaletteCustomizer

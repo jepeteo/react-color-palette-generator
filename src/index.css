@@ -24,7 +24,10 @@
   .containerColorPalette h2 {
     @apply border-b text-2xl font-bold;
   }
-
+  .buttonReset {
+    @apply relative -mb-11 mt-5 block w-12 rounded-lg bg-red-800 px-1 py-0.5 text-sm text-white transition-colors hover:bg-red-600;
+    left: calc(100% - 48px);
+  }
   .containerInfo {
     @apply rounded-xl border bg-white p-4;
   }
