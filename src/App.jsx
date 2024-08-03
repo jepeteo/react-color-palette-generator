@@ -1,13 +1,14 @@
 // src/App.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import ColorInput from './components/ColorInput';
 import ColorLegend from './components/ColorLegend';
-import Preview from './components/Preview';
-import PaletteCustomizer from './components/PaletteCustomizer';
+import Preview, {
+  elements,
+  getElementColor,
+  handleElementClick,
+} from './components/Preview';
 import HarmonySelector from './components/HarmonySelector';
 import ThemeToggle from './components/ThemeToggle';
-import AccessibilityChecker from './components/AccessibilityChecker';
-import ImageUpload from './components/ImageUpload';
 import Footer from './components/Footer';
 import {
   generatePalette,
@@ -20,9 +21,15 @@ import {
   generateSquarePalette,
   generateDoubleSplitComplementaryPalette,
 } from './utils/colorUtils';
-
 import { extractColors } from 'extract-colors';
 import './index.css';
+
+const PaletteCustomizer = lazy(() => import('./components/PaletteCustomizer'));
+const AccessibilityChecker = lazy(
+  () => import('./components/AccessibilityChecker'),
+);
+const ImageUpload = lazy(() => import('./components/ImageUpload'));
+const ElementColorList = lazy(() => import('./components/ElementColorList'));
 
 function App() {
   const [initialPrimaryColor] = useState('#3490dc');
@@ -51,8 +58,6 @@ function App() {
   };
 
   useEffect(() => {
-    // console.log('Primary Color:', primaryColor);
-    // console.log('Harmony:', harmony);
     let newPalette;
     if (primaryColor) {
       switch (harmony) {
@@ -112,19 +117,38 @@ function App() {
           </button>
         )}
         <HarmonySelector currentHarmony={harmony} setHarmony={setHarmony} />
-        {palette && (
-          <PaletteCustomizer
-            palette={palette}
-            updatePalette={setPalette}
-            setPrimaryColor={setPrimaryColor}
-          />
-        )}
+        <Suspense fallback={<div>Customize Palette is Loading...</div>}>
+          {palette && (
+            <PaletteCustomizer
+              palette={palette}
+              updatePalette={setPalette}
+              setPrimaryColor={setPrimaryColor}
+            />
+          )}
+        </Suspense>
+        <Suspense fallback={<div>Accessibility Checker is Loading...</div>}>
+              <AccessibilityChecker palette={palette} />
+            </Suspense>
       </div>
+
       <div className="containerInfo">
         {palette && (
           <>
             <ColorLegend palette={palette} />
-            <AccessibilityChecker palette={palette} />
+            <Suspense fallback={<div>Elements Color List is Loading...</div>}>
+              <ElementColorList
+                elements={elements}
+                colors={Object.fromEntries(
+                  Object.keys(elements).map((key) => [
+                    key,
+                    getElementColor(key, palette, {}), // Pass an empty object for customColors
+                  ]),
+                )}
+                onElementClick={(element) =>
+                  handleElementClick(element, setSelectedElement)
+                }
+              />
+            </Suspense>
           </>
         )}
       </div>

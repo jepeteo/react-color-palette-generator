@@ -16,6 +16,7 @@ const ColorInput = ({ setPrimaryColor, primaryColor }) => {
         id="colorInput"
         value={primaryColor}
         onChange={handleColorChange}
+        aria-label="Input for Primary Color"
         className="m-0 h-8 w-10 bg-white p-0"
       />
     </div>

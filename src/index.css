@@ -13,7 +13,7 @@
     @apply grid grid-cols-1 gap-8 bg-slate-100 p-2 md:grid-cols-2 md:p-8 xl:grid-cols-4;
   }
   .title {
-    @apply mb-12 text-center text-4xl font-bold md:col-span-2 xl:col-span-4;
+    @apply mb-0 text-center text-4xl font-bold md:col-span-2 xl:col-span-4;
   }
   .containerGenerator {
     @apply rounded-xl border bg-white p-4;
@@ -71,10 +71,10 @@
     @apply mt-4 grid grid-cols-1 items-center gap-4;
   }
   .containerPalette {
-    @apply grid grid-cols-1 gap-4;
+    @apply grid grid-cols-1 gap-1;
   }
   .paletteItems {
-    @apply grid grid-cols-2 items-center;
+    @apply grid grid-cols-2 items-center capitalize;
   }
   .paletteItems input {
     @apply justify-self-end;
@@ -82,7 +82,7 @@
 
   /* ColorLegend */
   .colorLegend {
-    @apply grid grid-cols-1 gap-4;
+    @apply mb-4 grid grid-cols-1 gap-2;
   }
 
   /* Accessibility Checks */
