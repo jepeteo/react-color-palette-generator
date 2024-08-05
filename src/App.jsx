@@ -127,8 +127,8 @@ function App() {
           )}
         </Suspense>
         <Suspense fallback={<div>Accessibility Checker is Loading...</div>}>
-              <AccessibilityChecker palette={palette} />
-            </Suspense>
+          <AccessibilityChecker palette={palette} />
+        </Suspense>
       </div>
 
       <div className="containerInfo">
@@ -138,6 +138,7 @@ function App() {
             <Suspense fallback={<div>Elements Color List is Loading...</div>}>
               <ElementColorList
                 elements={elements}
+                palette={palette}
                 colors={Object.fromEntries(
                   Object.keys(elements).map((key) => [
                     key,
