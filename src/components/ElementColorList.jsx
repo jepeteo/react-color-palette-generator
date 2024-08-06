@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from 'react-tooltip';
 import { getAccessibilityInfo } from '../utils/accessibilityUtils';
 
 const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
@@ -23,9 +24,14 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
                 style={{ backgroundColor: colors[key] || '#ccc' }}
                 onClick={() => onElementClick(key)}
               ></div>
-              <div className="col-span-2 ml-2 text-sm">
+              <div 
+                className="col-span-2 ml-2 text-sm cursor-help"
+                data-tooltip-id={`tooltip-${key}`}
+                data-tooltip-content={`Contrast: ${accessibilityInfo.contrast.toFixed(2)}`}
+              >
                 {accessibilityInfo.aa ? '✅' : '❌'} AA
               </div>
+              <Tooltip id={`tooltip-${key}`} />
             </li>
           );
         })}
