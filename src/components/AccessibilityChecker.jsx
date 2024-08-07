@@ -3,6 +3,7 @@ import React from 'react';
 import { calculateContrastRatio } from '../utils/colorUtils';
 
 function AccessibilityChecker({ palette }) {
+  if (!palette) return null;
   const textContrast = calculateContrastRatio(palette.text, palette.background);
   const primaryContrast = calculateContrastRatio(
     palette.primary,

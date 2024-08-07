@@ -126,9 +126,9 @@ function App() {
             />
           )}
         </Suspense>
-        <Suspense fallback={<div>Accessibility Checker is Loading...</div>}>
-          <AccessibilityChecker palette={palette} />
-        </Suspense>
+        {/* <Suspense fallback={<div>Accessibility Checker is Loading...</div>}>
+          {palette && <AccessibilityChecker palette={palette} />}
+        </Suspense> */}
       </div>
 
       <div className="containerInfo">
