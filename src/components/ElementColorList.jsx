@@ -1,6 +1,9 @@
 import React from 'react';
 import { Tooltip } from 'react-tooltip';
-import { getAccessibilityInfo } from '../utils/accessibilityUtils';
+import {
+  getAccessibilityInfo,
+  generateAccessibleAlternatives,
+} from '../utils/accessibilityUtils';
 
 const calculateAccessibilityScore = (colors, palette) => {
   const relevantChecks = [
@@ -66,6 +69,9 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
           }
 
           const accessibilityInfo = getAccessibilityInfo(color, contrastColor);
+          const alternativeColor = !accessibilityInfo.aa
+            ? generateAccessibleAlternatives(color, contrastColor)
+            : null;
 
           return (
             <li key={key} className="grid grid-cols-12 items-center">
@@ -81,7 +87,7 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
               <div
                 className="col-span-1 ml-2 cursor-help text-sm"
                 data-tooltip-id={`tooltip-${key}`}
-                data-tooltip-content={`Contrast: ${accessibilityInfo.contrast.toFixed(2)} | AA: ${accessibilityInfo.aa ? '✅' : '❌'} | AAA: ${accessibilityInfo.aaa ? '✅' : '❌'}`}
+                data-tooltip-content={`Contrast: ${accessibilityInfo.contrast.toFixed(2)} | AA: ${accessibilityInfo.aa ? '✅' : '❌'} | AAA: ${accessibilityInfo.aaa ? '✅' : '❌'} ${alternativeColor ? ` | Suggested: ${alternativeColor.toUpperCase()}` : ''}`}
               >
                 {accessibilityInfo.aa ? '✅' : '❌'}
               </div>
