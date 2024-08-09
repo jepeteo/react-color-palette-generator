@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 import { getAccessibilityInfo } from '../utils/accessibilityUtils';
+import ColorSelector from './ColorSelector';
 
 const calculateAccessibilityScore = (colors, palette) => {
   const relevantChecks = [
@@ -27,8 +28,14 @@ const calculateAccessibilityScore = (colors, palette) => {
 
   return (passedChecks / totalChecks) * 100;
 };
+
+const handleElementClick = (element) => {
+  setSelectedElement(element);
+};
+
 const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
   const accessibilityScore = calculateAccessibilityScore(colors, palette);
+  const [selectedElement, setSelectedElement] = useState(null);
 
   return (
     <div className="colorListElements">
@@ -76,7 +83,8 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
               <div
                 className="col-span-1 ml-auto h-5 w-5 cursor-pointer rounded-full border"
                 style={{ backgroundColor: colors[key] || '#ccc' }}
-                onClick={() => onElementClick(key)}
+                // onClick={() => onElementClick(key)}
+                onClick={() => handleElementClick(key)}
               ></div>
               <div
                 className="col-span-1 ml-2 cursor-help text-sm"
@@ -85,6 +93,18 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
               >
                 {accessibilityInfo.aa ? '✅' : '❌'}
               </div>
+              {selectedElement && (
+                <ColorSelector
+                  palette={palette}
+                  onSelect={(color) => {
+                    onColorUpdate(selectedElement, color);
+                    setSelectedElement(null);
+                  }}
+                  onClose={() => setSelectedElement(null)}
+                  selectedElement={selectedElement}
+                />
+              )}
+
               <Tooltip id={`tooltip-${key}`} />
             </li>
           );

@@ -15,11 +15,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.2.7",
     "chroma-js": "^2.4.2",
     "extract-colors": "^4.0.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-tooltip": "^5.28.0"
+    "react-redux": "^9.1.2",
+    "react-tooltip": "^5.28.0",
+    "redux": "^5.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

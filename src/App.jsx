@@ -1,5 +1,14 @@
 // src/App.js
 import { useState, useEffect, Suspense, lazy } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setPrimaryColor,
+  setHarmony,
+  setPalette,
+  setIsDarkMode,
+  setUploadedImage,
+  setImageColors,
+} from './store/colorSlice';
 import ColorInput from './components/ColorInput';
 import ColorLegend from './components/ColorLegend';
 import Preview, {
@@ -29,26 +38,26 @@ const ImageUpload = lazy(() => import('./components/ImageUpload'));
 const ElementColorList = lazy(() => import('./components/ElementColorList'));
 
 function App() {
-  const [initialPrimaryColor] = useState('#3490dc');
-  const [primaryColor, setPrimaryColor] = useState('#3490dc');
-  const [palette, setPalette] = useState(null);
-  const [harmony, setHarmony] = useState('default');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState(null);
-  const [imageColors, setImageColors] = useState(null);
+  const dispatch = useDispatch();
+  const primaryColor = useSelector((state) => state.color.primaryColor);
+  const palette = useSelector((state) => state.color.palette);
+  const harmony = useSelector((state) => state.color.harmony);
+  const isDarkMode = useSelector((state) => state.color.isDarkMode);
+  const uploadedImage = useSelector((state) => state.color.uploadedImage);
+  const imageColors = useSelector((state) => state.color.imageColors);
 
   const handleReset = () => {
-    setPrimaryColor(initialPrimaryColor);
-    setHarmony('default');
-    setUploadedImage(null);
+    dispatch(setPrimaryColor(initialPrimaryColor));
+    dispatch(setHarmony('default'));
+    dispatch(setUploadedImage(null));
   };
 
   const handleImageUpload = async (imageData) => {
-    setUploadedImage(imageData);
+    dispatch(setUploadedImage(imageData));
     try {
       const colors = await extractColors(imageData);
       const primaryColor = colors[0].hex;
-      setPrimaryColor(primaryColor);
+      dispatch(setPrimaryColor(primaryColor));
     } catch (error) {
       console.error('Error extracting colors:', error);
     }
@@ -92,8 +101,8 @@ function App() {
           newPalette = generatePalette(primaryColor, isDarkMode);
       }
     }
-    setPalette(newPalette);
-  }, [primaryColor, harmony, isDarkMode]);
+    dispatch(setPalette(newPalette));
+  }, [primaryColor, harmony, isDarkMode, dispatch]);
 
   return (
     <div className="App">
@@ -101,9 +110,12 @@ function App() {
       <div className="containerGenerator">
         <div className="containerColorPalette">
           <h2>Color Palette</h2>
-          <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+          <ThemeToggle
+            isDarkMode={isDarkMode}
+            setIsDarkMode={(value) => dispatch(setIsDarkMode(value))}
+          />
           <ColorInput
-            setPrimaryColor={setPrimaryColor}
+            setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
             primaryColor={primaryColor}
           />
           <ImageUpload onImageUpload={handleImageUpload} />
@@ -113,13 +125,16 @@ function App() {
             Reset
           </button>
         )}
-        <HarmonySelector currentHarmony={harmony} setHarmony={setHarmony} />
+        <HarmonySelector
+          currentHarmony={harmony}
+          setHarmony={(value) => dispatch(setHarmony(value))}
+        />
         <Suspense fallback={<div>Customize Palette is Loading...</div>}>
           {palette && (
             <PaletteCustomizer
               palette={palette}
               updatePalette={setPalette}
-              setPrimaryColor={setPrimaryColor}
+              setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
             />
           )}
         </Suspense>
