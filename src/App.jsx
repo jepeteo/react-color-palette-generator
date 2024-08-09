@@ -25,9 +25,6 @@ import { extractColors } from 'extract-colors';
 import './index.css';
 
 const PaletteCustomizer = lazy(() => import('./components/PaletteCustomizer'));
-const AccessibilityChecker = lazy(
-  () => import('./components/AccessibilityChecker'),
-);
 const ImageUpload = lazy(() => import('./components/ImageUpload'));
 const ElementColorList = lazy(() => import('./components/ElementColorList'));
 
@@ -126,9 +123,6 @@ function App() {
             />
           )}
         </Suspense>
-        {/* <Suspense fallback={<div>Accessibility Checker is Loading...</div>}>
-          {palette && <AccessibilityChecker palette={palette} />}
-        </Suspense> */}
       </div>
 
       <div className="containerInfo">

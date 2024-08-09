@@ -15,17 +15,3 @@ export function getAccessibilityInfo(color, backgroundColor) {
     aaa,
   };
 }
-
-export function generateAccessibleAlternatives(
-  color,
-  backgroundColor,
-  targetContrast = 4.5,
-) {
-  let alternativeColor = chroma(color);
-  const darken =
-    chroma.contrast(alternativeColor, backgroundColor) < targetContrast;
-  while (chroma.contrast(alternativeColor, backgroundColor) < targetContrast) {
-    alternativeColor = alternativeColor.darken(0.1);
-  }
-  return alternativeColor.hex();
-}
