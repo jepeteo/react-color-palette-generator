@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Tooltip } from 'react-tooltip';
 import { getAccessibilityInfo } from '../utils/accessibilityUtils';
 import ColorSelector from './ColorSelector';
 import { useDispatch, useSelector } from 'react-redux';
 import { elements } from './Preview';
 import { updateElementColor } from '../store/colorSlice';
+import { shallowEqual } from 'react-redux';
 
-const ElementColorList = () => {
+const ElementColorList = React.memo(({ elements }) => {
   const dispatch = useDispatch();
   const colors = useSelector((state) => state.color.colors);
   const palette = useSelector((state) => state.color.palette);
@@ -30,19 +31,25 @@ const ElementColorList = () => {
 
     relevantChecks.forEach(({ text, background }) => {
       const { aa } = getAccessibilityInfo(text, background);
-      console.log(`Text: ${text}, Background: ${background}, AA: ${aa}`);
       if (aa) passedChecks++;
     });
 
     return (passedChecks / totalChecks) * 100;
   };
-  const accessibilityScore = calculateAccessibilityScore(colors, palette);
 
-  const handleElementClick = (element) => {
+  const accessibilityScore = useMemo(
+    () => calculateAccessibilityScore(colors, palette),
+    [colors, palette],
+  );
+
+  const handleElementClick = useCallback((event, element) => {
+    event.stopPropagation();
     setSelectedElement(element);
-  };
+  }, []);
 
   const onColorUpdate = (element, color) => {
+    console.log('onColorUpdate called with:', element, color);
+
     dispatch(updateElementColor({ element, color }));
   };
 
@@ -82,6 +89,11 @@ const ElementColorList = () => {
           }
           const accessibilityInfo = getAccessibilityInfo(color, contrastColor);
 
+          console.log(
+            'Rendering ElementColorList, selectedElement:',
+            selectedElement,
+          );
+
           return (
             <li key={key} className="grid grid-cols-12 items-center">
               <span className="col-span-7 text-sm">{label}</span>
@@ -91,7 +103,7 @@ const ElementColorList = () => {
               <div
                 className="col-span-1 ml-auto h-5 w-5 cursor-pointer rounded-full border"
                 style={{ backgroundColor: colors[key] || '#ccc' }}
-                onClick={() => handleElementClick(key)}
+                onClick={(event) => handleElementClick(event, key)}
               ></div>
               <div
                 className="col-span-1 ml-2 cursor-help text-sm"
@@ -100,25 +112,25 @@ const ElementColorList = () => {
               >
                 {accessibilityInfo.aa ? '✅' : '❌'}
               </div>
-              {selectedElement && (
-                <ColorSelector
-                  palette={palette}
-                  onSelect={(color) => {
-                    onColorUpdate(selectedElement, color);
-                    setSelectedElement(null);
-                  }}
-                  onClose={() => setSelectedElement(null)}
-                  selectedElement={selectedElement}
-                />
-              )}
 
               <Tooltip id={`tooltip-${key}`} />
             </li>
           );
         })}
       </ul>
+      {selectedElement && (
+        <ColorSelector
+          palette={palette}
+          onSelect={(color) => {
+            onColorUpdate(selectedElement, color);
+            setSelectedElement(null);
+          }}
+          onClose={() => setSelectedElement(null)}
+          selectedElement={selectedElement}
+        />
+      )}
     </div>
   );
-};
+});
 
 export default ElementColorList;

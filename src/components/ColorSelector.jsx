@@ -2,7 +2,7 @@ import React from 'react';
 
 function ColorSelector({ palette, onSelect, onClose, selectedElement }) {
   return (
-    <div className="absolute right-8 z-10 flex max-w-[400px] flex-wrap items-center gap-4 rounded bg-white p-4 shadow-lg">
+    <div className="absolute right-6 top-6 z-50 flex max-w-[400px] flex-wrap items-center gap-4 rounded bg-white p-4 shadow-lg">
       {selectedElement && (
         <p className="w-full border-b pb-2">
           Selected Element: <span className="font-bold">{selectedElement}</span>
