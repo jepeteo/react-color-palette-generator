@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-// import chroma from 'chroma-js';
 import ColorSelector from './ColorSelector';
-import ElementColorList from './ElementColorList';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateElementColor } from '../store/colorSlice';
 
 export const elements = {
   background: 'Background',
@@ -26,7 +26,7 @@ export const elements = {
 };
 
 export const getElementColor = (element, palette, customColors) => {
-  if (!palette) return '#369';
+  if (!palette) return '#336699';
   const defaultColors = {
     background: palette.background,
     headerBackground: palette.primary,
@@ -56,7 +56,9 @@ export const handleElementClick = (element, callback) => {
   if (callback) callback(element);
 };
 
-function Preview({ palette }) {
+function Preview() {
+  const palette = useSelector((state) => state.color.palette);
+  const colors = useSelector((state) => state.color.colors);
   const [selectedElement, setSelectedElement] = useState(null);
   const [customColors, setCustomColors] = useState({});
 
@@ -64,12 +66,10 @@ function Preview({ palette }) {
     setCustomColors({});
   }, [palette]);
 
+  const dispatch = useDispatch();
   const handleColorSelect = (color) => {
     if (selectedElement) {
-      setCustomColors((prevColors) => ({
-        ...prevColors,
-        [selectedElement]: color,
-      }));
+      dispatch(updateElementColor({ element: selectedElement, color }));
       setSelectedElement(null);
     }
   };
@@ -81,7 +81,7 @@ function Preview({ palette }) {
         className="overflow-hidden rounded-lg border"
         onClick={() => handleElementClick('background', setSelectedElement)}
         style={{
-          backgroundColor: getElementColor('background', palette, customColors),
+          backgroundColor: getElementColor('background', palette, colors),
         }}
       >
         <header
@@ -94,7 +94,7 @@ function Preview({ palette }) {
             backgroundColor: getElementColor(
               'headerBackground',
               palette,
-              customColors,
+              colors,
             ),
           }}
         >
@@ -105,7 +105,7 @@ function Preview({ palette }) {
               handleElementClick('headerText', setSelectedElement);
             }}
             style={{
-              color: getElementColor('headerText', palette, customColors),
+              color: getElementColor('headerText', palette, colors),
             }}
           >
             Website Header
@@ -119,11 +119,7 @@ function Preview({ palette }) {
             handleElementClick('navBackground', setSelectedElement);
           }}
           style={{
-            backgroundColor: getElementColor(
-              'navBackground',
-              palette,
-              customColors,
-            ),
+            backgroundColor: getElementColor('navBackground', palette, colors),
           }}
         >
           <ul className="flex space-x-4">
@@ -137,7 +133,7 @@ function Preview({ palette }) {
                     handleElementClick('navText', setSelectedElement);
                   }}
                   style={{
-                    color: getElementColor('navText', palette, customColors),
+                    color: getElementColor('navText', palette, colors),
                   }}
                 >
                   {item}
@@ -155,7 +151,7 @@ function Preview({ palette }) {
               handleElementClick('heading1', setSelectedElement);
             }}
             style={{
-              color: getElementColor('heading1', palette, customColors),
+              color: getElementColor('heading1', palette, colors),
             }}
           >
             Welcome to our website
@@ -167,7 +163,7 @@ function Preview({ palette }) {
               handleElementClick('heading2', setSelectedElement);
             }}
             style={{
-              color: getElementColor('heading2', palette, customColors),
+              color: getElementColor('heading2', palette, colors),
             }}
           >
             Subheading
@@ -179,7 +175,7 @@ function Preview({ palette }) {
               handleElementClick('paragraphText', setSelectedElement);
             }}
             style={{
-              color: getElementColor('paragraphText', palette, customColors),
+              color: getElementColor('paragraphText', palette, colors),
             }}
           >
             This is a paragraph of text demonstrating the body copy style. It's
@@ -194,7 +190,7 @@ function Preview({ palette }) {
               handleElementClick('linkText', setSelectedElement);
             }}
             style={{
-              color: getElementColor('linkText', palette, customColors),
+              color: getElementColor('linkText', palette, colors),
             }}
           >
             This is a link
@@ -206,12 +202,8 @@ function Preview({ palette }) {
               handleElementClick('blockquoteText', setSelectedElement);
             }}
             style={{
-              borderColor: getElementColor(
-                'blockquoteBorder',
-                palette,
-                customColors,
-              ),
-              color: getElementColor('blockquoteText', palette, customColors),
+              borderColor: getElementColor('blockquoteBorder', palette, colors),
+              color: getElementColor('blockquoteText', palette, colors),
             }}
           >
             "This is a blockquote to demonstrate how quoted text might appear
@@ -224,7 +216,7 @@ function Preview({ palette }) {
               handleElementClick('listText', setSelectedElement);
             }}
             style={{
-              color: getElementColor('listText', palette, customColors),
+              color: getElementColor('listText', palette, colors),
             }}
           >
             <li>First list item</li>
@@ -242,9 +234,9 @@ function Preview({ palette }) {
               backgroundColor: getElementColor(
                 'buttonBackground',
                 palette,
-                customColors,
+                colors,
               ),
-              color: getElementColor('buttonText', palette, customColors),
+              color: getElementColor('buttonText', palette, colors),
             }}
           >
             Call to Action
@@ -263,10 +255,10 @@ function Preview({ palette }) {
                 backgroundColor: getElementColor(
                   'inputBackground',
                   palette,
-                  customColors,
+                  colors,
                 ),
-                color: getElementColor('inputText', palette, customColors),
-                border: `1px solid ${getElementColor('inputBorder', palette, customColors)}})}`,
+                color: getElementColor('inputText', palette, colors),
+                border: `1px solid ${getElementColor('inputBorder', palette, colors)}})}`,
               }}
             />
             <button
@@ -280,9 +272,9 @@ function Preview({ palette }) {
                 backgroundColor: getElementColor(
                   'buttonBackground',
                   palette,
-                  customColors,
+                  colors,
                 ),
-                color: getElementColor('buttonText', palette, customColors),
+                color: getElementColor('buttonText', palette, colors),
               }}
             >
               Subscribe

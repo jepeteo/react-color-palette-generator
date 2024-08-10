@@ -1,18 +1,22 @@
-// src/components/HarmonySelector.js
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHarmony } from '../store/colorSlice';
 
-function HarmonySelector({ currentHarmony, setHarmony }) {
-  const harmonies = [
-    'Default',
-    'Complementary',
-    'Triadic',
-    'Square',
-    'Analogous',
-    'Split Complementary',
-    'Tetradic',
-    'Monochromatic',
-    'Double Split Complementary',
-  ];
+const harmonies = [
+  'Default',
+  'Complementary',
+  'Triadic',
+  'Square',
+  'Analogous',
+  'Split Complementary',
+  'Tetradic',
+  'Monochromatic',
+  'Double Split Complementary',
+];
+
+function HarmonySelector() {
+  const dispatch = useDispatch();
+  const currentHarmony = useSelector((state) => state.color.harmony);
 
   return (
     <div className="containerColorHarmony">
@@ -21,7 +25,9 @@ function HarmonySelector({ currentHarmony, setHarmony }) {
         {harmonies.map((harmony) => (
           <button
             key={harmony}
-            onClick={() => setHarmony(harmony.toLowerCase().replace(' ', '-'))}
+            onClick={() =>
+              dispatch(setHarmony(harmony.toLowerCase().replace(' ', '-')))
+            }
             title={harmony}
             aria-label={harmony}
             className={`harmony ${

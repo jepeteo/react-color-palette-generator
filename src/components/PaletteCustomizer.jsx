@@ -1,15 +1,24 @@
-// src/components/PaletteCustomizer.js
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPrimaryColor, updatePaletteColor } from '../store/colorSlice';
+import { generatePalette } from '../utils/colorUtils';
 
-function PaletteCustomizer({ palette, updatePalette, setPrimaryColor }) {
+function PaletteCustomizer() {
+  const primaryColor = useSelector((state) => state.color.primaryColor);
+  const palette = useSelector((state) => state.color.palette);
+  const dispatch = useDispatch();
+
   const handleColorChange = (colorName, newValue) => {
-    console.log(`Changing ${colorName} to ${newValue}`);
-    updatePalette({ ...palette, [colorName]: newValue });
+    dispatch(updatePaletteColor({ colorName, newValue }));
+
     if (colorName === 'primary') {
-      setPrimaryColor(newValue);
+      dispatch(setPrimaryColor(newValue));
     }
   };
 
+  if (!palette || typeof palette !== 'object') {
+    return <div>Loading palette...</div>;
+  }
   return (
     <div className="containerCustomizePalette">
       <h2 className="containerTitle">Customize Palette</h2>

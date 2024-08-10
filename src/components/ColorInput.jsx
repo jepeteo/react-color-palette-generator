@@ -1,9 +1,13 @@
-// src/components/ColorInput.js
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPrimaryColor } from '../store/colorSlice';
 
-const ColorInput = ({ setPrimaryColor, primaryColor }) => {
+const ColorInput = () => {
+  const dispatch = useDispatch();
+  const primaryColor = useSelector((state) => state.color.primaryColor);
+
   const handleColorChange = (e) => {
-    setPrimaryColor(e.target.value);
+    dispatch(setPrimaryColor(e.target.value));
   };
 
   return (

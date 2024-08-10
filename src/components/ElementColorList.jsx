@@ -2,40 +2,49 @@ import React, { useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 import { getAccessibilityInfo } from '../utils/accessibilityUtils';
 import ColorSelector from './ColorSelector';
+import { useDispatch, useSelector } from 'react-redux';
+import { elements } from './Preview';
+import { updateElementColor } from '../store/colorSlice';
 
-const calculateAccessibilityScore = (colors, palette) => {
-  const relevantChecks = [
-    { text: colors.paragraphText, background: palette.background },
-    { text: colors.headerText, background: colors.headerBackground },
-    { text: colors.navText, background: colors.navBackground },
-    { text: colors.heading1, background: colors.background },
-    { text: colors.heading2, background: colors.background },
-    { text: colors.linkText, background: colors.background },
-    { text: colors.blockquoteText, background: colors.background },
-    { text: colors.listText, background: colors.background },
-    { text: colors.buttonText, background: colors.buttonBackground },
-    { text: colors.footerText, background: colors.footerBackground },
-  ];
-
-  const totalChecks = relevantChecks.length * 2; // AA and AAA for each combination
-  let passedChecks = 0;
-
-  relevantChecks.forEach(({ text, background }) => {
-    const { aa, aaa } = getAccessibilityInfo(text, background);
-    if (aa) passedChecks++;
-    if (aaa) passedChecks++;
-  });
-
-  return (passedChecks / totalChecks) * 100;
-};
-
-const handleElementClick = (element) => {
-  setSelectedElement(element);
-};
-
-const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
-  const accessibilityScore = calculateAccessibilityScore(colors, palette);
+const ElementColorList = () => {
+  const dispatch = useDispatch();
+  const colors = useSelector((state) => state.color.colors);
+  const palette = useSelector((state) => state.color.palette);
   const [selectedElement, setSelectedElement] = useState(null);
+
+  const calculateAccessibilityScore = (colors, palette) => {
+    const relevantChecks = [
+      { text: colors.paragraphText, background: palette.background },
+      { text: colors.headerText, background: colors.headerBackground },
+      { text: colors.navText, background: colors.navBackground },
+      { text: colors.heading1, background: colors.background },
+      { text: colors.heading2, background: colors.background },
+      { text: colors.linkText, background: colors.background },
+      { text: colors.blockquoteText, background: colors.background },
+      { text: colors.listText, background: colors.background },
+      { text: colors.buttonText, background: colors.buttonBackground },
+      { text: colors.footerText, background: colors.footerBackground },
+    ];
+    const totalChecks = relevantChecks.length;
+    let passedChecks = 0;
+
+    relevantChecks.forEach(({ text, background }) => {
+      const { aa } = getAccessibilityInfo(text, background);
+      console.log(`Text: ${text}, Background: ${background}, AA: ${aa}`);
+      if (aa) passedChecks++;
+    });
+
+    return (passedChecks / totalChecks) * 100;
+  };
+  const accessibilityScore = calculateAccessibilityScore(colors, palette);
+
+  const handleElementClick = (element) => {
+    setSelectedElement(element);
+  };
+
+  const onColorUpdate = (element, color) => {
+    dispatch(updateElementColor({ element, color }));
+  };
 
   return (
     <div className="colorListElements">
@@ -69,9 +78,8 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
           } else if (key === 'navText') {
             contrastColor = colors.navBackground;
           } else {
-            contrastColor = palette.background;
+            contrastColor = colors.background;
           }
-
           const accessibilityInfo = getAccessibilityInfo(color, contrastColor);
 
           return (
@@ -83,7 +91,6 @@ const ElementColorList = ({ elements, colors, palette, onElementClick }) => {
               <div
                 className="col-span-1 ml-auto h-5 w-5 cursor-pointer rounded-full border"
                 style={{ backgroundColor: colors[key] || '#ccc' }}
-                // onClick={() => onElementClick(key)}
                 onClick={() => handleElementClick(key)}
               ></div>
               <div
