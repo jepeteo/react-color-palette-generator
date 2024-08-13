@@ -88,7 +88,7 @@ function updateColors(palette) {
   return {
     paragraphText: palette.text,
     background: palette.background,
-    headerText: palette.primary,
+    headerText: palette.text,
     headerBackground: palette.secondary,
     navText: palette.background,
     navBackground: palette.primary,

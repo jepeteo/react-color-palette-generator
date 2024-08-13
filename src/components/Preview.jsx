@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ColorSelector from './ColorSelector';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateElementColor } from '../store/colorSlice';
+import ColorSelector from './ColorSelector';
 
 export const elements = {
   background: 'Background',
@@ -80,9 +80,7 @@ function Preview() {
       <div
         className="overflow-hidden rounded-lg border"
         onClick={() => handleElementClick('background', setSelectedElement)}
-        style={{
-          backgroundColor: getElementColor('background', palette, colors),
-        }}
+        style={{ backgroundColor: colors.background }}
       >
         <header
           className="p-4"
@@ -90,13 +88,7 @@ function Preview() {
             e.stopPropagation();
             handleElementClick('headerBackground', setSelectedElement);
           }}
-          style={{
-            backgroundColor: getElementColor(
-              'headerBackground',
-              palette,
-              colors,
-            ),
-          }}
+          style={{ backgroundColor: colors.headerBackground }}
         >
           <h1
             className="text-2xl font-bold"
@@ -104,9 +96,7 @@ function Preview() {
               e.stopPropagation();
               handleElementClick('headerText', setSelectedElement);
             }}
-            style={{
-              color: getElementColor('headerText', palette, colors),
-            }}
+            style={{ color: colors.headerText }}
           >
             Website Header
           </h1>
@@ -132,9 +122,7 @@ function Preview() {
                     e.stopPropagation();
                     handleElementClick('navText', setSelectedElement);
                   }}
-                  style={{
-                    color: getElementColor('navText', palette, colors),
-                  }}
+                  style={{ color: colors.navText }}
                 >
                   {item}
                 </a>
@@ -150,9 +138,7 @@ function Preview() {
               e.stopPropagation();
               handleElementClick('heading1', setSelectedElement);
             }}
-            style={{
-              color: getElementColor('heading1', palette, colors),
-            }}
+            style={{ color: colors.heading1 }}
           >
             Welcome to our website
           </h1>
@@ -162,9 +148,7 @@ function Preview() {
               e.stopPropagation();
               handleElementClick('heading2', setSelectedElement);
             }}
-            style={{
-              color: getElementColor('heading2', palette, colors),
-            }}
+            style={{ color: colors.heading2 }}
           >
             Subheading
           </h2>
@@ -174,9 +158,7 @@ function Preview() {
               e.stopPropagation();
               handleElementClick('paragraphText', setSelectedElement);
             }}
-            style={{
-              color: getElementColor('paragraphText', palette, colors),
-            }}
+            style={{ color: colors.paragraphText }}
           >
             This is a paragraph of text demonstrating the body copy style. It's
             important to ensure good readability and contrast with the
@@ -189,9 +171,7 @@ function Preview() {
               e.stopPropagation();
               handleElementClick('linkText', setSelectedElement);
             }}
-            style={{
-              color: getElementColor('linkText', palette, colors),
-            }}
+            style={{ color: colors.linkText }}
           >
             This is a link
           </a>
@@ -202,8 +182,8 @@ function Preview() {
               handleElementClick('blockquoteText', setSelectedElement);
             }}
             style={{
-              borderColor: getElementColor('blockquoteBorder', palette, colors),
-              color: getElementColor('blockquoteText', palette, colors),
+              borderColor: colors.blockquoteBorder,
+              color: colors.blockquoteText,
             }}
           >
             "This is a blockquote to demonstrate how quoted text might appear
@@ -215,9 +195,7 @@ function Preview() {
               e.stopPropagation();
               handleElementClick('listText', setSelectedElement);
             }}
-            style={{
-              color: getElementColor('listText', palette, colors),
-            }}
+            style={{ color: colors.listText }}
           >
             <li>First list item</li>
             <li>Second list item</li>
@@ -231,12 +209,8 @@ function Preview() {
               handleElementClick('buttonBackground', setSelectedElement);
             }}
             style={{
-              backgroundColor: getElementColor(
-                'buttonBackground',
-                palette,
-                colors,
-              ),
-              color: getElementColor('buttonText', palette, colors),
+              backgroundColor: colors.footerBackground,
+              color: colors.buttonText,
             }}
           >
             Call to Action
@@ -252,13 +226,9 @@ function Preview() {
                 handleElementClick('inputBackground', setSelectedElement);
               }}
               style={{
-                backgroundColor: getElementColor(
-                  'inputBackground',
-                  palette,
-                  colors,
-                ),
-                color: getElementColor('inputText', palette, colors),
-                border: `1px solid ${getElementColor('inputBorder', palette, colors)}})}`,
+                backgroundColor: colors.inputBackground,
+                color: colors.inputText,
+                border: `1px solid ${colors.inputBorder}`,
               }}
             />
             <button
@@ -269,12 +239,8 @@ function Preview() {
                 handleElementClick('buttonBackground', setSelectedElement);
               }}
               style={{
-                backgroundColor: getElementColor(
-                  'buttonBackground',
-                  palette,
-                  colors,
-                ),
-                color: getElementColor('buttonText', palette, colors),
+                backgroundColor: colors.buttonBackground,
+                color: colors.buttonText,
               }}
             >
               Subscribe
@@ -290,10 +256,18 @@ function Preview() {
           }}
           style={{
             backgroundColor: getElementColor('footerBackground'),
-            color: getElementColor('footerText'),
           }}
         >
-          © 2024 Color Palette Generator. All rights reserved.
+          <div
+            className="mb"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleElementClick('footerText', setSelectedElement);
+            }}
+            style={{ color: colors.footerText }}
+          >
+            © 2024 Color Palette Generator. All rights reserved.
+          </div>
         </footer>
       </div>
       {selectedElement && (

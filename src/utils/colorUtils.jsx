@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 
-const darkColor = '#121212';
-const lightColor = '#fcfcfc';
+const darkColor = '#161616';
+const lightColor = '#f8f8f8';
 
 export function generatePalette(primaryColor, isDarkMode) {
   const base = chroma(primaryColor);

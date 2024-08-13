@@ -3,9 +3,7 @@ import { Tooltip } from 'react-tooltip';
 import { getAccessibilityInfo } from '../utils/accessibilityUtils';
 import ColorSelector from './ColorSelector';
 import { useDispatch, useSelector } from 'react-redux';
-import { elements } from './Preview';
 import { updateElementColor } from '../store/colorSlice';
-import { shallowEqual } from 'react-redux';
 
 const ElementColorList = React.memo(({ elements }) => {
   const dispatch = useDispatch();
@@ -15,7 +13,7 @@ const ElementColorList = React.memo(({ elements }) => {
 
   const calculateAccessibilityScore = (colors, palette) => {
     const relevantChecks = [
-      { text: colors.paragraphText, background: palette.background },
+      { text: colors.paragraphText, background: colors.background },
       { text: colors.headerText, background: colors.headerBackground },
       { text: colors.navText, background: colors.navBackground },
       { text: colors.heading1, background: colors.background },
@@ -78,21 +76,30 @@ const ElementColorList = React.memo(({ elements }) => {
 
           if (key === 'background') {
             contrastColor = colors.paragraphText;
-          } else if (key === 'buttonText') {
-            contrastColor = colors.buttonBackground;
-          } else if (key === 'inputBackground') {
-            contrastColor = colors.inputText;
+          } else if (key === 'headerText') {
+            contrastColor = colors.headerBackground;
           } else if (key === 'navText') {
             contrastColor = colors.navBackground;
+          } else if (key === 'heading1Text') {
+            contrastColor = colors.background;
+          } else if (key === 'heading2Text') {
+            contrastColor = colors.background;
+          } else if (key === 'linkText') {
+            contrastColor = colors.background;
+          } else if (key === 'blockquoteText') {
+            contrastColor = colors.background;
+          } else if (key === 'listText') {
+            contrastColor = colors.background;
+          } else if (key === 'buttonText') {
+            contrastColor = colors.buttonBackground;
+          } else if (key === 'footerText') {
+            contrastColor = colors.footerBackground;
+          } else if (key === 'inputBackground') {
+            contrastColor = colors.inputText;
           } else {
             contrastColor = colors.background;
           }
           const accessibilityInfo = getAccessibilityInfo(color, contrastColor);
-
-          console.log(
-            'Rendering ElementColorList, selectedElement:',
-            selectedElement,
-          );
 
           return (
             <li key={key} className="grid grid-cols-12 items-center">
