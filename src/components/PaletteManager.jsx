@@ -1,9 +1,9 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setPrimaryColor, updatePaletteColor } from '../store/colorSlice';
 import { generatePalette } from '../utils/colorUtils';
 
-function PaletteCustomizer() {
+const PaletteManager = () => {
   const primaryColor = useSelector((state) => state.color.primaryColor);
   const palette = useSelector((state) => state.color.palette);
   const dispatch = useDispatch();
@@ -21,13 +21,14 @@ function PaletteCustomizer() {
   }
   return (
     <div className="containerCustomizePalette">
-      <h2 className="containerTitle">Customize Palette</h2>
+      <h2 className="containerTitle">Palette Manager</h2>
       <div className="containerPalette">
         {Object.entries(palette).map(([name, color]) => (
           <div key={name} className="paletteItems">
             <label htmlFor={`color-${name}`} className="mr-2">
               {name}:
             </label>
+            <span className="">{color}</span>
             <input
               type="color"
               id={`color-${name}`}
@@ -40,6 +41,5 @@ function PaletteCustomizer() {
       </div>
     </div>
   );
-}
-
-export default PaletteCustomizer;
+};
+export default PaletteManager;

@@ -10,7 +10,6 @@ import {
   setImageColors,
 } from './store/colorSlice';
 import ColorInput from './components/ColorInput';
-import ColorLegend from './components/ColorLegend';
 import Preview, {
   elements,
   getElementColor,
@@ -33,7 +32,7 @@ import {
 import { extractColors } from 'extract-colors';
 import './index.css';
 
-const PaletteCustomizer = lazy(() => import('./components/PaletteCustomizer'));
+const PaletteManager = lazy(() => import('./components/PaletteManager'));
 const ImageUpload = lazy(() => import('./components/ImageUpload'));
 const ElementColorList = lazy(() => import('./components/ElementColorList'));
 
@@ -129,9 +128,9 @@ function App() {
           currentHarmony={harmony}
           setHarmony={(value) => dispatch(setHarmony(value))}
         />
-        <Suspense fallback={<div>Customize Palette is Loading...</div>}>
+        <Suspense fallback={<div>Palette Manager is Loading...</div>}>
           {palette && (
-            <PaletteCustomizer
+            <PaletteManager
               palette={palette}
               updatePalette={setPalette}
               setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
@@ -143,7 +142,6 @@ function App() {
       <div className="containerInfo">
         {palette && (
           <>
-            <ColorLegend palette={palette} />
             <Suspense fallback={<div>Elements Color List is Loading...</div>}>
               <ElementColorList
                 elements={elements}

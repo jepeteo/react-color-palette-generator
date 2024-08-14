@@ -66,7 +66,7 @@
     @apply overflow-hidden text-ellipsis whitespace-nowrap rounded px-2 py-1;
   }
 
-  /* PaletteCustomizer */
+  /* Palette Manager  */
   .containerCustomizePalette {
     @apply mt-4 grid grid-cols-1 items-center gap-4;
   }
@@ -74,10 +74,16 @@
     @apply grid grid-cols-1 gap-1;
   }
   .paletteItems {
-    @apply grid grid-cols-2 items-center capitalize;
+    @apply grid grid-cols-[2fr_72px_48px] items-center capitalize;
+  }
+  .paletteItems label {
+    @apply col-span-1;
   }
   .paletteItems input {
     @apply justify-self-end;
+  }
+  .paletteItems span {
+    @apply text-center;
   }
 
   /* ColorLegend */
