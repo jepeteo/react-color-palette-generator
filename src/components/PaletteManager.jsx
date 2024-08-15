@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setPrimaryColor, updatePaletteColor } from '../store/colorSlice';
-import { generatePalette } from '../utils/colorUtils';
+import { randomizePalette } from '../store/colorSlice';
 
 const PaletteManager = () => {
-  const primaryColor = useSelector((state) => state.color.primaryColor);
+  //   const primaryColor = useSelector((state) => state.color.primaryColor);
   const palette = useSelector((state) => state.color.palette);
   const dispatch = useDispatch();
 
@@ -16,9 +16,14 @@ const PaletteManager = () => {
     }
   };
 
+  const handleRandomize = () => {
+    dispatch(randomizePalette());
+  };
+
   if (!palette || typeof palette !== 'object') {
     return <div>Loading palette...</div>;
   }
+
   return (
     <div className="containerCustomizePalette">
       <h2 className="containerTitle">Palette Manager</h2>
@@ -39,6 +44,7 @@ const PaletteManager = () => {
           </div>
         ))}
       </div>
+      <button onClick={handleRandomize}>Randomize Palette</button>
     </div>
   );
 };

@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAction } from '@reduxjs/toolkit';
 import { generatePalette } from '../utils/colorUtils';
+import { generateRandomPalette } from '../utils/colorUtils';
 
 const initialState = {
   primaryColor: '#336699',
@@ -81,6 +82,11 @@ export const colorSlice = createSlice({
       state.colors[element] = color;
       console.log(action.payload, state);
     },
+    randomizePalette: (state) => {
+      const newPalette = generateRandomPalette();
+      state.palette = newPalette;
+      state.colors = updateColors(newPalette);
+    },
   },
 });
 
@@ -118,5 +124,7 @@ export const {
   updatePaletteColor,
   updateElementColor,
 } = colorSlice.actions;
+
+export const randomizePalette = createAction('color/randomizePalette');
 
 export default colorSlice.reducer;

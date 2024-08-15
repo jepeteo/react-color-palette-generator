@@ -155,3 +155,14 @@ export function calculateContrastRatio(color1, color2) {
   const darkest = Math.min(luminance1, luminance2);
   return (brightest + 0.05) / (darkest + 0.05);
 }
+
+export function generateRandomPalette() {
+  const baseHue = Math.floor(Math.random() * 360);
+  return {
+    primary: chroma.hsl(baseHue, 0.7, 0.5).hex(),
+    secondary: chroma.hsl((baseHue + 30) % 360, 0.6, 0.6).hex(),
+    accent: chroma.hsl((baseHue + 60) % 360, 0.65, 0.55).hex(),
+    text: chroma.hsl(baseHue, 0.15, 0.2).hex(),
+    background: chroma.hsl(baseHue, 0.2, 0.95).hex(),
+  };
+}
