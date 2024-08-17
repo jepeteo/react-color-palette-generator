@@ -5,8 +5,9 @@ import { randomizePalette } from '../store/colorSlice';
 
 const PaletteManager = () => {
   //   const primaryColor = useSelector((state) => state.color.primaryColor);
-  const palette = useSelector((state) => state.color.palette);
   const dispatch = useDispatch();
+  const palette = useSelector((state) => state.color.palette);
+  const harmony = useSelector((state) => state.color.harmony);
 
   const handleColorChange = (colorName, newValue) => {
     dispatch(updatePaletteColor({ colorName, newValue }));
@@ -17,7 +18,7 @@ const PaletteManager = () => {
   };
 
   const handleRandomize = () => {
-    dispatch(randomizePalette());
+    dispatch(randomizePalette({ harmony }));
   };
 
   if (!palette || typeof palette !== 'object') {

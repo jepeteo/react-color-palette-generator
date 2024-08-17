@@ -80,11 +80,12 @@ export const colorSlice = createSlice({
     updateElementColor: (state, action) => {
       const { element, color } = action.payload;
       state.colors[element] = color;
-      console.log(action.payload, state);
     },
-    randomizePalette: (state) => {
-      const newPalette = generateRandomPalette();
+    randomizePalette: (state, action) => {
+      const { harmony } = action.payload;
+      const newPalette = generateRandomPalette(harmony, state.isDarkMode);
       state.palette = newPalette;
+      state.harmony = harmony;
       state.colors = updateColors(newPalette);
     },
   },

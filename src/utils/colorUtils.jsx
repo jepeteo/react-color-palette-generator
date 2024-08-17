@@ -156,13 +156,27 @@ export function calculateContrastRatio(color1, color2) {
   return (brightest + 0.05) / (darkest + 0.05);
 }
 
-export function generateRandomPalette() {
-  const baseHue = Math.floor(Math.random() * 360);
-  return {
-    primary: chroma.hsl(baseHue, 0.7, 0.5).hex(),
-    secondary: chroma.hsl((baseHue + 30) % 360, 0.6, 0.6).hex(),
-    accent: chroma.hsl((baseHue + 60) % 360, 0.65, 0.55).hex(),
-    text: chroma.hsl(baseHue, 0.15, 0.2).hex(),
-    background: chroma.hsl(baseHue, 0.2, 0.95).hex(),
-  };
+export function generateRandomPalette(harmony, isDarkMode) {
+  const randomColor = chroma.random().hex();
+
+  switch (harmony) {
+    case 'complementary':
+      return generateComplementaryPalette(randomColor, isDarkMode);
+    case 'triadic':
+      return generateTriadicPalette(randomColor, isDarkMode);
+    case 'analogous':
+      return generateAnalogousPalette(randomColor, isDarkMode);
+    case 'split-complementary':
+      return generateSplitComplementaryPalette(randomColor, isDarkMode);
+    case 'tetradic':
+      return generateTetradicPalette(randomColor, isDarkMode);
+    case 'monochromatic':
+      return generateMonochromaticPalette(randomColor, isDarkMode);
+    case 'square':
+      return generateSquarePalette(randomColor, isDarkMode);
+    case 'double-split complementary':
+      return generateDoubleSplitComplementaryPalette(randomColor, isDarkMode);
+    default:
+      return generatePalette(randomColor, isDarkMode);
+  }
 }
