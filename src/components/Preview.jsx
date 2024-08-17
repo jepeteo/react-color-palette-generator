@@ -249,14 +249,12 @@ function Preview() {
         </main>
 
         <footer
-          className="p-2 text-sm"
+          className="p-4 text-sm"
           onClick={(e) => {
             e.stopPropagation();
             handleElementClick('footerBackground', setSelectedElement);
           }}
-          style={{
-            backgroundColor: getElementColor('footerBackground'),
-          }}
+          style={{ backgroundColor: colors.footerBackground }}
         >
           <div
             className="mb"
