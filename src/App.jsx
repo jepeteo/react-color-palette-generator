@@ -46,7 +46,7 @@ function App() {
   const imageColors = useSelector((state) => state.color.imageColors);
 
   const handleReset = () => {
-    dispatch(setPrimaryColor(initialPrimaryColor));
+    dispatch(setPrimaryColor('#336699'));
     dispatch(setHarmony('default'));
     dispatch(setUploadedImage(null));
   };
