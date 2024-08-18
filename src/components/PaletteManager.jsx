@@ -1,28 +1,31 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { setPrimaryColor, updatePaletteColor } from '../store/colorSlice';
 import { randomizePalette } from '../store/colorSlice';
 
 const PaletteManager = () => {
-  //   const primaryColor = useSelector((state) => state.color.primaryColor);
   const dispatch = useDispatch();
-  const palette = useSelector((state) => state.color.palette);
+  const palette = useSelector((state) => state.color.palette, shallowEqual);
+
   const harmony = useSelector((state) => state.color.harmony);
 
-  const handleColorChange = (colorName, newValue) => {
-    dispatch(updatePaletteColor({ colorName, newValue }));
+  const handleColorChange = useCallback(
+    (colorName, newValue) => {
+      dispatch(updatePaletteColor({ colorName, newValue }));
 
-    if (colorName === 'primary') {
-      dispatch(setPrimaryColor(newValue));
-    }
-  };
+      if (colorName === 'primary') {
+        dispatch(setPrimaryColor(newValue));
+      }
+    },
+    [dispatch],
+  );
 
   const handleRandomize = () => {
     dispatch(randomizePalette({ harmony }));
   };
 
   if (!palette || typeof palette !== 'object') {
-    return <div>Loading palette...</div>;
+    return <div>Error: Invalid palette data!</div>;
   }
 
   return (
