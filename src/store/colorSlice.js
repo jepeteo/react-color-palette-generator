@@ -1,4 +1,4 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { generatePalette } from '../utils/colorUtils';
 import { generateRandomPalette } from '../utils/colorUtils';
 
@@ -30,6 +30,21 @@ const initialState = {
     inputBackground: '#000000',
     inputBorder: '#000000',
   },
+  lockedColors: {
+    primary: false,
+    secondary: false,
+    accent: false,
+    text: false,
+    background: false,
+    extra1: false,
+    extra2: false,
+    extra3: false,
+    extra4: false,
+    extra5: false,
+  },
+  paletteSize: 5,
+  lockerColors: {},
+  harmony: 'default',
 };
 
 export const colorSlice = createSlice({
@@ -47,12 +62,12 @@ export const colorSlice = createSlice({
     },
     setHarmony: (state, action) => {
       state.harmony = action.payload;
-      state.palette = generatePalette(
-        state.primaryColor,
-        action.payload,
-        state.isDarkMode,
-      );
-      state.colors = updateColors(state.palette);
+      // state.palette = generatePalette(
+      //   state.primaryColor,
+      //   action.payload,
+      //   state.isDarkMode,
+      // );
+      // state.colors = updateColors(state.palette);
     },
     setPalette: (state, action) => {
       state.palette = action.payload;
@@ -81,10 +96,26 @@ export const colorSlice = createSlice({
       const { element, color } = action.payload;
       state.colors[element] = color;
     },
+    setPaletteSize: (state, action) => {
+      state.paletteSize = action.payload;
+    },
+    toggleColorLock: (state, action) => {
+      const colorName = action.payload;
+      state.lockedColors[colorName] = !state.lockedColors[colorName];
+    },
     randomizePalette: (state, action) => {
+      // const newPalette = generateRandomPalette(harmony, state.isDarkMode, state.lockedColors);
       const { harmony } = action.payload;
       const newPalette = generateRandomPalette(harmony, state.isDarkMode);
+
+      Object.entries(state.palette).forEach(([name, color]) => {
+        if (state.lockedColors[name]) {
+          newPalette[name] = color;
+        }
+      });
+
       state.palette = newPalette;
+      state.paletteSize = newPalette.length;
       state.harmony = harmony;
       state.colors = updateColors(newPalette);
     },
@@ -126,6 +157,6 @@ export const {
   updateElementColor,
 } = colorSlice.actions;
 
-export const randomizePalette = createAction('color/randomizePalette');
-
+export const { toggleColorLock, setPaletteSize, randomizePalette } =
+  colorSlice.actions;
 export default colorSlice.reducer;

@@ -63,9 +63,9 @@ const generateTriadicPalette = createPaletteGenerator((primaryColor) => {
 });
 const generateTetradicPalette = createPaletteGenerator((primaryColor) => {
   const base = chroma(primaryColor);
-  const tetrad1 = base.set('hsl.h', '+90');
+  const tetrad1 = base.set('hsl.h', '+60');
   const tetrad2 = base.set('hsl.h', '+180');
-  const tetrad3 = base.set('hsl.h', '+270');
+  const tetrad3 = base.set('hsl.h', '+240');
 
   return {
     primary: base.hex(),

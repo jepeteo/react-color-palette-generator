@@ -74,7 +74,7 @@
     @apply grid grid-cols-1 gap-1;
   }
   .paletteItems {
-    @apply grid grid-cols-[2fr_72px_48px] items-center capitalize;
+    @apply grid grid-cols-[2fr_64px_48px_32px] items-center capitalize;
   }
   .paletteItems label {
     @apply col-span-1;
