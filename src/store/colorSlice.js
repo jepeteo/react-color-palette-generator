@@ -42,7 +42,6 @@ const initialState = {
     extra4: false,
     extra5: false,
   },
-  paletteSize: 5,
   lockerColors: {},
   harmony: 'default',
 };
@@ -62,12 +61,6 @@ export const colorSlice = createSlice({
     },
     setHarmony: (state, action) => {
       state.harmony = action.payload;
-      // state.palette = generatePalette(
-      //   state.primaryColor,
-      //   action.payload,
-      //   state.isDarkMode,
-      // );
-      // state.colors = updateColors(state.palette);
     },
     setPalette: (state, action) => {
       state.palette = action.payload;
@@ -96,9 +89,6 @@ export const colorSlice = createSlice({
       const { element, color } = action.payload;
       state.colors[element] = color;
     },
-    setPaletteSize: (state, action) => {
-      state.paletteSize = action.payload;
-    },
     toggleColorLock: (state, action) => {
       const colorName = action.payload;
       state.lockedColors[colorName] = !state.lockedColors[colorName];
@@ -115,7 +105,6 @@ export const colorSlice = createSlice({
       });
 
       state.palette = newPalette;
-      state.paletteSize = newPalette.length;
       state.harmony = harmony;
       state.colors = updateColors(newPalette);
     },
@@ -155,8 +144,8 @@ export const {
   setImageColors,
   updatePaletteColor,
   updateElementColor,
+  toggleColorLock,
+  randomizePalette,
 } = colorSlice.actions;
 
-export const { toggleColorLock, setPaletteSize, randomizePalette } =
-  colorSlice.actions;
 export default colorSlice.reducer;
