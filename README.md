@@ -6,12 +6,12 @@ A React component for generating and managing color palettes.
 
 - Generate harmonious color palettes based on color theory
 - Upload images to extract color palettes
-- Customize palette size and color types
 - Apply different color harmony rules (complementary, triadic, analogous, etc.)
+- Customize colors
 - Real-time preview of generated palettes
 - Accessibility checks for color contrast
 - Dark/Light mode toggle
-- Export palettes in various formats (coming soon)
+- Export palettes in various formats (JSON, CSS, SCSS)
 - Save and load favorite palettes (coming soon)
 
 ## Installation
@@ -19,6 +19,10 @@ A React component for generating and managing color palettes.
 ```bash
 npm install
 ```
+
+## Export Functionality
+
+The color palette generator now supports exporting palettes in JSON, CSS, and SCSS formats. Use the toolbar buttons to export your generated palette in your preferred format.
 
 ## Contributing
 
