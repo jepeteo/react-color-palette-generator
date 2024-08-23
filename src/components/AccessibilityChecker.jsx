@@ -1,4 +1,3 @@
-// src/components/AccessibilityChecker.js
 import React from 'react';
 import { calculateContrastRatio } from '../utils/colorUtils';
 

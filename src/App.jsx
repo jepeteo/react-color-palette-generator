@@ -31,10 +31,12 @@ import {
 } from './utils/colorUtils';
 import { extractColors } from 'extract-colors';
 import './index.css';
+import { current } from '@reduxjs/toolkit';
 
 const PaletteManager = lazy(() => import('./components/PaletteManager'));
 const ImageUpload = lazy(() => import('./components/ImageUpload'));
 const ElementColorList = lazy(() => import('./components/ElementColorList'));
+const Toolbar = lazy(() => import('./components/Toolbar'));
 
 function App() {
   const dispatch = useDispatch();
@@ -160,6 +162,9 @@ function App() {
           </>
         )}
       </div>
+      <Suspense fallback={<div>Toolbar is Loading...</div>}>
+        <Toolbar palette={palette} />
+      </Suspense>
       <div className="containerPreview">
         {palette && <Preview palette={palette} />}
       </div>

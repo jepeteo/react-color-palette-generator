@@ -1,4 +1,3 @@
-// src/components/PaletteGenerator.js
 import React, { useEffect } from 'react';
 import { generatePalette } from '../utils/colorUtils';
 

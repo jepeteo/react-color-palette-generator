@@ -1,4 +1,3 @@
-// src/components/ThemeToggle.js
 import React from 'react';
 
 function ThemeToggle({ isDarkMode, setIsDarkMode }) {
