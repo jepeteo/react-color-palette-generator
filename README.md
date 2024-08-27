@@ -1,6 +1,6 @@
 # react-color-palette-generator
 
-A React component for generating and managing color palettes.
+A React app for generating and managing color palettes.
 
 ## Features
 
