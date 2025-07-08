@@ -29,7 +29,7 @@ function ImageUpload({ onImageUpload }) {
       <label className="block text-sm font-medium text-gray-300">
         🖼️ Extract from Image
       </label>
-      
+
       <div className="space-y-3">
         <label
           htmlFor="imageToPrimary"
@@ -45,7 +45,7 @@ function ImageUpload({ onImageUpload }) {
           onChange={handleFileChange}
           className="hidden"
         />
-        
+
         {previewUrl && (
           <div className="relative">
             <img

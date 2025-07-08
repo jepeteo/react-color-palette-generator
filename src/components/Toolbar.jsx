@@ -23,26 +23,26 @@ const Toolbar = ({ palette }) => {
         >
           <BsCollection className="toolbar-icon" />
         </button>
-        
-        <div className="h-6 w-px bg-white bg-opacity-20" />
-        
-        <button 
+
+        <div className="toolbar-divider" />
+
+        <button
           onClick={() => handleExport(palette, 'json')}
           className="toolbar-btn"
           title="Export as JSON"
         >
           <BsFiletypeJson className="toolbar-icon" />
         </button>
-        
-        <button 
+
+        <button
           onClick={() => handleExport(palette, 'css')}
           className="toolbar-btn"
           title="Export as CSS"
         >
           <BsFiletypeCss className="toolbar-icon" />
         </button>
-        
-        <button 
+
+        <button
           onClick={() => handleExport(palette, 'scss')}
           className="toolbar-btn"
           title="Export as SCSS"
@@ -50,7 +50,7 @@ const Toolbar = ({ palette }) => {
           <BsFiletypeScss className="toolbar-icon" />
         </button>
       </div>
-      
+
       <PaletteLibraryPopup
         isOpen={isLibraryOpen}
         onClose={() => setIsLibraryOpen(false)}

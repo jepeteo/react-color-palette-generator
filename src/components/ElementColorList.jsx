@@ -52,24 +52,42 @@ const ElementColorList = React.memo(({ elements }) => {
   };
 
   return (
-    <div className="colorListElements">
-      <div className="containerTitle mb-4">Detailed Color List</div>
-      <div className="mb-4 rounded bg-gray-100 p-2">
-        <p className="font-bold">
-          Accessibility Score: {accessibilityScore.toFixed(2)}%
-        </p>
-        <p className="text-sm">
+    <div className="glass-card">
+      <h3 className="section-title mb-4">Detailed Color List</h3>
+
+      <div className="mb-6 p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-white/80">Accessibility Score</span>
+          <span className={`text-lg font-bold ${accessibilityScore >= 90 ? 'text-green-400' :
+              accessibilityScore >= 70 ? 'text-yellow-400' :
+                accessibilityScore >= 50 ? 'text-orange-400' :
+                  'text-red-400'
+            }`}>
+            {accessibilityScore.toFixed(1)}%
+          </span>
+        </div>
+        <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div
+            className={`h-full transition-all duration-500 ${accessibilityScore >= 90 ? 'bg-green-400' :
+                accessibilityScore >= 70 ? 'bg-yellow-400' :
+                  accessibilityScore >= 50 ? 'bg-orange-400' :
+                    'bg-red-400'
+              }`}
+            style={{ width: `${accessibilityScore}%` }}
+          />
+        </div>
+        <p className="text-xs text-white/60 mt-2">
           {accessibilityScore >= 90
-            ? 'Excellent'
+            ? 'Excellent accessibility'
             : accessibilityScore >= 70
-              ? 'Good'
+              ? 'Good accessibility'
               : accessibilityScore >= 50
-                ? 'Fair'
-                : 'Poor'}{' '}
-          accessibility
+                ? 'Fair accessibility'
+                : 'Poor accessibility'}
         </p>
       </div>
-      <ul className="space-y-1.5">
+
+      <div className="space-y-2">
         {Object.entries(elements).map(([key, label]) => {
           const color = colors[key];
           let contrastColor;
@@ -102,29 +120,35 @@ const ElementColorList = React.memo(({ elements }) => {
           const accessibilityInfo = getAccessibilityInfo(color, contrastColor);
 
           return (
-            <li key={key} className="grid grid-cols-12 items-center">
-              <span className="col-span-7 text-sm">{label}</span>
-              <span className="col-span-3 ml-auto text-right text-sm uppercase">
-                {colors[key] || 'Not set'}
-              </span>
-              <div
-                className="col-span-1 ml-auto h-5 w-5 cursor-pointer rounded-full border"
-                style={{ backgroundColor: colors[key] || '#ccc' }}
-                onClick={(event) => handleElementClick(event, key)}
-              ></div>
-              <div
-                className="col-span-1 ml-2 cursor-help text-sm"
-                data-tooltip-id={`tooltip-${key}`}
-                data-tooltip-content={`Contrast: ${accessibilityInfo.contrast.toFixed(2)} | AA: ${accessibilityInfo.aa ? '✅' : '❌'} `}
-              >
-                {accessibilityInfo.aa ? '✅' : '❌'}
+            <div key={key} className="flex items-center p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-white/90 truncate block">{label}</span>
+                <span className="text-xs text-white/60 font-mono">{colors[key] || 'Not set'}</span>
+              </div>
+
+              <div className="flex items-center gap-3 ml-4">
+                <div
+                  className="w-8 h-8 rounded-lg border-2 border-white/20 cursor-pointer hover:border-white/40 hover:scale-105 transition-all shadow-lg"
+                  style={{ backgroundColor: colors[key] || '#ccc' }}
+                  onClick={(event) => handleElementClick(event, key)}
+                  title={`Click to change ${label} color`}
+                />
+
+                <div
+                  className="cursor-help text-lg hover:scale-110 transition-transform"
+                  data-tooltip-id={`tooltip-${key}`}
+                  data-tooltip-content={`Contrast: ${accessibilityInfo.contrast.toFixed(2)} | AA: ${accessibilityInfo.aa ? '✅' : '❌'} `}
+                >
+                  {accessibilityInfo.aa ? '✅' : '❌'}
+                </div>
               </div>
 
               <Tooltip id={`tooltip-${key}`} />
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
+
       {selectedElement && (
         <ColorSelector
           palette={palette}

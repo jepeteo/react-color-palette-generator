@@ -35,11 +35,10 @@ function HarmonySelector() {
               handleHarmonyChange(harmony.toLowerCase().replace(' ', '-'))
             }
             title={harmony}
-            className={`harmony-button ${
-              currentHarmony === harmony.toLowerCase().replace(' ', '-')
+            className={`harmony-button ${currentHarmony === harmony.toLowerCase().replace(' ', '-')
                 ? 'active'
                 : ''
-            }`}
+              }`}
           >
             {harmony}
           </button>

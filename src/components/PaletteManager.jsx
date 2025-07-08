@@ -36,39 +36,49 @@ const PaletteManager = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="glass-card">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="section-header">Palette Manager</h2>
-        <button 
+        <button
           onClick={handleRandomize}
-          className="btn-secondary"
+          className="btn-secondary flex items-center gap-2"
         >
           🎲 Randomize
         </button>
       </div>
-      
+
       <div className="palette-grid">
         {Object.entries(palette).map(([name, color]) => (
           <div key={name} className="color-item">
             <div className="flex items-center justify-between mb-2">
               <label className="color-label">{name}</label>
-              <button 
+              <button
                 onClick={() => handleLockToggle(name)}
-                className="text-sm opacity-70 hover:opacity-100 transition-opacity"
+                className={`text-sm transition-all duration-300 hover:scale-110 ${lockedColors[name]
+                    ? 'text-yellow-400 hover:text-yellow-300'
+                    : 'text-gray-400 hover:text-gray-300'
+                  }`}
                 title={lockedColors[name] ? 'Unlock color' : 'Lock color'}
               >
                 {lockedColors[name] ? '🔒' : '🔓'}
               </button>
             </div>
-            
-            <input
-              type="color"
-              value={color ?? '#000000'}
-              onChange={(e) => handleColorChange(name, e.target.value)}
-              className="color-preview cursor-pointer"
-              style={{ backgroundColor: color }}
-            />
-            
+
+            <div className="relative">
+              <input
+                type="color"
+                value={color ?? '#000000'}
+                onChange={(e) => handleColorChange(name, e.target.value)}
+                className="color-preview"
+                style={{ backgroundColor: color }}
+              />
+              {lockedColors[name] && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
+                  <span className="text-white text-lg">🔒</span>
+                </div>
+              )}
+            </div>
+
             <p className="color-value">{color}</p>
           </div>
         ))}
