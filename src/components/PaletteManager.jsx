@@ -36,29 +36,43 @@ const PaletteManager = () => {
   }
 
   return (
-    <div className="containerCustomizePalette">
-      <h2 className="containerTitle">Palette Manager</h2>
-      <div className="containerPalette">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="section-header">Palette Manager</h2>
+        <button 
+          onClick={handleRandomize}
+          className="btn-secondary"
+        >
+          🎲 Randomize
+        </button>
+      </div>
+      
+      <div className="palette-grid">
         {Object.entries(palette).map(([name, color]) => (
-          <div key={name} className="paletteItems">
-            <label htmlFor={`color-${name}`} className="mr-2">
-              {name}:
-            </label>
-            <span className="">{color}</span>
+          <div key={name} className="color-item">
+            <div className="flex items-center justify-between mb-2">
+              <label className="color-label">{name}</label>
+              <button 
+                onClick={() => handleLockToggle(name)}
+                className="text-sm opacity-70 hover:opacity-100 transition-opacity"
+                title={lockedColors[name] ? 'Unlock color' : 'Lock color'}
+              >
+                {lockedColors[name] ? '🔒' : '🔓'}
+              </button>
+            </div>
+            
             <input
               type="color"
-              id={`color-${name}`}
               value={color ?? '#000000'}
               onChange={(e) => handleColorChange(name, e.target.value)}
-              className="h-8 w-8"
+              className="color-preview cursor-pointer"
+              style={{ backgroundColor: color }}
             />
-            <button onClick={() => handleLockToggle(name)}>
-              {lockedColors[name] ? '🔒' : '🔓'}
-            </button>
+            
+            <p className="color-value">{color}</p>
           </div>
         ))}
       </div>
-      <button onClick={handleRandomize}>Randomize Palette</button>
     </div>
   );
 };

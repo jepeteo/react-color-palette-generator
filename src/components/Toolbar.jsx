@@ -13,44 +13,44 @@ const handleExport = (currentPalette, format) => {
 
 const Toolbar = ({ palette }) => {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-
   return (
     <>
-      <div className="absolute bottom-8 right-8 flex flex-row items-center gap-2 rounded-md border border-gray-300 bg-gray-100 p-2 shadow-md">
+      <div className="modern-toolbar">
         <button
           onClick={() => setIsLibraryOpen(true)}
-          className="rounded"
+          className="toolbar-btn"
+          title="Palette Library"
         >
-          <BsCollection
-            className="toolbar-icon"
-            aria-label="Open Palette Library"
-            title="Palette Library"
-          />
+          <BsCollection className="toolbar-icon" />
         </button>
-        <div className="h-6 w-px bg-gray-300" />
-        <button onClick={() => handleExport(palette, 'json')}>
-          <BsFiletypeJson
-            className="toolbar-icon"
-            aria-label="Export as JSON"
-            title="Export as JSON"
-          />
+        
+        <div className="h-6 w-px bg-white bg-opacity-20" />
+        
+        <button 
+          onClick={() => handleExport(palette, 'json')}
+          className="toolbar-btn"
+          title="Export as JSON"
+        >
+          <BsFiletypeJson className="toolbar-icon" />
         </button>
-        <button onClick={() => handleExport(palette, 'css')}>
-          <BsFiletypeCss
-            className="toolbar-icon"
-            aria-label="Export as CSS"
-            title="Export as CSS"
-          />
+        
+        <button 
+          onClick={() => handleExport(palette, 'css')}
+          className="toolbar-btn"
+          title="Export as CSS"
+        >
+          <BsFiletypeCss className="toolbar-icon" />
         </button>
-        <button onClick={() => handleExport(palette, 'scss')}>
-          <BsFiletypeScss
-            className="toolbar-icon"
-            aria-label="Export as SCSS"
-            title="Export as SCSS"
-          />
+        
+        <button 
+          onClick={() => handleExport(palette, 'scss')}
+          className="toolbar-btn"
+          title="Export as SCSS"
+        >
+          <BsFiletypeScss className="toolbar-icon" />
         </button>
       </div>
-
+      
       <PaletteLibraryPopup
         isOpen={isLibraryOpen}
         onClose={() => setIsLibraryOpen(false)}

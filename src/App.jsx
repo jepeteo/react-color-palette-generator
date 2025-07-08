@@ -107,51 +107,70 @@ function App() {
 
   return (
     <div className="App">
-      <h1 className="title">Color Palette Generator for Web Designers</h1>
-      <div className="containerGenerator">
-        <div className="containerColorPalette">
-          <h2>Color Palette</h2>
-          <ThemeToggle
-            isDarkMode={isDarkMode}
-            setIsDarkMode={(value) => dispatch(setIsDarkMode(value))}
-          />
-          <ColorInput
-            setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
-            primaryColor={primaryColor}
-          />
-          <ImageUpload onImageUpload={handleImageUpload} />
-        </div>
-        {harmony !== 'default' && (
-          <button onClick={handleReset} className="buttonReset">
-            Reset
-          </button>
-        )}
-        <HarmonySelector
-          currentHarmony={harmony}
-          setHarmony={(value) => dispatch(setHarmony(value))}
-        />
-        <Suspense fallback={<div>Palette Manager is Loading...</div>}>
-          {palette && (
-            <PaletteManager
-              palette={palette}
-              updatePalette={setPalette}
-              setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
+      {/* Header */}
+      <header className="app-header fade-in">
+        <h1 className="title">Color Palette Generator</h1>
+        <p className="subtitle">
+          Create beautiful, accessible color palettes for your design projects
+        </p>
+      </header>
+
+      {/* Left Sidebar - Controls */}
+      <aside className="app-sidebar">
+        <div className="glass-card slide-up">
+          <h2 className="section-header">Color Controls</h2>
+          <div className="space-y-4">
+            <ThemeToggle
+              isDarkMode={isDarkMode}
+              setIsDarkMode={(value) => dispatch(setIsDarkMode(value))}
             />
+            <ColorInput
+              setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
+              primaryColor={primaryColor}
+            />
+            <ImageUpload onImageUpload={handleImageUpload} />
+          </div>
+        </div>
+
+        <div className="glass-card slide-up">
+          <HarmonySelector
+            currentHarmony={harmony}
+            setHarmony={(value) => dispatch(setHarmony(value))}
+          />
+        </div>
+
+        <Suspense fallback={<div className="glass-card animate-pulse">Loading...</div>}>
+          {palette && (
+            <div className="glass-card slide-up">
+              <PaletteManager
+                palette={palette}
+                updatePalette={setPalette}
+                setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
+              />
+            </div>
           )}
         </Suspense>
-      </div>
+      </aside>
 
-      <div className="containerInfo">
+      {/* Main Preview Area */}
+      <main className="app-preview">
+        <div className="glass-card slide-up">
+          {palette && <Preview palette={palette} />}
+        </div>
+      </main>
+
+      {/* Right Sidebar - Tools */}
+      <aside className="app-tools">
         {palette && (
-          <>
-            <Suspense fallback={<div>Elements Color List is Loading...</div>}>
+          <div className="glass-card slide-up">
+            <Suspense fallback={<div className="animate-pulse">Loading tools...</div>}>
               <ElementColorList
                 elements={elements}
                 palette={palette}
                 colors={Object.fromEntries(
                   Object.keys(elements).map((key) => [
                     key,
-                    getElementColor(key, palette, {}), // Pass an empty object for customColors
+                    getElementColor(key, palette, {}),
                   ]),
                 )}
                 onElementClick={(element) =>
@@ -159,16 +178,19 @@ function App() {
                 }
               />
             </Suspense>
-          </>
+          </div>
         )}
-      </div>
-      <Suspense fallback={<div>Toolbar is Loading...</div>}>
+      </aside>
+
+      {/* Floating Toolbar */}
+      <Suspense fallback={null}>
         <Toolbar palette={palette} />
       </Suspense>
-      <div className="containerPreview">
-        {palette && <Preview palette={palette} />}
-      </div>
-      <Footer />
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <Footer />
+      </footer>
     </div>
   );
 }

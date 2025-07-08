@@ -25,9 +25,9 @@ function HarmonySelector() {
   };
 
   return (
-    <div className="containerColorHarmony">
-      <h3 className="containerTitle">Color Harmony</h3>
-      <div className="containerHarmonies">
+    <div className="space-y-4">
+      <h3 className="section-header">Color Harmony</h3>
+      <div className="harmony-grid">
         {harmonies.map((harmony) => (
           <button
             key={harmony}
@@ -35,11 +35,10 @@ function HarmonySelector() {
               handleHarmonyChange(harmony.toLowerCase().replace(' ', '-'))
             }
             title={harmony}
-            aria-label={harmony}
-            className={`harmony ${
+            className={`harmony-button ${
               currentHarmony === harmony.toLowerCase().replace(' ', '-')
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-800'
+                ? 'active'
+                : ''
             }`}
           >
             {harmony}

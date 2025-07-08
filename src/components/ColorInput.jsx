@@ -11,18 +11,28 @@ const ColorInput = () => {
   };
 
   return (
-    <div className="colorInput">
-      <label htmlFor="colorInput" className="col-span-2">
-        Primary Color:
+    <div className="space-y-3">
+      <label htmlFor="colorInput" className="block text-sm font-medium text-gray-300">
+        Primary Color
       </label>
-      <input
-        type="color"
-        id="colorInput"
-        value={primaryColor}
-        onChange={handleColorChange}
-        aria-label="Input for Primary Color"
-        className="m-0 h-8 w-10 bg-white p-0"
-      />
+      <div className="flex items-center gap-3">
+        <input
+          type="color"
+          id="colorInput"
+          value={primaryColor}
+          onChange={handleColorChange}
+          className="w-16 h-16 rounded-xl border-2 border-white border-opacity-20 cursor-pointer transition-all duration-300 hover:scale-105"
+        />
+        <div className="flex-1">
+          <input
+            type="text"
+            value={primaryColor}
+            onChange={handleColorChange}
+            className="modern-input font-mono text-sm"
+            placeholder="#000000"
+          />
+        </div>
+      </div>
     </div>
   );
 };

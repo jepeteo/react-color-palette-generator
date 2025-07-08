@@ -2,19 +2,18 @@ import React from 'react';
 
 function ThemeToggle({ isDarkMode, setIsDarkMode }) {
   return (
-    <div className="toggleSwitch">
-      <label className="switch">
-        <input
-          type="checkbox"
-          checked={isDarkMode}
-          onChange={() => setIsDarkMode(!isDarkMode)}
-        />
-        {isDarkMode ? (
-          <span className="ml-2 block w-full">Uncheck for Light Theme</span>
-        ) : (
-          <span className="ml-2 block w-full">Check for Dark Theme</span>
-        )}
-      </label>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium text-gray-300">
+          {isDarkMode ? '🌙' : '☀️'} Theme
+        </span>
+      </div>
+      <button
+        onClick={() => setIsDarkMode(!isDarkMode)}
+        className={`modern-toggle ${isDarkMode ? 'active' : ''}`}
+      >
+        <span className="toggle-thumb" />
+      </button>
     </div>
   );
 }

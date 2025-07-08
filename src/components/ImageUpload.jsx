@@ -25,14 +25,17 @@ function ImageUpload({ onImageUpload }) {
   };
 
   return (
-    <div className="imageUpload">
-      <h3 className="mb-2 w-full">Upload Image to find primary color</h3>
-      <div className="block">
+    <div className="space-y-3">
+      <label className="block text-sm font-medium text-gray-300">
+        🖼️ Extract from Image
+      </label>
+      
+      <div className="space-y-3">
         <label
           htmlFor="imageToPrimary"
-          className="block w-fit w-full cursor-pointer rounded-lg border border-blue-400 px-2 py-1 hover:bg-slate-200"
+          className="btn-secondary cursor-pointer inline-flex items-center gap-2 w-full justify-center"
         >
-          Upload
+          📁 Choose Image
         </label>
         <input
           id="imageToPrimary"
@@ -40,20 +43,21 @@ function ImageUpload({ onImageUpload }) {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="mb-2 hidden text-sm"
+          className="hidden"
         />
+        
         {previewUrl && (
-          <div className="flex">
+          <div className="relative">
             <img
               src={previewUrl}
               alt="Uploaded preview"
-              className="mt-2 inline-block aspect-square max-w-24 object-cover"
+              className="w-full h-20 object-cover rounded-xl border border-white border-opacity-20"
             />
             <button
               onClick={clearImage}
-              className="relative right-4 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-black text-white"
+              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-sm hover:bg-red-600 transition-colors"
             >
-              <span className="text-1xl -mt-1">x</span>
+              ×
             </button>
           </div>
         )}

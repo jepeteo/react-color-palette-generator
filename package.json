@@ -3,7 +3,7 @@
   "homepage": "https://jepeteo.github.io/react-color-palette-generator",
   "author": "Theodoros Mentis",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
