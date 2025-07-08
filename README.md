@@ -12,7 +12,8 @@ A React app for generating and managing color palettes.
 - Accessibility checks for color contrast
 - Dark/Light mode toggle
 - Export palettes in various formats (JSON, CSS, SCSS)
-- Save and load favorite palettes (coming soon)
+- **Save and manage favorite palettes** - Access via toolbar popup
+- Palette library with local storage and popup interface
 
 ## Installation
 

@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { generatePalette } from '../utils/colorUtils';
 import { generateRandomPalette } from '../utils/colorUtils';
+import { loadSavedPalettes } from '../utils/paletteStorage';
 
 const initialState = {
   primaryColor: '#336699',
@@ -9,6 +10,7 @@ const initialState = {
   isDarkMode: false,
   uploadedImage: null,
   imageColors: null,
+  savedPalettes: loadSavedPalettes(),
   colors: {
     paragraphText: '#FFFFFF',
     background: '#000000',
@@ -108,6 +110,28 @@ export const colorSlice = createSlice({
       state.harmony = harmony;
       state.colors = updateColors(newPalette);
     },
+    addSavedPalette: (state, action) => {
+      state.savedPalettes.push(action.payload);
+    },
+    removeSavedPalette: (state, action) => {
+      state.savedPalettes = state.savedPalettes.filter(
+        palette => palette.id !== action.payload
+      );
+    },
+    updateSavedPalette: (state, action) => {
+      const { id, updatedData } = action.payload;
+      const index = state.savedPalettes.findIndex(p => p.id === id);
+      if (index !== -1) {
+        state.savedPalettes[index] = { ...state.savedPalettes[index], ...updatedData };
+      }
+    },
+    loadPaletteFromSaved: (state, action) => {
+      const savedPalette = action.payload;
+      state.palette = savedPalette.colors;
+      state.harmony = savedPalette.harmony;
+      state.isDarkMode = savedPalette.isDarkMode;
+      state.colors = updateColors(savedPalette.colors);
+    },
   },
 });
 
@@ -146,6 +170,10 @@ export const {
   updateElementColor,
   toggleColorLock,
   randomizePalette,
+  addSavedPalette,
+  removeSavedPalette,
+  updateSavedPalette,
+  loadPaletteFromSaved,
 } = colorSlice.actions;
 
 export default colorSlice.reducer;
