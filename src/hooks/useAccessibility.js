@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import {
+ useState, useEffect, useMemo, useCallback 
+} from 'react';
 import { useSelector } from 'react-redux';
 import { selectPalette } from '../store/slices/paletteSlice';
 import { selectAccessibilitySettings } from '../store/slices/settingsSlice';
@@ -10,23 +12,23 @@ import { UI_ELEMENTS } from '../utils/constants';
  * Provides comprehensive WCAG compliance checking
  */
 export const useAccessibility = (customColorCombinations = null) => {
-    const palette = useSelector(selectPalette);
+  const palette = useSelector(selectPalette);
     const accessibilitySettings = useSelector(selectAccessibilitySettings);
-    const [accessibilityData, setAccessibilityData] = useState(null);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [accessibilityData, setAccessibilityData] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-    // Define default color combinations for UI elements
+  // Define default color combinations for UI elements
     const defaultColorCombinations = useMemo(() => {
         if (!palette) return [];
 
-        return [
+    return [
             {
                 name: 'Body Text',
                 fg: palette.text,
                 bg: palette.background,
                 element: UI_ELEMENTS.PARAGRAPH_TEXT,
                 isLargeText: false,
-                priority: 'high'
+                priority: 'high',
             },
             {
                 name: 'Primary Button',
@@ -34,15 +36,15 @@ export const useAccessibility = (customColorCombinations = null) => {
                 bg: palette.primary,
                 element: UI_ELEMENTS.BUTTON_BACKGROUND,
                 isLargeText: false,
-                priority: 'high'
+                priority: 'high',
             },
-            {
-                name: 'Secondary Button',
+      {
+        name: 'Secondary Button',
                 fg: palette.text,
                 bg: palette.secondary,
                 element: UI_ELEMENTS.BUTTON_BACKGROUND,
                 isLargeText: false,
-                priority: 'medium'
+                priority: 'medium',
             },
             {
                 name: 'Link Text',
@@ -50,7 +52,7 @@ export const useAccessibility = (customColorCombinations = null) => {
                 bg: palette.background,
                 element: UI_ELEMENTS.LINK_TEXT,
                 isLargeText: false,
-                priority: 'high'
+                priority: 'high',
             },
             {
                 name: 'Header Text',
@@ -58,7 +60,7 @@ export const useAccessibility = (customColorCombinations = null) => {
                 bg: palette.surface || palette.background,
                 element: UI_ELEMENTS.HEADER_TEXT,
                 isLargeText: true,
-                priority: 'medium'
+                priority: 'medium',
             },
             {
                 name: 'Surface Text',
@@ -66,50 +68,54 @@ export const useAccessibility = (customColorCombinations = null) => {
                 bg: palette.surface || palette.background,
                 element: UI_ELEMENTS.PARAGRAPH_TEXT,
                 isLargeText: false,
-                priority: 'medium'
+                priority: 'medium',
             }
-        ].filter(combo => combo.fg && combo.bg); // Filter out undefined colors
+    ].filter((combo) => combo.fg && combo.bg); // Filter out undefined colors
     }, [palette]);
 
-    // Use custom combinations if provided, otherwise use defaults
+  // Use custom combinations if provided, otherwise use defaults
     const colorCombinations = customColorCombinations || defaultColorCombinations;
 
-    // Analyze accessibility whenever palette or combinations change
+  // Analyze accessibility whenever palette or combinations change
     useEffect(() => {
         if (!accessibilitySettings.checkContrast || !colorCombinations.length) {
             setAccessibilityData(null);
             return;
         }
 
-        setIsAnalyzing(true);
+    setIsAnalyzing(true);
 
-        // Use setTimeout to avoid blocking the UI
+    // Use setTimeout to avoid blocking the UI
         const timeoutId = setTimeout(() => {
             try {
                 const analysis = AccessibilityUtils.analyzePaletteAccessibility(colorCombinations);
                 setAccessibilityData(analysis);
-            } catch (error) {
-                console.error('Error analyzing accessibility:', error);
+      } catch (error) {
+        console.error('Error analyzing accessibility:', error);
                 setAccessibilityData(null);
             } finally {
                 setIsAnalyzing(false);
             }
         }, 100);
 
-        return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
     }, [palette, colorCombinations, accessibilitySettings.checkContrast]);
 
-    // Check a specific color combination
+  // Check a specific color combination
     const checkColorCombination = useCallback((foreground, background, isLargeText = false) => {
         if (!foreground || !background) return null;
 
-        try {
+    try {
             const contrast = AccessibilityUtils.getContrastRatio(foreground, background);
             const wcagLevel = AccessibilityUtils.getWCAGLevel(foreground, background, isLargeText);
-            const meetsAA = AccessibilityUtils.meetsWCAG_AA(foreground, background, isLargeText);
-            const meetsAAA = AccessibilityUtils.meetsWCAG_AAA(foreground, background, isLargeText);
+        );
+        const meetsAA = AccessibilityUtils.meetsWCAG_AA(
+          foreground,
+          background,
+          isLargeText,
+      const meetsAAA = AccessibilityUtils.meetsWCAG_AAA(foreground, background, isLargeText);
 
-            return {
+      return {
                 contrast,
                 wcagLevel,
                 meetsAA,
@@ -117,55 +123,61 @@ export const useAccessibility = (customColorCombinations = null) => {
                 passed: meetsAA,
                 foreground,
                 background,
-                isLargeText
-            };
+          isLargeText,
+      };
         } catch (error) {
             console.error('Error checking color combination:', error);
             return null;
-        }
-    }, []);
+      }
+  },
+    [],
+  );
 
-    // Get accessibility recommendations for a color combination
+  // Get accessibility recommendations for a color combination
     const getRecommendations = useCallback((foreground, background, isLargeText = false) => {
         if (!foreground || !background) return null;
 
-        try {
+    try {
             return AccessibilityUtils.getAccessibilityRecommendations(
-                foreground,
-                background,
-                isLargeText
+          foreground,
+        background,
+                isLargeText,
             );
-        } catch (error) {
-            console.error('Error getting recommendations:', error);
+      } catch (error) {
+      console.error('Error getting recommendations:', error);
             return null;
         }
-    }, []);
+    },
+    [],
+  );
 
-    // Generate accessible variations of a color
+  // Generate accessible variations of a color
     const generateAccessibleVariations = useCallback((color, backgroundColor) => {
         if (!color || !backgroundColor) return [];
 
-        try {
+    try {
             return AccessibilityUtils.generateAccessibleVariations(color, backgroundColor);
-        } catch (error) {
-            console.error('Error generating accessible variations:', error);
+      );
+    } catch (error) {
+      console.error('Error generating accessible variations:', error);
             return [];
         }
-    }, []);
+  }, []);
 
-    // Check color blindness compatibility
+  // Check color blindness compatibility
     const checkColorBlindness = useCallback((color1, color2) => {
         if (!color1 || !color2) return null;
 
-        try {
+    try {
             return AccessibilityUtils.checkColorBlindnessCompatibility(color1, color2);
-        } catch (error) {
-            console.error('Error checking color blindness compatibility:', error);
+      );
+    } catch (error) {
+      console.error('Error checking color blindness compatibility:', error);
             return null;
-        }
-    }, []);
+    }
+  }, []);
 
-    // Get overall accessibility status
+  // Get overall accessibility status
     const accessibilityStatus = useMemo(() => {
         if (!accessibilityData) {
             return {
@@ -184,7 +196,7 @@ export const useAccessibility = (customColorCombinations = null) => {
                 message: `Excellent accessibility (${passed}/${total} checks passed)`,
                 color: 'green'
             };
-        } else if (score >= 70) {
+        } if (score >= 70) {
             return {
                 level: 'good',
                 score,
@@ -208,50 +220,50 @@ export const useAccessibility = (customColorCombinations = null) => {
         }
     }, [accessibilityData]);
 
-    // Get high priority issues
+  // Get high priority issues
     const criticalIssues = useMemo(() => {
-        if (!accessibilityData) return [];
+    if (!accessibilityData) return [];
 
-        return accessibilityData.combinations
-            .filter(combo => !combo.passed && combo.priority === 'high')
-            .map(combo => ({
+    return accessibilityData.combinations
+            .filter((combo) => !combo.passed && combo.priority === 'high')
+            .map((combo) => ({
                 ...combo,
                 issue: `${combo.name} has insufficient contrast (${combo.contrast.toFixed(2)}:1)`,
-                severity: 'critical'
+                severity: 'critical',
             }));
     }, [accessibilityData]);
 
-    // Get warnings (medium priority issues)
-    const warnings = useMemo(() => {
-        if (!accessibilityData) return [];
+  // Get warnings (medium priority issues)
+  const warnings = useMemo(() => {
+    if (!accessibilityData) return [];
 
-        return accessibilityData.combinations
-            .filter(combo => !combo.passed && combo.priority === 'medium')
-            .map(combo => ({
+    return accessibilityData.combinations
+            .filter((combo) => !combo.passed && combo.priority === 'medium')
+            .map((combo) => ({
                 ...combo,
                 issue: `${combo.name} has insufficient contrast (${combo.contrast.toFixed(2)}:1)`,
-                severity: 'warning'
+                severity: 'warning',
             }));
     }, [accessibilityData]);
 
-    // Check if palette meets minimum standards
+  // Check if palette meets minimum standards
     const meetsMinimumStandards = useMemo(() => {
         if (!accessibilityData) return false;
 
-        const highPriorityCombinations = accessibilityData.combinations.filter(
-            combo => combo.priority === 'high'
-        );
+    const highPriorityCombinations = accessibilityData.combinations.filter(
+      (combo) => combo.priority === 'high',
+    );
 
-        return highPriorityCombinations.every(combo => combo.passed);
+    return highPriorityCombinations.every((combo) => combo.passed);
     }, [accessibilityData]);
 
-    // Get detailed breakdown by WCAG level
+  // Get detailed breakdown by WCAG level
     const wcagBreakdown = useMemo(() => {
         if (!accessibilityData) return { AA: 0, AAA: 0, fail: 0 };
 
-        const breakdown = { AA: 0, AAA: 0, fail: 0 };
+    const breakdown = { AA: 0, AAA: 0, fail: 0 };
 
-        accessibilityData.combinations.forEach(combo => {
+    accessibilityData.combinations.forEach((combo) => {
             if (combo.meetsAAA) {
                 breakdown.AAA++;
             } else if (combo.meetsAA) {
@@ -261,96 +273,97 @@ export const useAccessibility = (customColorCombinations = null) => {
             }
         });
 
-        return breakdown;
+    return breakdown;
     }, [accessibilityData]);
 
-    // Helper functions for direct use in components
-    const checkContrast = useCallback((color1, color2) => {
-        return AccessibilityUtils.getContrastRatio(color1, color2);
-    }, []);
+  // Helper functions for direct use in components
+    const checkContrast = useCallback((color1, color2) => AccessibilityUtils.getContrastRatio(color1, color2), []);
 
-    const getWcagLevel = useCallback((color1, color2, isLargeText = false) => {
-        return AccessibilityUtils.getWCAGLevel(color1, color2, isLargeText);
-    }, []);
+  const getWcagLevel = useCallback((color1, color2, isLargeText = false) => AccessibilityUtils.getWCAGLevel(color1, color2, isLargeText), []);
 
-    const analyzeColorPalette = useCallback((colors) => {
+  const analyzeColorPalette = useCallback((colors) => {
         if (!colors || colors.length < 2) {
             return {
                 score: 0,
                 level: 'insufficient',
                 issues: ['Need at least 2 colors for analysis'],
-                recommendations: []
+                recommendations: [],
             };
-        }
+    }
 
-        const issues = [];
+    const issues = [];
         const recommendations = [];
         let totalPairs = 0;
         let passingPairs = 0;
 
-        for (let i = 0; i < colors.length; i++) {
+    for (let i = 0; i < colors.length; i++) {
             for (let j = i + 1; j < colors.length; j++) {
                 totalPairs++;
                 const contrast = AccessibilityUtils.getContrastRatio(colors[i], colors[j]);
 
-                if (contrast >= 4.5) {
+        if (contrast >= 4.5) {
                     passingPairs++;
-                } else {
-                    issues.push(`Low contrast between ${colors[i]} and ${colors[j]} (${contrast.toFixed(2)}:1)`);
-                    recommendations.push(`Adjust ${colors[i]} or ${colors[j]} to achieve at least 4.5:1 contrast`);
-                }
+        } else {
+          issues.push(`Low contrast between ${colors[i]} and ${colors[j]} (${contrast.toFixed(2)}:1)`);
+          );
+          recommendations.push(
+            `Adjust ${colors[i]} or ${colors[j]} to achieve at least 4.5:1 contrast`,
+        }
             }
         }
 
-        const score = totalPairs > 0 ? (passingPairs / totalPairs) * 100 : 0;
+    const score = totalPairs > 0 ? (passingPairs / totalPairs) * 100 : 0;
 
-        let level = 'excellent';
+    let level = 'excellent';
         if (score < 50) level = 'poor';
         else if (score < 70) level = 'fair';
         else if (score < 90) level = 'good';
 
-        return { score, level, issues, recommendations, totalPairs, passingPairs };
+    return {
+ score, level, issues, recommendations, totalPairs, passingPairs 
+};
     }, []);
 
-    const getLuminanceRatio = useCallback((color1, color2) => {
-        return AccessibilityUtils.getContrastRatio(color1, color2);
-    }, []);
+  const getLuminanceRatio = useCallback((color1, color2) => AccessibilityUtils.getContrastRatio(color1, color2), []);
 
-    const checkColorBlindnessCompliance = useCallback((colors) => {
+  const checkColorBlindnessCompliance = useCallback((colors) => {
         const issues = [];
         const recommendations = [];
 
-        for (let i = 0; i < colors.length; i++) {
+    for (let i = 0; i < colors.length; i++) {
             for (let j = i + 1; j < colors.length; j++) {
                 const contrast = AccessibilityUtils.getContrastRatio(colors[i], colors[j]);
-                if (contrast < 3.0) {
-                    issues.push(`Colors ${colors[i]} and ${colors[j]} may be hard to distinguish`);
-                    recommendations.push(`Increase contrast between ${colors[i]} and ${colors[j]}`);
-                }
+        );
+        if (contrast < 3.0) {
+          issues.push(`Colors ${colors[i]} and ${colors[j]} may be hard to distinguish`);
+          );
+          recommendations.push(
+            `Increase contrast between ${colors[i]} and ${colors[j]}`,
+        }
             }
         }
 
-        return {
+    return {
             hasIssues: issues.length > 0,
             issues,
             recommendations,
-            compliance: issues.length === 0 ? 'excellent' : 'poor'
+            compliance: issues.length === 0 ? 'excellent' : 'poor',
         };
-    }, []);
+  }, []);
 
-    return {
+  return {
         // Analysis results
         accessibilityData,
         accessibilityStatus,
-        criticalIssues,
-        warnings,
+    criticalIssues,
+    warnings,
         wcagBreakdown,
         meetsMinimumStandards,
 
-        // State
+    // State
         isAnalyzing,
 
-        // Utility functions
+    // Utility functions
         checkColorCombination,
         getRecommendations,
         generateAccessibleVariations,
@@ -358,10 +371,10 @@ export const useAccessibility = (customColorCombinations = null) => {
         checkContrast,
         getWcagLevel,
         analyzeColorPalette,
-        getLuminanceRatio,
-        checkColorBlindnessCompliance,
+    getLuminanceRatio,
+    checkColorBlindnessCompliance,
 
-        // Settings
-        isEnabled: accessibilitySettings.checkContrast
+    // Settings
+        isEnabled: accessibilitySettings.checkContrast,
     };
 };

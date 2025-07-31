@@ -5,168 +5,172 @@ import { ColorUtils } from '../../utils/colorUtils';
 /**
  * Enhanced ColorPicker component with validation and accessibility
  */
-const ColorPicker = ({
-    value = '#000000',
+function ColorPicker({
+  value = '#000000',
     onChange,
-    label,
-    disabled = false,
-    locked = false,
-    onToggleLock,
-    showHex = true,
-    showLockButton = false,
-    size = 'md',
-    className = '',
+  label,
+  disabled = false,
+  locked = false,
+  onToggleLock,
+  showHex = true,
+  showLockButton = false,
+  size = 'md',
+  className = '',
     ...props
-}) => {
-    const [inputValue, setInputValue] = useState(value);
-    const [isValid, setIsValid] = useState(true);
-    const colorInputRef = useRef(null);
-    const textInputRef = useRef(null);
+}) {
+  const [inputValue, setInputValue] = useState(value);
+  const [isValid, setIsValid] = useState(true);
+  const colorInputRef = useRef(null);
+  const textInputRef = useRef(null);
 
-    // Handle color input change
+  // Handle color input change
     const handleColorChange = useCallback((event) => {
         const newColor = event.target.value;
         setInputValue(newColor);
         setIsValid(true);
 
-        if (onChange) {
+    if (onChange) {
             onChange(newColor);
         }
-    }, [onChange]);
+    },
+    [onChange],
+  );
 
-    // Handle text input change with validation
+  // Handle text input change with validation
     const handleTextChange = useCallback((event) => {
         const newValue = event.target.value;
         setInputValue(newValue);
 
-        // Validate color format
+    // Validate color format
         const valid = ColorUtils.isValidColor(newValue);
         setIsValid(valid);
 
-        if (valid && onChange) {
+    if (valid && onChange) {
             onChange(newValue);
         }
-    }, [onChange]);
+    },
+    [onChange],
+  );
 
-    // Handle text input blur - revert to last valid value if invalid
+  // Handle text input blur - revert to last valid value if invalid
     const handleTextBlur = useCallback(() => {
         if (!isValid) {
-            setInputValue(value);
-            setIsValid(true);
+      setInputValue(value);
+      setIsValid(true);
         }
     }, [isValid, value]);
 
-    // Handle lock toggle
+  // Handle lock toggle
     const handleLockToggle = useCallback(() => {
         if (onToggleLock) {
             onToggleLock();
         }
     }, [onToggleLock]);
 
-    // Sync internal state with prop value
+  // Sync internal state with prop value
     React.useEffect(() => {
         if (value !== inputValue && ColorUtils.isValidColor(value)) {
             setInputValue(value);
             setIsValid(true);
-        }
-    }, [value, inputValue]);
+    }
+  }, [value, inputValue]);
 
-    const sizes = {
+  const sizes = {
         sm: {
             picker: 'w-10 h-10',
             text: 'text-xs px-2 py-1',
-            lock: 'w-6 h-6 text-xs'
+            lock: 'w-6 h-6 text-xs',
         },
-        md: {
-            picker: 'w-12 h-12',
+    md: {
+      picker: 'w-12 h-12',
             text: 'text-sm px-3 py-2',
-            lock: 'w-8 h-8 text-sm'
-        },
+      lock: 'w-8 h-8 text-sm',
+    },
         lg: {
             picker: 'w-16 h-16',
-            text: 'text-base px-4 py-3',
-            lock: 'w-10 h-10 text-base'
+      text: 'text-base px-4 py-3',
+      lock: 'w-10 h-10 text-base',
         }
-    };
+  };
 
-    const sizeClasses = sizes[size] || sizes.md;
+  const sizeClasses = sizes[size] || sizes.md;
 
-    const containerClasses = [
+  const containerClasses = [
         'color-picker',
-        'flex',
-        'flex-col',
+    'flex',
+    'flex-col',
         'gap-2',
-        ...(className ? [className] : [])
+        ...(className ? [className] : []),
     ].join(' ');
 
-    const pickerClasses = [
+  const pickerClasses = [
         sizeClasses.picker,
         'rounded-xl',
         'border-2',
-        'border-white/20',
-        'cursor-pointer',
+    'border-white/20',
+    'cursor-pointer',
         'transition-all',
         'duration-300',
         'hover:scale-105',
-        'hover:border-white/40',
-        'focus:outline-none',
+    'hover:border-white/40',
+    'focus:outline-none',
         'focus:ring-2',
         'focus:ring-blue-500/50',
         'focus:border-blue-500/50',
         ...(disabled ? ['opacity-50', 'cursor-not-allowed', 'hover:scale-100'] : []),
-        ...(locked ? ['ring-2', 'ring-yellow-400/50'] : [])
+        ...(locked ? ['ring-2', 'ring-yellow-400/50'] : []),
     ].join(' ');
 
-    const textClasses = [
+  const textClasses = [
         sizeClasses.text,
         'bg-white/10',
         'border',
         'border-white/20',
-        'rounded-lg',
-        'text-white',
+    'rounded-lg',
+    'text-white',
         'font-mono',
         'transition-all',
         'duration-200',
-        'focus:outline-none',
-        'focus:ring-2',
+    'focus:outline-none',
+    'focus:ring-2',
         'focus:ring-blue-500/50',
         'focus:border-blue-500/50',
         'placeholder-white/40',
         ...(disabled ? ['opacity-50', 'cursor-not-allowed'] : []),
         ...(locked ? ['cursor-not-allowed'] : []),
-        ...(!isValid ? ['border-red-500/50', 'ring-2', 'ring-red-500/20'] : [])
+        ...(!isValid ? ['border-red-500/50', 'ring-2', 'ring-red-500/20'] : []),
     ].join(' ');
 
-    const lockButtonClasses = [
+  const lockButtonClasses = [
         sizeClasses.lock,
         'flex',
         'items-center',
-        'justify-center',
-        'rounded-lg',
+    'justify-center',
+    'rounded-lg',
         'border',
         'border-white/20',
         'bg-white/10',
-        'text-white/70',
-        'transition-all',
+    'text-white/70',
+    'transition-all',
         'duration-200',
         'hover:bg-white/20',
         'hover:text-white',
-        'focus:outline-none',
-        'focus:ring-2',
+    'focus:outline-none',
+    'focus:ring-2',
         'focus:ring-blue-500/50',
-        ...(locked ? ['bg-yellow-400/20', 'border-yellow-400/50', 'text-yellow-400'] : [])
+        ...(locked ? ['bg-yellow-400/20', 'border-yellow-400/50', 'text-yellow-400'] : []),
     ].join(' ');
 
-    return (
+  return (
         <div className={containerClasses}>
             {label && (
                 <label className="block text-sm font-medium text-white/80 mb-1">
                     {label}
                     {locked && <span className="ml-1 text-yellow-400">🔒</span>}
-                </label>
-            )}
+        </label>
+      )}
 
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
                 {/* Color Input */}
                 <div className="relative">
                     <input
@@ -186,18 +190,18 @@ const ColorPicker = ({
                     )}
                 </div>
 
-                {/* Text Input */}
+              {/* Text Input */}
                 {showHex && (
                     <div className="flex-1">
                         <input
                             ref={textInputRef}
-                            type="text"
-                            value={inputValue}
+              type="text"
+                          value={inputValue}
                             onChange={handleTextChange}
                             onBlur={handleTextBlur}
                             disabled={disabled || locked}
-                            placeholder="#000000"
-                            className={textClasses}
+              placeholder="#000000"
+                          className={textClasses}
                             aria-label={label ? `${label} hex code` : 'Hex color code'}
                             pattern="^#[0-9A-Fa-f]{6}$"
                             maxLength={7}
@@ -210,9 +214,9 @@ const ColorPicker = ({
                     </div>
                 )}
 
-                {/* Lock Button */}
-                {showLockButton && onToggleLock && (
-                    <button
+              {/* Lock Button */}
+        {showLockButton && onToggleLock && (
+                <button
                         type="button"
                         onClick={handleLockToggle}
                         disabled={disabled}
@@ -220,25 +224,26 @@ const ColorPicker = ({
                         aria-label={locked ? 'Unlock color' : 'Lock color'}
                         title={locked ? 'Click to unlock this color' : 'Click to lock this color during randomization'}
                     >
-                        {locked ? '🔒' : '🔓'}
-                    </button>
-                )}
-            </div>
-        </div>
-    );
-};
+          >
+            {locked ? '🔒' : '🔓'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 ColorPicker.propTypes = {
-    value: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string,
-    disabled: PropTypes.bool,
-    locked: PropTypes.bool,
-    onToggleLock: PropTypes.func,
-    showHex: PropTypes.bool,
-    showLockButton: PropTypes.bool,
-    size: PropTypes.oneOf(['sm', 'md', 'lg']),
-    className: PropTypes.string
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  label: PropTypes.string,
+  disabled: PropTypes.bool,
+  locked: PropTypes.bool,
+  onToggleLock: PropTypes.func,
+  showHex: PropTypes.bool,
+  showLockButton: PropTypes.bool,
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  className: PropTypes.string,
 };
 
 export default ColorPicker;

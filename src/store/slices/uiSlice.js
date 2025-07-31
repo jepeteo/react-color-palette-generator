@@ -1,237 +1,235 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    // Modal states
-    isLibraryOpen: false,
-    isExportModalOpen: false,
-    isSettingsModalOpen: false,
-    isImageUploadModalOpen: false,
-    isAccessibilityPanelOpen: true,
-    showModal: false,
+  // Modal states
+  isLibraryOpen: false,
+  isExportModalOpen: false,
+  isSettingsModalOpen: false,
+  isImageUploadModalOpen: false,
+  isAccessibilityPanelOpen: true,
+  showModal: false,
 
-    // Selection states
-    selectedElement: null,
-    selectedPaletteRole: null,
-    selectedColor: null,
+  // Selection states
+  selectedElement: null,
+  selectedPaletteRole: null,
+  selectedColor: null,
 
-    // Color picker states
-    showColorPicker: false,
+  // Color picker states
+  showColorPicker: false,
 
-    // Upload states
-    uploadedImage: null,
-    imageExtractionProgress: 0,
-    isExtractingColors: false,
+  // Upload states
+  uploadedImage: null,
+  imageExtractionProgress: 0,
+  isExtractingColors: false,
 
-    // Loading states
-    isLoading: false,
-    loadingMessage: '',
+  // Loading states
+  isLoading: false,
+  loadingMessage: '',
 
-    // Error states
-    error: null,
-    errorDetails: null,
+  // Error states
+  error: null,
+  errorDetails: null,
 
-    // Toast/notification states
-    notifications: [],
+  // Toast/notification states
+  notifications: [],
 
-    // UI layout states
-    sidebarCollapsed: false,
-    previewMode: 'website', // 'website', 'cards', 'minimal'
-    activeTab: 'generator', // 'generator', 'library', 'settings'
+  // UI layout states
+  sidebarCollapsed: false,
+  previewMode: 'website', // 'website', 'cards', 'minimal'
+  activeTab: 'generator', // 'generator', 'library', 'settings'
 
-    // Search and filter states
-    librarySearchQuery: '',
-    libraryFilter: 'all', // 'all', 'recent', 'favorites'
+  // Search and filter states
+  librarySearchQuery: '',
+  libraryFilter: 'all', // 'all', 'recent', 'favorites'
 
-    // Drag and drop states
-    isDragging: false,
-    draggedItem: null
+  // Drag and drop states
+  isDragging: false,
+  draggedItem: null,
 };
 
 const uiSlice = createSlice({
-    name: 'ui',
-    initialState,
-    reducers: {
-        // Modal actions
-        openLibrary: (state) => {
-            state.isLibraryOpen = true;
-        },
+  name: 'ui',
+  initialState,
+  reducers: {
+    // Modal actions
+    openLibrary: (state) => {
+      state.isLibraryOpen = true;
+    },
 
-        closeLibrary: (state) => {
-            state.isLibraryOpen = false;
-        },
+    closeLibrary: (state) => {
+      state.isLibraryOpen = false;
+    },
 
-        openExportModal: (state) => {
-            state.isExportModalOpen = true;
-        },
+    openExportModal: (state) => {
+      state.isExportModalOpen = true;
+    },
 
-        closeExportModal: (state) => {
-            state.isExportModalOpen = false;
-        },
+    closeExportModal: (state) => {
+      state.isExportModalOpen = false;
+    },
 
-        openSettingsModal: (state) => {
-            state.isSettingsModalOpen = true;
-        },
+    openSettingsModal: (state) => {
+      state.isSettingsModalOpen = true;
+    },
 
-        closeSettingsModal: (state) => {
-            state.isSettingsModalOpen = false;
-        },
+    closeSettingsModal: (state) => {
+      state.isSettingsModalOpen = false;
+    },
 
-        openImageUploadModal: (state) => {
-            state.isImageUploadModalOpen = true;
-        },
+    openImageUploadModal: (state) => {
+      state.isImageUploadModalOpen = true;
+    },
 
-        closeImageUploadModal: (state) => {
-            state.isImageUploadModalOpen = false;
-        },
+    closeImageUploadModal: (state) => {
+      state.isImageUploadModalOpen = false;
+    },
 
-        toggleAccessibilityPanel: (state) => {
-            state.isAccessibilityPanelOpen = !state.isAccessibilityPanelOpen;
-        },
+    toggleAccessibilityPanel: (state) => {
+      state.isAccessibilityPanelOpen = !state.isAccessibilityPanelOpen;
+    },
 
-        setShowModal: (state, action) => {
-            state.showModal = action.payload;
-        },
+    setShowModal: (state, action) => {
+      state.showModal = action.payload;
+    },
 
-        closeAllModals: (state) => {
-            state.isLibraryOpen = false;
-            state.isExportModalOpen = false;
-            state.isSettingsModalOpen = false;
-            state.isImageUploadModalOpen = false;
-            state.showModal = false;
-        },
+    closeAllModals: (state) => {
+      state.isLibraryOpen = false;
+      state.isExportModalOpen = false;
+      state.isSettingsModalOpen = false;
+      state.isImageUploadModalOpen = false;
+      state.showModal = false;
+    },
 
-        // Selection actions
-        setSelectedElement: (state, action) => {
-            state.selectedElement = action.payload;
-        },
+    // Selection actions
+    setSelectedElement: (state, action) => {
+      state.selectedElement = action.payload;
+    },
 
-        setSelectedPaletteRole: (state, action) => {
-            state.selectedPaletteRole = action.payload;
-        },
+    setSelectedPaletteRole: (state, action) => {
+      state.selectedPaletteRole = action.payload;
+    },
 
-        setSelectedColor: (state, action) => {
-            state.selectedColor = action.payload;
-        },
+    setSelectedColor: (state, action) => {
+      state.selectedColor = action.payload;
+    },
 
-        setShowColorPicker: (state, action) => {
-            state.showColorPicker = action.payload;
-        },
+    setShowColorPicker: (state, action) => {
+      state.showColorPicker = action.payload;
+    },
 
-        clearSelections: (state) => {
-            state.selectedElement = null;
-            state.selectedPaletteRole = null;
-            state.selectedColor = null;
-        },
+    clearSelections: (state) => {
+      state.selectedElement = null;
+      state.selectedPaletteRole = null;
+      state.selectedColor = null;
+    },
 
-        // Image upload actions
-        setUploadedImage: (state, action) => {
-            state.uploadedImage = action.payload;
-        },
+    // Image upload actions
+    setUploadedImage: (state, action) => {
+      state.uploadedImage = action.payload;
+    },
 
-        setImageExtractionProgress: (state, action) => {
-            state.imageExtractionProgress = action.payload;
-        },
+    setImageExtractionProgress: (state, action) => {
+      state.imageExtractionProgress = action.payload;
+    },
 
-        setIsExtractingColors: (state, action) => {
-            state.isExtractingColors = action.payload;
-        },
+    setIsExtractingColors: (state, action) => {
+      state.isExtractingColors = action.payload;
+    },
 
-        clearUploadedImage: (state) => {
-            state.uploadedImage = null;
-            state.imageExtractionProgress = 0;
-            state.isExtractingColors = false;
-        },
+    clearUploadedImage: (state) => {
+      state.uploadedImage = null;
+      state.imageExtractionProgress = 0;
+      state.isExtractingColors = false;
+    },
 
-        // Loading actions
-        setLoading: (state, action) => {
-            state.isLoading = action.payload.isLoading;
-            state.loadingMessage = action.payload.message || '';
-        },
+    // Loading actions
+    setLoading: (state, action) => {
+      state.isLoading = action.payload.isLoading;
+      state.loadingMessage = action.payload.message || '';
+    },
 
-        // Error actions
-        setError: (state, action) => {
-            state.error = action.payload.message;
-            state.errorDetails = action.payload.details || null;
-        },
+    // Error actions
+    setError: (state, action) => {
+      state.error = action.payload.message;
+      state.errorDetails = action.payload.details || null;
+    },
 
-        clearError: (state) => {
-            state.error = null;
-            state.errorDetails = null;
-        },
+    clearError: (state) => {
+      state.error = null;
+      state.errorDetails = null;
+    },
 
-        // Notification actions
-        addNotification: (state, action) => {
-            const notification = {
-                id: Date.now() + Math.random(),
-                type: action.payload.type || 'info', // 'info', 'success', 'warning', 'error'
-                message: action.payload.message,
-                duration: action.payload.duration || 3000,
-                timestamp: Date.now()
-            };
-            state.notifications.push(notification);
-        },
+    // Notification actions
+    addNotification: (state, action) => {
+      const notification = {
+        id: Date.now() + Math.random(),
+        type: action.payload.type || 'info', // 'info', 'success', 'warning', 'error'
+        message: action.payload.message,
+        duration: action.payload.duration || 3000,
+        timestamp: Date.now(),
+      };
+      state.notifications.push(notification);
+    },
 
-        removeNotification: (state, action) => {
-            state.notifications = state.notifications.filter(
-                notification => notification.id !== action.payload
-            );
-        },
+    removeNotification: (state, action) => {
+      state.notifications = state.notifications.filter(
+        (notification) => notification.id !== action.payload,
+      );
+    },
 
-        clearAllNotifications: (state) => {
-            state.notifications = [];
-        },
+    clearAllNotifications: (state) => {
+      state.notifications = [];
+    },
 
-        // Layout actions
-        toggleSidebar: (state) => {
-            state.sidebarCollapsed = !state.sidebarCollapsed;
-        },
+    // Layout actions
+    toggleSidebar: (state) => {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+    },
 
-        setSidebarCollapsed: (state, action) => {
-            state.sidebarCollapsed = action.payload;
-        },
+    setSidebarCollapsed: (state, action) => {
+      state.sidebarCollapsed = action.payload;
+    },
 
-        setPreviewMode: (state, action) => {
-            state.previewMode = action.payload;
-        },
+    setPreviewMode: (state, action) => {
+      state.previewMode = action.payload;
+    },
 
-        setActiveTab: (state, action) => {
-            state.activeTab = action.payload;
-        },
+    setActiveTab: (state, action) => {
+      state.activeTab = action.payload;
+    },
 
-        // Search and filter actions
-        setLibrarySearchQuery: (state, action) => {
-            state.librarySearchQuery = action.payload;
-        },
+    // Search and filter actions
+    setLibrarySearchQuery: (state, action) => {
+      state.librarySearchQuery = action.payload;
+    },
 
-        setLibraryFilter: (state, action) => {
-            state.libraryFilter = action.payload;
-        },
+    setLibraryFilter: (state, action) => {
+      state.libraryFilter = action.payload;
+    },
 
-        // Drag and drop actions
-        setIsDragging: (state, action) => {
-            state.isDragging = action.payload;
-        },
+    // Drag and drop actions
+    setIsDragging: (state, action) => {
+      state.isDragging = action.payload;
+    },
 
-        setDraggedItem: (state, action) => {
-            state.draggedItem = action.payload;
-        },
+    setDraggedItem: (state, action) => {
+      state.draggedItem = action.payload;
+    },
 
-        clearDragState: (state) => {
-            state.isDragging = false;
-            state.draggedItem = null;
-        },
+    clearDragState: (state) => {
+      state.isDragging = false;
+      state.draggedItem = null;
+    },
 
-        // Bulk actions
-        resetUI: (state) => {
-            return {
-                ...initialState,
-                // Preserve some user preferences
-                sidebarCollapsed: state.sidebarCollapsed,
-                previewMode: state.previewMode,
-                isAccessibilityPanelOpen: state.isAccessibilityPanelOpen
-            };
-        }
-    }
+    // Bulk actions
+    resetUI: (state) => ({
+      ...initialState,
+      // Preserve some user preferences
+      sidebarCollapsed: state.sidebarCollapsed,
+      previewMode: state.previewMode,
+      isAccessibilityPanelOpen: state.isAccessibilityPanelOpen,
+    }),
+  },
 });
 
 // Selectors
@@ -265,42 +263,42 @@ export const selectDraggedItem = (state) => state.ui.draggedItem;
 export const dismissNotification = (id) => removeNotification(id);
 
 export const {
-    openLibrary,
-    closeLibrary,
-    openExportModal,
-    closeExportModal,
-    openSettingsModal,
-    closeSettingsModal,
-    openImageUploadModal,
-    closeImageUploadModal,
-    toggleAccessibilityPanel,
-    setShowModal,
-    closeAllModals,
-    setSelectedElement,
-    setSelectedPaletteRole,
-    setSelectedColor,
-    setShowColorPicker,
-    clearSelections,
-    setUploadedImage,
-    setImageExtractionProgress,
-    setIsExtractingColors,
-    clearUploadedImage,
-    setLoading,
-    setError,
-    clearError,
-    addNotification,
-    removeNotification,
-    clearAllNotifications,
-    toggleSidebar,
-    setSidebarCollapsed,
-    setPreviewMode,
-    setActiveTab,
-    setLibrarySearchQuery,
-    setLibraryFilter,
-    setIsDragging,
-    setDraggedItem,
-    clearDragState,
-    resetUI
+  openLibrary,
+  closeLibrary,
+  openExportModal,
+  closeExportModal,
+  openSettingsModal,
+  closeSettingsModal,
+  openImageUploadModal,
+  closeImageUploadModal,
+  toggleAccessibilityPanel,
+  setShowModal,
+  closeAllModals,
+  setSelectedElement,
+  setSelectedPaletteRole,
+  setSelectedColor,
+  setShowColorPicker,
+  clearSelections,
+  setUploadedImage,
+  setImageExtractionProgress,
+  setIsExtractingColors,
+  clearUploadedImage,
+  setLoading,
+  setError,
+  clearError,
+  addNotification,
+  removeNotification,
+  clearAllNotifications,
+  toggleSidebar,
+  setSidebarCollapsed,
+  setPreviewMode,
+  setActiveTab,
+  setLibrarySearchQuery,
+  setLibraryFilter,
+  setIsDragging,
+  setDraggedItem,
+  clearDragState,
+  resetUI,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

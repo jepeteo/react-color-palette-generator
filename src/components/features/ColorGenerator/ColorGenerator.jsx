@@ -9,86 +9,93 @@ import { ColorUtils } from '../../../utils/colorUtils';
 /**
  * Enhanced ColorGenerator component with advanced controls
  */
-const ColorGenerator = () => {
-    const {
+function ColorGenerator() {
+  const {
         palette,
         baseColor,
         harmony,
         generatePalette,
-        randomize,
-        canUndo,
+    randomize,
+    canUndo,
         canRedo,
         undoChange,
         redoChange,
         reset,
-        isGenerating
+        isGenerating,
     } = useColorPalette();
 
-    const [advancedMode, setAdvancedMode] = useState(false);
+  const [advancedMode, setAdvancedMode] = useState(false);
     const [customHueRange, setCustomHueRange] = useState([0, 360]);
     const [saturationRange, setSaturationRange] = useState([0.3, 0.8]);
     const [lightnessRange, setLightnessRange] = useState([0.3, 0.7]);
 
-    // Generate random color within specified ranges
-    const generateRandomColor = useCallback(() => {
-        const randomColor = ColorUtils.generateRandomColor(
-            customHueRange,
-            saturationRange,
-            lightnessRange
+  // Generate random color within specified ranges
+  const generateRandomColor = useCallback(() => {
+    const randomColor = ColorUtils.generateRandomColor(
+      customHueRange,
+      saturationRange,
+            lightnessRange,
         );
         generatePalette(randomColor, harmony);
     }, [customHueRange, saturationRange, lightnessRange, harmony, generatePalette]);
 
-    // Handle harmony change
-    const handleHarmonyChange = useCallback((newHarmony) => {
-        generatePalette(baseColor, newHarmony);
-    }, [baseColor, generatePalette]);
+  // Handle harmony change
+  const handleHarmonyChange = useCallback(
+    (newHarmony) => {
+    generatePalette(baseColor, newHarmony);
+    },
+    [baseColor, generatePalette],
+  );
 
-    // Handle base color change
-    const handleBaseColorChange = useCallback((newColor) => {
-        generatePalette(newColor, harmony);
-    }, [harmony, generatePalette]);
+  // Handle base color change
+  const handleBaseColorChange = useCallback(
+    (newColor) => {
+    generatePalette(newColor, harmony);
+    },
+    [harmony, generatePalette],
+  );
 
-    // Generate complementary suggestions
-    const generateSuggestions = useCallback(() => {
-        const suggestions = [];
-        const harmonies = [
-            HARMONY_TYPES.COMPLEMENTARY,
+  // Generate complementary suggestions
+  const generateSuggestions = useCallback(() => {
+    const suggestions = [];
+    const harmonies = [
+      HARMONY_TYPES.COMPLEMENTARY,
             HARMONY_TYPES.TRIADIC,
             HARMONY_TYPES.ANALOGOUS,
-            HARMONY_TYPES.SPLIT_COMPLEMENTARY
+            HARMONY_TYPES.SPLIT_COMPLEMENTARY,
         ];
 
-        harmonies.forEach(harmonyType => {
-            if (harmonyType !== harmony) {
-                const suggestedPalette = ColorUtils.generateHarmony(baseColor, harmonyType, false);
-                suggestions.push({
-                    harmony: harmonyType,
+    harmonies.forEach((harmonyType) => {
+      if (harmonyType !== harmony) {
+        const suggestedPalette = ColorUtils.generateHarmony(baseColor, harmonyType, false);
+        );
+        suggestions.push({
+          harmony: harmonyType,
                     label: HARMONY_LABELS[harmonyType],
                     palette: suggestedPalette,
-                    primaryColor: suggestedPalette.primary
+                    primaryColor: suggestedPalette.primary,
                 });
             }
         });
 
-        return suggestions;
+    return suggestions;
     }, [baseColor, harmony]);
 
-    const suggestions = generateSuggestions();
+  const suggestions = generateSuggestions();
 
-    const ActionButtons = () => (
+  const ActionButtons = () => (
         <div className="flex flex-wrap gap-2">
             <Button
                 onClick={() => randomize(true)}
                 variant="accent"
                 size="sm"
-                loading={isGenerating}
-                icon={<span>🎲</span>}
+        loading={isGenerating}
+              icon={<span>🎲</span>}
             >
                 Randomize
             </Button>
 
-            <Button
+          <Button
                 onClick={generateRandomColor}
                 variant="secondary"
                 size="sm"
@@ -98,17 +105,17 @@ const ColorGenerator = () => {
                 Random Base
             </Button>
 
-            <Button
+          <Button
                 onClick={undoChange}
                 disabled={!canUndo}
-                variant="ghost"
-                size="sm"
+        variant="ghost"
+              size="sm"
                 icon={<span>↶</span>}
             >
                 Undo
             </Button>
 
-            <Button
+          <Button
                 onClick={redoChange}
                 disabled={!canRedo}
                 variant="ghost"
@@ -118,7 +125,7 @@ const ColorGenerator = () => {
                 Redo
             </Button>
 
-            <Button
+          <Button
                 onClick={reset}
                 variant="outline"
                 size="sm"
@@ -129,11 +136,11 @@ const ColorGenerator = () => {
         </div>
     );
 
-    return (
+  return (
         <Card
             title="Color Generator"
             subtitle="Create harmonious color palettes"
-            headerAction={
+            headerAction={(
                 <Button
                     onClick={() => setAdvancedMode(!advancedMode)}
                     variant="ghost"
@@ -141,14 +148,14 @@ const ColorGenerator = () => {
                 >
                     {advancedMode ? 'Simple' : 'Advanced'}
                 </Button>
-            }
+              )}
         >
             <div className="space-y-6">
                 {/* Base Color Selection */}
                 <div>
                     <ColorPicker
-                        label="Base Color"
-                        value={baseColor}
+            label="Base Color"
+                      value={baseColor}
                         onChange={handleBaseColorChange}
                         showLockButton={false}
                         disabled={isGenerating}
@@ -158,7 +165,7 @@ const ColorGenerator = () => {
                     </p>
                 </div>
 
-                {/* Harmony Type Selection */}
+              {/* Harmony Type Selection */}
                 <div>
                     <label className="block text-sm font-medium text-white/80 mb-2">
                         Color Harmony Type
@@ -170,60 +177,80 @@ const ColorGenerator = () => {
                         className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50"
                     >
                         {Object.entries(HARMONY_TYPES).map(([key, value]) => (
-                            <option key={key} value={value} className="bg-gray-800">
-                                {HARMONY_LABELS[value]}
+              <option key={key} value={value} className="bg-gray-800">
+                              {HARMONY_LABELS[value]}
                             </option>
-                        ))}
-                    </select>
-                    <p className="text-xs text-white/60 mt-1">
+            ))}
+          </select>
+                  <p className="text-xs text-white/60 mt-1">
                         Different harmony types create different color relationships
                     </p>
                 </div>
 
-                {/* Advanced Controls */}
+              {/* Advanced Controls */}
                 {advancedMode && (
                     <div className="space-y-4 p-4 bg-white/5 rounded-lg border border-white/10">
                         <h4 className="text-sm font-medium text-white/90">Advanced Settings</h4>
 
-                        {/* Hue Range */}
-                        <div>
+            </h4>
+
+            {/* Hue Range */}
+                      <div>
                             <label className="block text-xs font-medium text-white/80 mb-2">
-                                Hue Range ({customHueRange[0]}° - {customHueRange[1]}°)
+                                Hue Range (
+{customHueRange[0]}° - 
+{' '}
+{customHueRange[1]}°)
                             </label>
                             <div className="flex gap-2">
                                 <input
                                     type="range"
-                                    min="0"
-                                    max="360"
+                  min="0"
+                                  max="360"
                                     value={customHueRange[0]}
-                                    onChange={(e) => setCustomHueRange([parseInt(e.target.value), customHueRange[1]])}
-                                    className="flex-1"
+                  onChange={(e) =>
+                    setCustomHueRange([
+                      parseInt(e.target.value),
+                      customHueRange[1],
+                    ])
+                                  className="flex-1"
                                 />
                                 <input
                                     type="range"
                                     min="0"
                                     max="360"
                                     value={customHueRange[1]}
-                                    onChange={(e) => setCustomHueRange([customHueRange[0], parseInt(e.target.value)])}
-                                    className="flex-1"
+                  onChange={(e) =>
+                    setCustomHueRange([
+                      customHueRange[0],
+                      parseInt(e.target.value),
+                    ])
+                                  className="flex-1"
                                 />
                             </div>
                         </div>
 
-                        {/* Saturation Range */}
-                        <div>
+            {/* Saturation Range */}
+                      <div>
                             <label className="block text-xs font-medium text-white/80 mb-2">
-                                Saturation Range ({Math.round(saturationRange[0] * 100)}% - {Math.round(saturationRange[1] * 100)}%)
+                                Saturation Range (
+{Math.round(saturationRange[0] * 100)}% - 
+{' '}
+{Math.round(saturationRange[1] * 100)}%)
                             </label>
-                            <div className="flex gap-2">
-                                <input
+              <div className="flex gap-2">
+                              <input
                                     type="range"
                                     min="0"
                                     max="1"
                                     step="0.1"
                                     value={saturationRange[0]}
-                                    onChange={(e) => setSaturationRange([parseFloat(e.target.value), saturationRange[1]])}
-                                    className="flex-1"
+                  onChange={(e) =>
+                    setSaturationRange([
+                      parseFloat(e.target.value),
+                      saturationRange[1],
+                    ])
+                                  className="flex-1"
                                 />
                                 <input
                                     type="range"
@@ -231,26 +258,37 @@ const ColorGenerator = () => {
                                     max="1"
                                     step="0.1"
                                     value={saturationRange[1]}
-                                    onChange={(e) => setSaturationRange([saturationRange[0], parseFloat(e.target.value)])}
-                                    className="flex-1"
+                  onChange={(e) =>
+                    setSaturationRange([
+                      saturationRange[0],
+                      parseFloat(e.target.value),
+                    ])
+                                  className="flex-1"
                                 />
                             </div>
                         </div>
 
-                        {/* Lightness Range */}
-                        <div>
+            {/* Lightness Range */}
+                      <div>
                             <label className="block text-xs font-medium text-white/80 mb-2">
-                                Lightness Range ({Math.round(lightnessRange[0] * 100)}% - {Math.round(lightnessRange[1] * 100)}%)
+                                Lightness Range (
+{Math.round(lightnessRange[0] * 100)}% - 
+{' '}
+{Math.round(lightnessRange[1] * 100)}%)
                             </label>
                             <div className="flex gap-2">
                                 <input
                                     type="range"
                                     min="0"
-                                    max="1"
-                                    step="0.1"
+                  max="1"
+                                  step="0.1"
                                     value={lightnessRange[0]}
-                                    onChange={(e) => setLightnessRange([parseFloat(e.target.value), lightnessRange[1]])}
-                                    className="flex-1"
+                  onChange={(e) =>
+                    setLightnessRange([
+                      parseFloat(e.target.value),
+                      lightnessRange[1],
+                    ])
+                                  className="flex-1"
                                 />
                                 <input
                                     type="range"
@@ -258,23 +296,28 @@ const ColorGenerator = () => {
                                     max="1"
                                     step="0.1"
                                     value={lightnessRange[1]}
-                                    onChange={(e) => setLightnessRange([lightnessRange[0], parseFloat(e.target.value)])}
-                                    className="flex-1"
+                  onChange={(e) =>
+                    setLightnessRange([
+                      lightnessRange[0],
+                      parseFloat(e.target.value),
+                    ])
+                                  className="flex-1"
                                 />
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Action Buttons */}
+              {/* Action Buttons */}
                 <ActionButtons />
 
-                {/* Harmony Suggestions */}
+              {/* Harmony Suggestions */}
                 {suggestions.length > 0 && (
                     <div className="space-y-3">
                         <h4 className="text-sm font-medium text-white/90">Try Different Harmonies</h4>
-                        <div className="grid grid-cols-2 gap-2">
-                            {suggestions.map((suggestion) => (
+            </h4>
+            <div className="grid grid-cols-2 gap-2">
+                          {suggestions.map((suggestion) => (
                                 <button
                                     key={suggestion.harmony}
                                     onClick={() => handleHarmonyChange(suggestion.harmony)}
@@ -293,8 +336,9 @@ const ColorGenerator = () => {
                                     <div className="flex gap-1">
                                         {Object.values(suggestion.palette).slice(0, 4).map((color, index) => (
                                             <div
-                                                key={index}
-                                                className="w-3 h-3 rounded-sm"
+                        <div
+                          key={index}
+                                              className="w-3 h-3 rounded-sm"
                                                 style={{ backgroundColor: color }}
                                             />
                                         ))}
@@ -307,6 +351,6 @@ const ColorGenerator = () => {
             </div>
         </Card>
     );
-};
+}
 
 export default ColorGenerator;
