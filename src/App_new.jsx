@@ -5,20 +5,14 @@ import Card from './components/ui/Card';
 import ColorGenerator from './components/features/ColorGenerator/ColorGenerator';
 import ImageUpload from './components/features/ImageUpload/ImageUpload';
 import PalettePreview from './components/features/PalettePreview/PalettePreview';
-// import PaletteManager from './components/features/PaletteManager/PaletteManager';
+import PaletteManager from './components/features/PaletteManager/PaletteManager';
 import AccessibilityChecker from './components/features/AccessibilityChecker/AccessibilityChecker';
 import ExportTools from './components/features/ExportTools/ExportTools';
-import ColorWheel from './components/features/ColorWheel/ColorWheel';
-import AdvancedColorPicker from './components/features/AdvancedColorPicker/AdvancedColorPicker';
-import DesignPreview from './components/features/DesignPreview/DesignPreview';
-import ColorTrends from './components/features/ColorTrends/ColorTrends';
 import PaletteLibrary from './components/features/PaletteLibrary/PaletteLibrary';
-import GradientGenerator from './components/features/GradientGenerator/GradientGenerator';
-import AIColorAssistant from './components/features/AIColorAssistant/AIColorAssistant';
-// import PaletteSharing from './components/features/PaletteSharing/PaletteSharing';
+import PaletteSharing from './components/features/PaletteSharing/PaletteSharing';
 import { useColorPalette } from './hooks/useColorPalette';
-// import { useAccessibility } from './hooks/useAccessibility';
-// import { useUrlSharing } from './hooks/useUrlSharing';
+import { useAccessibility } from './hooks/useAccessibility';
+import { useUrlSharing } from './hooks/useUrlSharing';
 import { selectPalette } from './store/slices/paletteSlice';
 import { selectNotifications, dismissNotification } from './store/slices/uiSlice';
 
@@ -28,8 +22,8 @@ const PaletteGeneratorApp = () => {
     const palette = useSelector(selectPalette);
     const notifications = useSelector(selectNotifications);
 
-    const { checkContrast } = useColorPalette();
-    // useUrlSharing(); // Initialize URL sharing functionality
+    const { checkContrast } = useAccessibility();
+    useUrlSharing(); // Initialize URL sharing functionality
 
     const [activeTab, setActiveTab] = useState('generate');
 
@@ -38,17 +32,11 @@ const PaletteGeneratorApp = () => {
         { id: 'generate', label: 'Generate', icon: '🎨', component: ColorGenerator },
         { id: 'upload', label: 'Extract', icon: '📁', component: ImageUpload },
         { id: 'preview', label: 'Preview', icon: '👁️', component: PalettePreview },
-        { id: 'picker', label: 'Picker', icon: '🎯', component: AdvancedColorPicker },
-        { id: 'wheel', label: 'Harmony', icon: '⚫', component: ColorWheel },
-        { id: 'gradients', label: 'Gradients', icon: '🌈', component: GradientGenerator },
-        { id: 'designs', label: 'Designs', icon: '🎪', component: DesignPreview },
-        { id: 'trends', label: 'Trends', icon: '📊', component: ColorTrends },
-        // { id: 'manage', label: 'Manage', icon: '⚙️', component: PaletteManager },
-        { id: 'ai', label: 'AI Assistant', icon: '🤖', component: AIColorAssistant },
+        { id: 'manage', label: 'Manage', icon: '⚙️', component: PaletteManager },
         { id: 'accessibility', label: 'A11y', icon: '♿', component: AccessibilityChecker },
         { id: 'export', label: 'Export', icon: '📦', component: ExportTools },
         { id: 'library', label: 'Library', icon: '📚', component: PaletteLibrary },
-        // { id: 'share', label: 'Share', icon: '🔗', component: PaletteSharing }
+        { id: 'share', label: 'Share', icon: '🔗', component: PaletteSharing }
     ];
 
     return (
@@ -60,12 +48,12 @@ const PaletteGeneratorApp = () => {
                         <div
                             key={notification.id}
                             className={`max-w-sm p-4 rounded-lg shadow-lg backdrop-blur-sm border transition-all duration-300 ${notification.type === 'success'
-                                ? 'bg-green-500/20 border-green-500/40 text-green-100'
-                                : notification.type === 'error'
-                                    ? 'bg-red-500/20 border-red-500/40 text-red-100'
-                                    : notification.type === 'warning'
-                                        ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-100'
-                                        : 'bg-blue-500/20 border-blue-500/40 text-blue-100'
+                                    ? 'bg-green-500/20 border-green-500/40 text-green-100'
+                                    : notification.type === 'error'
+                                        ? 'bg-red-500/20 border-red-500/40 text-red-100'
+                                        : notification.type === 'warning'
+                                            ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-100'
+                                            : 'bg-blue-500/20 border-blue-500/40 text-blue-100'
                                 }`}
                         >
                             <div className="flex items-center justify-between">
@@ -133,8 +121,8 @@ const PaletteGeneratorApp = () => {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${activeTab === tab.id
-                                        ? 'bg-white/20 text-white shadow-lg'
-                                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                                            ? 'bg-white/20 text-white shadow-lg'
+                                            : 'text-white/70 hover:text-white hover:bg-white/10'
                                         }`}
                                 >
                                     <span>{tab.icon}</span>
@@ -153,7 +141,7 @@ const PaletteGeneratorApp = () => {
                             <div className="space-y-6">
                                 {activeTab === 'generate' && <ColorGenerator />}
                                 {activeTab === 'upload' && <ImageUpload />}
-                                {/* <PaletteManager /> */}
+                                <PaletteManager />
                             </div>
                             <div>
                                 <PalettePreview />

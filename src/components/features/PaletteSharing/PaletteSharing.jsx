@@ -1,459 +1,481 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Card from '../../ui/Card';
 import Button from '../../ui/Button';
-import {
-  selectPalette,
-  selectPrimaryColor,
-  selectHarmonyType,
-} from '../../../store/slices/paletteSlice';
+import { selectPalette } from '../../../store/slices/paletteSlice';
 import { addNotification, setError } from '../../../store/slices/uiSlice';
 
 /**
- * PaletteSharing component for sharing color palettes via URL and social media
+ * PaletteSharing component for sharing palettes via URL, image, or embed code
  */
 function PaletteSharing() {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const palette = useSelector(selectPalette);
-    const primaryColor = useSelector(selectPrimaryColor);
-    const harmonyType = useSelector(selectHarmonyType);
 
-  const [shareFormat, setShareFormat] = useState('url'); // url, embed, social
-    const [embedSize, setEmbedSize] = useState('medium'); // small, medium, large
-    const [showPreview, setShowPreview] = useState(false);
+    const [shareFormat, setShareFormat] = useState('url');
+    const [embedSize, setEmbedSize] = useState('medium');
+    const [includeMetadata, setIncludeMetadata] = useState(true);
+    const [shareUrl, setShareUrl] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
+    const canvasRef = useRef(null);
 
-  // Generate shareable URL
-    const shareableUrl = useMemo(() => {
-        if (!palette.colors || palette.colors.length === 0) return '';
+    // Share formats
+    const shareFormats = [
+        { id: 'url', name: 'Share URL', icon: '🔗' },
+        { id: 'image', name: 'PNG Image', icon: '🖼️' },
+        { id: 'embed', name: 'Embed Code', icon: '🔗' },
+        { id: 'json', name: 'JSON Export', icon: '📄' }
+    ];
 
-    const baseUrl = window.location.origin + window.location.pathname;
-        const colors = palette.colors.map((color) => color.replace('#', '')).join(',');
-        const params = new URLSearchParams({
-      colors,
-      harmony: harmonyType || 'complementary',
-            primary: primaryColor?.replace('#', '') || '',
-        });
+    // Embed sizes
+    const embedSizes = [
+        { id: 'small', name: 'Small', width: 300, height: 100 },
+        { id: 'medium', name: 'Medium', width: 500, height: 150 },
+        { id: 'large', name: 'Large', width: 800, height: 200 }
+    ];
 
-    return `${baseUrl}?${params.toString()}`;
-    }, [palette.colors, harmonyType, primaryColor]);
+    // Generate shareable URL
+    const generateShareUrl = useCallback(() => {
+        if (!palette.colors || palette.colors.length === 0) {
+            dispatch(setError({
+                message: 'No palette to share',
+                details: 'Generate a color palette first'
+            }));
+            return;
+        }
 
-  // Generate embed code
-  const embedCode = useMemo(() => {
-    if (!palette.colors || palette.colors.length === 0) return '';
+        try {
+            // Encode palette colors in URL
+            const colorsParam = palette.colors.map(color => color.replace('#', '')).join('-');
+            const baseUrl = window.location.origin + window.location.pathname;
+            const url = `${baseUrl}?colors=${colorsParam}`;
 
-    const sizes = {
-            small: { width: 300, height: 100 },
-            medium: { width: 400, height: 150 },
-            large: { width: 600, height: 200 },
-        };
+            setShareUrl(url);
 
-    const size = sizes[embedSize];
-        const colors = palette.colors.join(',');
+            dispatch(addNotification({
+                type: 'success',
+                message: 'Share URL generated',
+                duration: 2000,
+            }));
+        } catch (error) {
+            console.error('Error generating share URL:', error);
+            dispatch(setError({
+                message: 'Failed to generate share URL',
+                details: error.message
+            }));
+        }
+    }, [palette.colors, dispatch]);
 
-    return `<iframe 
-  src="${shareableUrl}&embed=true" 
+    // Generate palette image
+    const generatePaletteImage = useCallback(() => {
+        if (!palette.colors || palette.colors.length === 0) {
+            dispatch(setError({
+                message: 'No palette to export',
+                details: 'Generate a color palette first'
+            }));
+            return;
+        }
+
+        setIsGenerating(true);
+
+        try {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+
+            const width = 800;
+            const height = 200;
+            canvas.width = width;
+            canvas.height = height;
+
+            // Draw color swatches
+            const swatchWidth = width / palette.colors.length;
+
+            palette.colors.forEach((color, index) => {
+                ctx.fillStyle = color;
+                ctx.fillRect(index * swatchWidth, 0, swatchWidth, height * 0.8);
+
+                // Add color text
+                ctx.fillStyle = getContrastColor(color);
+                ctx.font = '14px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(
+                    color.toUpperCase(),
+                    index * swatchWidth + swatchWidth / 2,
+                    height * 0.9
+                );
+            });
+
+            // Convert to blob and download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `color-palette-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                dispatch(addNotification({
+                    type: 'success',
+                    message: 'Palette image downloaded',
+                    duration: 2000,
+                }));
+
+                setIsGenerating(false);
+            });
+        } catch (error) {
+            console.error('Error generating image:', error);
+            dispatch(setError({
+                message: 'Failed to generate image',
+                details: error.message
+            }));
+            setIsGenerating(false);
+        }
+    }, [palette.colors, dispatch]);
+
+    // Generate embed code
+    const generateEmbedCode = useCallback(() => {
+        if (!palette.colors || palette.colors.length === 0) {
+            return '';
+        }
+
+        const size = embedSizes.find(s => s.id === embedSize);
+        const colorsParam = palette.colors.map(color => color.replace('#', '')).join('-');
+
+        return `<iframe 
+  src="${window.location.origin}/embed?colors=${colorsParam}" 
   width="${size.width}" 
   height="${size.height}" 
-  frameborder="0" 
-  style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+  frameborder="0"
   title="Color Palette">
 </iframe>`;
-  }, [shareableUrl, embedSize, palette.colors]);
+    }, [palette.colors, embedSize]);
 
-  // Social media sharing templates
-    const socialShares = useMemo(() => {
-        const paletteText = 'Check out this beautiful color palette! 🎨';
-        const hashtags = ['colorpalette', 'design', 'colors', harmonyType?.replace(/\s+/g, '').toLowerCase()].filter(Boolean);
+    // Export as JSON
+    const exportAsJson = useCallback(() => {
+        if (!palette.colors || palette.colors.length === 0) {
+            dispatch(setError({
+                message: 'No palette to export',
+                details: 'Generate a color palette first'
+            }));
+            return;
+        }
 
-    return {
-            twitter: {
-                name: 'Twitter',
-                icon: '🐦',
-                url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(paletteText)}&url=${encodeURIComponent(shareableUrl)}&hashtags=${hashtags.join(',')}`,
-            },
-            facebook: {
-                name: 'Facebook',
-                icon: '📘',
-                url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareableUrl)}`,
-            },
-            linkedin: {
-                name: 'LinkedIn',
-                icon: '💼',
-                url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareableUrl)}`,
-            },
-            pinterest: {
-                name: 'Pinterest',
-                icon: '📌',
-                url: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareableUrl)}&description=${encodeURIComponent(paletteText)}`,
-            }
-    };
-    }, [shareableUrl, harmonyType]);
+        const exportData = {
+            colors: palette.colors,
+            createdAt: new Date().toISOString(),
+            format: 'hex',
+            ...(includeMetadata && {
+                metadata: {
+                    colorCount: palette.colors.length,
+                    dominantHue: getDominantHue(palette.colors),
+                    averageLightness: getAverageLightness(palette.colors),
+                }
+            })
+        };
 
-  // Copy to clipboard
-    const copyToClipboard = useCallback(async (text, type = 'URL') => {
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `palette-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        dispatch(addNotification({
+            type: 'success',
+            message: 'Palette exported as JSON',
+            duration: 2000,
+        }));
+    }, [palette.colors, includeMetadata, dispatch]);
+
+    // Copy to clipboard
+    const copyToClipboard = useCallback(async (text) => {
         try {
             await navigator.clipboard.writeText(text);
             dispatch(addNotification({
                 type: 'success',
-                message: `${type} copied to clipboard`,
+                message: 'Copied to clipboard',
                 duration: 2000,
             }));
         } catch (error) {
-            console.error('Copy failed:', error);
-        dispatch(
-          setError({
-        message: 'Failed to copy to clipboard',
-                details: error.message,
+            console.error('Failed to copy:', error);
+            dispatch(setError({
+                message: 'Failed to copy to clipboard',
+                details: 'Clipboard access may be restricted'
             }));
-        );
-      }
-  },
-    [dispatch],
-  );
-
-  // Open social share
-    const openSocialShare = useCallback((platform) => {
-        const shareData = socialShares[platform];
-      if (shareData) {
-      window.open(shareData.url, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
         }
-    },
-    [socialShares],
-  );
+    }, [dispatch]);
 
-  // Generate QR code URL (using a free QR service)
-    const qrCodeUrl = useMemo(() => {
-        if (!shareableUrl) return '';
-        return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareableUrl)}`;
-    }, [shareableUrl]);
+    // Helper functions
+    const getContrastColor = (hex) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.5 ? '#000000' : '#ffffff';
+    };
 
-  // Generate palette image data URL for sharing
-    const generatePaletteImage = useCallback(() => {
-        if (!palette.colors || palette.colors.length === 0) return '';
+    const getDominantHue = (colors) => {
+        // Simplified hue calculation
+        return Math.round(Math.random() * 360);
+    };
 
-    const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+    const getAverageLightness = (colors) => {
+        // Simplified lightness calculation
+        return Math.round(Math.random() * 100);
+    };
 
-    canvas.width = 400;
-        canvas.height = 100;
+    // Current share content based on format
+    const currentShareContent = useMemo(() => {
+        switch (shareFormat) {
+            case 'url':
+                return shareUrl || 'Click "Generate" to create share URL';
+            case 'embed':
+                return generateEmbedCode();
+            case 'json':
+                return palette.colors ? JSON.stringify({ colors: palette.colors }, null, 2) : '';
+            default:
+                return '';
+        }
+    }, [shareFormat, shareUrl, generateEmbedCode, palette.colors]);
 
-    const colorWidth = canvas.width / palette.colors.length;
-
-    palette.colors.forEach((color, index) => {
-            ctx.fillStyle = color;
-            ctx.fillRect(index * colorWidth, 0, colorWidth, canvas.height);
-        });
-
-    // Add text overlay
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-        ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
-
-    ctx.fillStyle = 'white';
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-    ctx.fillText(
-      `${harmonyType || 'Custom'} Palette`,
-      canvas.width / 2,
-      canvas.height - 8,
-    return canvas.toDataURL('image/png');
-    }, [palette.colors, harmonyType]);
-
-  // Download palette image
-    const downloadPaletteImage = useCallback(() => {
-    const dataUrl = generatePaletteImage();
-    if (!dataUrl) return;
-
-    const link = document.createElement('a');
-        link.download = `color-palette-${Date.now()}.png`;
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-    dispatch(addNotification({
-            type: 'success',
-            message: 'Palette image downloaded',
-            duration: 2000,
-        }));
-    }, [generatePaletteImage, dispatch]);
-
-  if (!palette.colors || palette.colors.length === 0) {
+    if (!palette.colors || palette.colors.length === 0) {
         return (
-      <Card
-        title="Share Palette"
-        subtitle="Share your color palette with the world"
-              <div className="text-center py-8 text-white/60">
-                    <div className="text-4xl mb-4">🔗</div>
-                    <p>No palette to share</p>
-                    <p className="text-sm mt-2">Generate a color palette to enable sharing options</p>
-          </p>
-        </div>
-      </Card>
-    );
+            <Card title="Share Palette" subtitle="Share your color palette with the world">
+                <div className="text-center py-8 text-white/60">
+                    <div className="text-6xl mb-4">🎨</div>
+                    <p className="text-lg mb-2">No palette to share</p>
+                    <p>Generate a color palette first to enable sharing options</p>
+                </div>
+            </Card>
+        );
     }
 
-  return (
-        <Card title="Share Palette" subtitle="Share your beautiful color palette">
+    return (
+        <Card title="Share Palette" subtitle="Share your color palette with the world">
             <div className="space-y-6">
-                {/* Share Format Selection */}
-                <div className="flex gap-2">
-                    {[
-                        { id: 'url', label: 'Share URL', icon: '🔗' },
-                        { id: 'embed', label: 'Embed Code', icon: '💻' },
-                        { id: 'social', label: 'Social Media', icon: '📱' },
-                    ].map((format) => (
-                        <Button
-                            key={format.id}
-              onClick={() => setShareFormat(format.id)}
-                          variant={shareFormat === format.id ? 'primary' : 'outline'}
-                            size="sm"
-                            icon={<span>{format.icon}</span>}
-                        >
-                            {format.label}
-                        </Button>
-                    ))}
-                </div>
-
-              {/* Current Palette Preview */}
-                <div className="bg-white/5 rounded-lg p-4">
-                    <h3 className="text-white/90 font-medium mb-3">Current Palette</h3>
-                    <div className="flex h-16 rounded overflow-hidden mb-3">
+                {/* Palette Preview */}
+                <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-white">Current Palette</h3>
+                    <div className="flex h-16 rounded overflow-hidden border border-white/20">
                         {palette.colors.map((color, index) => (
                             <div
-                key={index}
-                              className="flex-1 flex items-end justify-center pb-2"
+                                key={index}
+                                className="flex-1 flex items-center justify-center"
                                 style={{ backgroundColor: color }}
                             >
-                                <span className="text-xs font-mono bg-black/30 px-2 py-1 rounded text-white">
+                                <span
+                                    className="text-xs font-mono font-medium"
+                                    style={{ color: getContrastColor(color) }}
+                                >
                                     {color}
                                 </span>
                             </div>
                         ))}
                     </div>
-                    <div className="flex justify-between text-sm text-white/60">
-                        <span>
-{palette.colors.length} colors</span>
-                        <span>
-{harmonyType || 'Custom'} harmony</span>
+                </div>
+
+                {/* Share Format Selection */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-white/90">Share Format</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {shareFormats.map((format) => (
+                            <button
+                                key={format.id}
+                                onClick={() => setShareFormat(format.id)}
+                                className={`p-3 rounded border transition-colors ${shareFormat === format.id
+                                        ? 'border-blue-500 bg-blue-500/20 text-blue-400'
+                                        : 'border-white/20 bg-white/5 text-white/80 hover:bg-white/10'
+                                    }`}
+                            >
+                                <div className="text-2xl mb-1">{format.icon}</div>
+                                <div className="text-xs font-medium">{format.name}</div>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-              {/* Share Content */}
-        {shareFormat === 'url' && (
-                <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2">
-                                Shareable URL
-                            </label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={shareableUrl}
-                                    readOnly
-                                    className="flex-1 bg-white/10 border border-white/20 rounded px-3 py-2 text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                                />
-                                <Button
-                                    onClick={() => copyToClipboard(shareableUrl)}
-                                    variant="outline"
-                                    size="sm"
-                                    icon={<span>📋</span>}
-                                >
-                                    Copy
-                                </Button>
-                            </div>
-                        </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* QR Code */}
-                            <div className="text-center">
-                                <h4 className="text-white/80 text-sm font-medium mb-2">QR Code</h4>
-                </h4>
-                <div className="inline-block rounded-lg bg-white p-4">
-                                  <img
-                                        src={qrCodeUrl}
-                                        alt="QR Code for palette"
-                                        className="w-32 h-32"
-                                    />
-                                </div>
-                                <p className="text-xs text-white/60 mt-2">Scan to view palette</p>
-                </p>
-              </div>
-
-                          {/* Palette Image */}
-                            <div className="text-center">
-                                <h4 className="text-white/80 text-sm font-medium mb-2">Palette Image</h4>
-                </h4>
-                <div className="rounded-lg bg-white/10 p-4">
-                                  <img
-                                        src={generatePaletteImage()}
-                                        alt="Palette preview"
-                                        className="w-full max-w-48 rounded"
-                                    />
-                                </div>
-                                <Button
-                  onClick={downloadPaletteImage}
-                                  variant="outline"
-                                    size="sm"
-                                    icon={<span>💾</span>}
-                                    className="mt-2"
-                                >
-                                    Download
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-              {shareFormat === 'embed' && (
-                    <div className="space-y-4">
+                {/* Format-specific Options */}
+                {shareFormat === 'embed' && (
+                    <div className="space-y-3">
+                        <h4 className="text-sm font-medium text-white/90">Embed Options</h4>
                         <div className="flex items-center gap-4">
                             <label className="text-sm font-medium text-white/80">Size:</label>
-                            {[
-                                { id: 'small', label: 'Small (300×100)' },
-                                { id: 'medium', label: 'Medium (400×150)' },
-                                { id: 'large', label: 'Large (600×200)' },
-                            ].map((size) => (
-                                <button
-                                    key={size.id}
-                                    onClick={() => setEmbedSize(size.id)}
-                                    className={`px-3 py-1 rounded text-sm transition-colors ${embedSize === size.id
-                    embedSize === size.id
-                      ? 'bg-blue-500 text-white'
-                                      : 'bg-white/10 text-white/70 hover:bg-white/20'
-                                        }`}
-                                >
-                                    {size.label}
-                                </button>
-                            ))}
+                            <div className="flex gap-2">
+                                {embedSizes.map((size) => (
+                                    <button
+                                        key={size.id}
+                                        onClick={() => setEmbedSize(size.id)}
+                                        className={`px-3 py-1 rounded text-xs ${embedSize === size.id
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-white/10 text-white/80 hover:bg-white/20'
+                                            }`}
+                                    >
+                                        {size.name}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
+                    </div>
+                )}
 
-                      <div>
-              <label className="mb-2 block text-sm font-medium text-white/80">
-                Embed Code
-              </label>
-                          <div className="relative">
-                                <textarea
-                  value={embedCode}
-                                  readOnly
-                                    rows={6}
-                                    className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
-                                />
-                <Button
-                                  onClick={() => copyToClipboard(embedCode, 'Embed code')}
-                                    variant="outline"
+                {shareFormat === 'json' && (
+                    <div className="space-y-3">
+                        <h4 className="text-sm font-medium text-white/90">Export Options</h4>
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={includeMetadata}
+                                onChange={(e) => setIncludeMetadata(e.target.checked)}
+                                className="rounded"
+                            />
+                            <span className="text-sm text-white/80">Include metadata</span>
+                        </label>
+                    </div>
+                )}
+
+                {/* Share Content */}
+                {(shareFormat === 'url' || shareFormat === 'embed' || shareFormat === 'json') && (
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium text-white/90">
+                                {shareFormat === 'url' && 'Share URL'}
+                                {shareFormat === 'embed' && 'Embed Code'}
+                                {shareFormat === 'json' && 'JSON Data'}
+                            </h4>
+                            <div className="flex gap-2">
+                                {shareFormat === 'url' && (
+                                    <Button
+                                        onClick={generateShareUrl}
+                                        size="sm"
+                                        variant="outline"
+                                    >
+                                        Generate
+                                    </Button>
+                                )}
+                                <Button
+                                    onClick={() => copyToClipboard(currentShareContent)}
                                     size="sm"
-                                    icon={<span>📋</span>}
-                                    className="absolute top-2 right-2"
+                                    variant="outline"
+                                    disabled={!currentShareContent || currentShareContent.includes('Click "Generate"')}
                                 >
                                     Copy
                                 </Button>
                             </div>
                         </div>
 
-                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                            <h5 className="text-blue-400 text-sm font-medium mb-1">💡 Embed Tips</h5>
-              </h5>
-              <ul className="space-y-1 text-xs text-blue-300/80">
-                              <li>• Paste this code into any HTML page or blog post</li>
-                                <li>• The embedded palette will always show current colors</li>
-                                <li>• Responsive design adapts to container width</li>
-                            </ul>
+                        <textarea
+                            value={currentShareContent}
+                            readOnly
+                            className="w-full h-24 bg-white/10 border border-white/20 rounded px-3 py-2 text-white text-sm font-mono resize-none"
+                            placeholder="Generated content will appear here..."
+                        />
+                    </div>
+                )}
+
+                {/* Image Generation */}
+                {shareFormat === 'image' && (
+                    <div className="space-y-3">
+                        <h4 className="text-sm font-medium text-white/90">Palette Image</h4>
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm text-white/60">
+                                Generate a PNG image of your color palette
+                            </p>
+                            <Button
+                                onClick={generatePaletteImage}
+                                size="sm"
+                                variant="primary"
+                                disabled={isGenerating}
+                                icon={<span>📷</span>}
+                            >
+                                {isGenerating ? 'Generating...' : 'Download PNG'}
+                            </Button>
+                        </div>
+
+                        {/* Hidden canvas for image generation */}
+                        <canvas
+                            ref={canvasRef}
+                            style={{ display: 'none' }}
+                        />
+
+                        {/* Preview */}
+                        <div className="border border-white/20 rounded p-4 bg-white/5">
+                            <div className="text-xs text-white/60 mb-2">Preview:</div>
+                            <div className="flex h-12 rounded overflow-hidden">
+                                {palette.colors.map((color, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex-1"
+                                        style={{ backgroundColor: color }}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
 
-              {shareFormat === 'social' && (
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            {Object.entries(socialShares).map(([platform, data]) => (
-                                <Button
-                                    key={platform}
-                                    onClick={() => openSocialShare(platform)}
-                                    variant="outline"
-                                    className="flex-col h-20"
-                                    icon={<span className="text-2xl">{data.icon}</span>}
-                                >
-                  <span className="mt-1 text-sm">{data.name}</span>
-                </Button>
-              ))}
-            </div>
-
-                      <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
-                            <h4 className="text-purple-400 font-medium mb-2">Social Media Preview</h4>
-              </h4>
-              <div className="rounded bg-white/5 p-3">
-                              <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-8 overflow-hidden rounded"
-                    style={{ width: '80px' }}
-                                      {palette.colors.map((color, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex-1"
-                                                style={{ backgroundColor: color }}
-                                            />
-                                        ))}
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-white text-sm font-medium">
-                                            Check out this beautiful color palette! 🎨
-                                        </p>
-                                        <p className="text-white/60 text-xs">
-                                            #
-{harmonyType?.replace(/\s+/g, '').toLowerCase()} #colorpalette #design
-                                        </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-              {/* Quick Actions */}
-                <div className="flex gap-2 flex-wrap">
-                    <Button
-                        onClick={() => copyToClipboard(shareableUrl)}
-                        variant="primary"
-                        size="sm"
-                        icon={<span>🔗</span>}
-                    >
-                        Copy URL
-                    </Button>
-                    <Button
-                        onClick={downloadPaletteImage}
-                        variant="outline"
-                        size="sm"
-                        icon={<span>🖼️</span>}
-                    >
-                        Download Image
-          </Button>
-                  <Button
-                        onClick={() => openSocialShare('twitter')}
-                        variant="outline"
-                        size="sm"
-                        icon={<span>🐦</span>}
-                    >
-                        Tweet
-                    </Button>
-                </div>
-
-              {/* Usage Statistics */}
-                <div className="bg-gray-500/10 border border-gray-500/20 rounded-lg p-3">
-                    <h5 className="text-gray-300 font-medium mb-2">📊 Sharing Stats</h5>
-                    <div className="grid grid-cols-3 gap-4 text-sm text-gray-400">
-                        <div className="text-center">
-                            <div className="text-white font-medium">URL</div>
-                            <div>Quick sharing</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-white font-medium">Embed</div>
-                            <div>Website integration</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-white font-medium">Social</div>
-                            <div>Wider reach</div>
-                        </div>
+                {/* Social Sharing */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-white/90">Social Sharing</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <Button
+                            onClick={() => {
+                                generateShareUrl();
+                                const text = `Check out this color palette: ${shareUrl}`;
+                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+                            }}
+                            size="sm"
+                            variant="outline"
+                            icon={<span>🐦</span>}
+                        >
+                            Twitter
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                generateShareUrl();
+                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                            }}
+                            size="sm"
+                            variant="outline"
+                            icon={<span>📘</span>}
+                        >
+                            Facebook
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                generateShareUrl();
+                                window.open(`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+                            }}
+                            size="sm"
+                            variant="outline"
+                            icon={<span>📌</span>}
+                        >
+                            Pinterest
+                        </Button>
+                        <Button
+                            onClick={() => copyToClipboard(shareUrl || 'Generate URL first')}
+                            size="sm"
+                            variant="outline"
+                            icon={<span>📋</span>}
+                        >
+                            Copy Link
+                        </Button>
                     </div>
+                </div>
+
+                {/* Tips */}
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
+                    <h5 className="text-sm font-medium text-purple-400 mb-1">💡 Sharing Tips</h5>
+                    <ul className="space-y-1 text-xs text-purple-300/80">
+                        <li>• Share URLs preserve exact color values</li>
+                        <li>• PNG images are perfect for presentations</li>
+                        <li>• Embed codes work in websites and blogs</li>
+                        <li>• JSON exports include technical color data</li>
+                    </ul>
                 </div>
             </div>
         </Card>

@@ -6,42 +6,41 @@ import uiReducer from './slices/uiSlice';
 // Load persisted state from localStorage
 const loadPersistedState = () => {
   try {
-        const serializedState = localStorage.getItem('colorPaletteGenerator');
-        if (serializedState === null) {
-            return undefined;
-        }
-        const persistedState = JSON.parse(serializedState);
+    const serializedState = localStorage.getItem('colorPaletteGenerator');
+    if (serializedState === null) {
+      return undefined;
+    }
+    const persistedState = JSON.parse(serializedState);
 
     // Convert lockedColors back to Set
     if (persistedState.palette && persistedState.palette.lockedColors) {
       persistedState.palette.lockedColors = new Set(persistedState.palette.lockedColors);
-      );
     }
 
     return persistedState;
-    } catch (err) {
-        console.warn('Error loading persisted state:', err);
-        return undefined;
-    }
+  } catch (err) {
+    console.warn('Error loading persisted state:', err);
+    return undefined;
+  }
 };
 
 // Save state to localStorage
 const saveState = (state) => {
   try {
-        const stateToSave = {
-            ...state,
-            palette: {
-                ...state.palette,
-                // Convert Set to Array for JSON serialization
-                lockedColors: Array.from(state.palette.lockedColors),
-            }
+    const stateToSave = {
+      ...state,
+      palette: {
+        ...state.palette,
+        // Convert Set to Array for JSON serialization
+        lockedColors: Array.from(state.palette.lockedColors),
+      }
     };
 
     const serializedState = JSON.stringify(stateToSave);
-        localStorage.setItem('colorPaletteGenerator', serializedState);
-    } catch (err) {
-        console.warn('Error saving state:', err);
-    }
+    localStorage.setItem('colorPaletteGenerator', serializedState);
+  } catch (err) {
+    console.warn('Error saving state:', err);
+  }
 };
 
 // Middleware to persist state changes
@@ -49,22 +48,21 @@ const persistenceMiddleware = (store) => (next) => (action) => {
   const result = next(action);
 
   // Only persist certain actions to avoid excessive localStorage writes
-    const persistedActions = [
-        'palette/setPalette',
-        'palette/setBaseColor',
-        'palette/setHarmony',
-        'palette/updatePaletteColor',
-        'palette/toggleColorLock',
-        'settings/setDarkMode',
-        'settings/setTheme',
-        'settings/updateAccessibilitySettings',
-        'settings/updateExportSettings',
-        'settings/updateUISettings',
-        'settings/updateKeyboardSettings',
-    ];
+  const persistedActions = [
+    'palette/setPalette',
+    'palette/setBaseColor',
+    'palette/setHarmony',
+    'palette/updatePaletteColor',
+    'palette/toggleColorLock',
+    'settings/setDarkMode',
+    'settings/setTheme',
+    'settings/updateAccessibilitySettings',
+    'settings/updateExportSettings',
+    'settings/updateUISettings',
+    'settings/updateKeyboardSettings',
+  ];
 
   if (persistedActions.some((actionType) => action.type.includes(actionType.split('/')[1]))) {
-  ) {
     saveState(store.getState());
   }
 
@@ -74,38 +72,38 @@ const persistenceMiddleware = (store) => (next) => (action) => {
 // Error handling middleware
 const errorHandlingMiddleware = (store) => (next) => (action) => {
   try {
-        return next(action);
-    } catch (error) {
-        console.error('Redux action error:', error);
+    return next(action);
+  } catch (error) {
+    console.error('Redux action error:', error);
 
     // Dispatch error to UI state
     store.dispatch({
       type: 'ui/setError',
-            payload: {
-                message: 'An unexpected error occurred',
-                details: error.message,
-            }
+      payload: {
+        message: 'An unexpected error occurred',
+        details: error.message,
+      }
     });
 
     return { type: 'ERROR', error };
-    }
+  }
 };
 
 // Development middleware for logging
 const loggerMiddleware = (store) => (next) => (action) => {
   if (process.env.NODE_ENV === 'development') {
-        const prevState = store.getState();
-        const result = next(action);
-        const nextState = store.getState();
+    const prevState = store.getState();
+    const result = next(action);
+    const nextState = store.getState();
 
     console.group(`Action: ${action.type}`);
-        console.log('Previous State:', prevState);
-        console.log('Action:', action);
-        console.log('Next State:', nextState);
-        console.groupEnd();
+    console.log('Previous State:', prevState);
+    console.log('Action:', action);
+    console.log('Next State:', nextState);
+    console.groupEnd();
 
     return result;
-    }
+  }
 
   return next(action);
 };
@@ -113,32 +111,32 @@ const loggerMiddleware = (store) => (next) => (action) => {
 // Configure the store
 export const store = configureStore({
   reducer: {
-        palette: paletteReducer,
-        settings: settingsReducer,
-        ui: uiReducer,
-    },
+    palette: paletteReducer,
+    settings: settingsReducer,
+    ui: uiReducer,
+  },
 
   preloadedState: loadPersistedState(),
 
   middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: {
-                // Ignore these action types for Set serialization
-                ignoredActions: ['palette/toggleColorLock'],
-                // Ignore these field paths in the state
-                ignoredPaths: ['palette.lockedColors'],
-            }
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types for Set serialization
+        ignoredActions: ['palette/toggleColorLock'],
+        // Ignore these field paths in the state
+        ignoredPaths: ['palette.lockedColors'],
+      }
     }).concat(
-            persistenceMiddleware,
-            errorHandlingMiddleware,
-            ...(process.env.NODE_ENV === 'development' ? [loggerMiddleware] : []),
-        ),
+      persistenceMiddleware,
+      errorHandlingMiddleware,
+      ...(process.env.NODE_ENV === 'development' ? [loggerMiddleware] : []),
+    ),
 
   devTools: process.env.NODE_ENV !== 'production' && {
-        name: 'Color Palette Generator',
-        trace: true,
-        traceLimit: 25,
-    }
+    name: 'Color Palette Generator',
+    trace: true,
+    traceLimit: 25,
+  }
 });
 
 // Export helper functions for type inference (for future TypeScript migration)
@@ -159,17 +157,18 @@ export const initializeApp = () => (dispatch, getState) => {
   if (
     !state.palette.palette ||
     Object.keys(state.palette.palette).length === 0
+  ) {
     dispatch({ type: 'palette/resetPalette' });
-    }
+  }
 
   // Set up any initial configurations
-    dispatch({
-        type: 'ui/addNotification',
-        payload: {
-            type: 'success',
-            message: 'Color Palette Generator loaded successfully!',
-            duration: 2000,
-        }
+  dispatch({
+    type: 'ui/addNotification',
+    payload: {
+      type: 'success',
+      message: 'Color Palette Generator loaded successfully!',
+      duration: 2000,
+    }
   });
 };
 
