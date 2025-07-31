@@ -1,198 +1,190 @@
-// src/App.js
-import { useState, useEffect, Suspense, lazy } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setPrimaryColor,
-  setHarmony,
-  setPalette,
-  setIsDarkMode,
-  setUploadedImage,
-  setImageColors,
-} from './store/colorSlice';
-import ColorInput from './components/ColorInput';
-import Preview, {
-  elements,
-  getElementColor,
-  handleElementClick,
-} from './components/Preview';
-import HarmonySelector from './components/HarmonySelector';
-import ThemeToggle from './components/ThemeToggle';
-import Footer from './components/Footer';
-import {
-  generatePalette,
-  generateComplementaryPalette,
-  generateTriadicPalette,
-  generateAnalogousPalette,
-  generateSplitComplementaryPalette,
-  generateTetradicPalette,
-  generateMonochromaticPalette,
-  generateSquarePalette,
-  generateDoubleSplitComplementaryPalette,
-} from './utils/colorUtils';
-import { extractColors } from 'extract-colors';
-import './index.css';
-import { current } from '@reduxjs/toolkit';
+import React, { useState } from 'react';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+import { store } from './store';
+import Card from './components/ui/Card';
+import Button from './components/ui/Button';
+import ColorPicker from './components/ui/ColorPicker';
+import ColorGenerator from './components/features/ColorGenerator/ColorGenerator';
+import ImageUpload from './components/features/ImageUpload/ImageUpload';
+import PalettePreview from './components/features/PalettePreview/PalettePreview';
+import PaletteManager from './components/features/PaletteManager/PaletteManager';
+import AccessibilityChecker from './components/features/AccessibilityChecker/AccessibilityChecker';
+import ExportTools from './components/features/ExportTools/ExportTools';
+import PaletteLibrary from './components/features/PaletteLibrary/PaletteLibrary';
+import PaletteSharing from './components/features/PaletteSharing/PaletteSharing';
+import { useColorPalette } from './hooks/useColorPalette';
+import { useAccessibility } from './hooks/useAccessibility';
+import { useUrlSharing } from './hooks/useUrlSharing';
+import { selectPalette, selectPrimaryColor } from './store/slices/paletteSlice';
+import { selectTheme } from './store/slices/settingsSlice';
+import { selectNotifications, dismissNotification } from './store/slices/uiSlice';
 
-const PaletteManager = lazy(() => import('./components/PaletteManager'));
-const ImageUpload = lazy(() => import('./components/ImageUpload'));
-const ElementColorList = lazy(() => import('./components/ElementColorList'));
-const Toolbar = lazy(() => import('./components/Toolbar'));
+// Main Palette Generator Component
+const PaletteGeneratorApp = () => {
+    const dispatch = useDispatch();
+    const palette = useSelector(selectPalette);
+    const primaryColor = useSelector(selectPrimaryColor);
+    const theme = useSelector(selectTheme);
+    const notifications = useSelector(selectNotifications);
 
-function App() {
-  const dispatch = useDispatch();
-  const primaryColor = useSelector((state) => state.color.primaryColor);
-  const palette = useSelector((state) => state.color.palette);
-  const harmony = useSelector((state) => state.color.harmony);
-  const isDarkMode = useSelector((state) => state.color.isDarkMode);
-  const uploadedImage = useSelector((state) => state.color.uploadedImage);
-  const imageColors = useSelector((state) => state.color.imageColors);
+    const { generatePalette, isGenerating } = useColorPalette();
+    const { checkContrast } = useAccessibility();
+    useUrlSharing(); // Initialize URL sharing functionality
 
-  const handleReset = () => {
-    dispatch(setPrimaryColor('#336699'));
-    dispatch(setHarmony('default'));
-    dispatch(setUploadedImage(null));
-  };
+    const [activeTab, setActiveTab] = useState('generate'); // generate, upload, preview, manage
 
-  const handleImageUpload = async (imageData) => {
-    dispatch(setUploadedImage(imageData));
-    try {
-      const colors = await extractColors(imageData);
-      const primaryColor = colors[0].hex;
-      dispatch(setPrimaryColor(primaryColor));
-    } catch (error) {
-      console.error('Error extracting colors:', error);
-    }
-  };
+    // Tab configuration
+    const tabs = [
+        { id: 'generate', label: 'Generate', icon: '🎨', component: ColorGenerator },
+        { id: 'upload', label: 'Extract', icon: '📁', component: ImageUpload },
+        { id: 'preview', label: 'Preview', icon: '👁️', component: PalettePreview },
+        { id: 'manage', label: 'Manage', icon: '⚙️', component: PaletteManager },
+        { id: 'accessibility', label: 'A11y', icon: '♿', component: AccessibilityChecker },
+        { id: 'export', label: 'Export', icon: '📦', component: ExportTools },
+        { id: 'library', label: 'Library', icon: '📚', component: PaletteLibrary },
+        { id: 'share', label: 'Share', icon: '🔗', component: PaletteSharing }
+    ];
 
-  useEffect(() => {
-    let newPalette;
-    if (primaryColor) {
-      switch (harmony) {
-        case 'complementary':
-          newPalette = generateComplementaryPalette(primaryColor, isDarkMode);
-          break;
-        case 'triadic':
-          newPalette = generateTriadicPalette(primaryColor, isDarkMode);
-          break;
-        case 'analogous':
-          newPalette = generateAnalogousPalette(primaryColor, isDarkMode);
-          break;
-        case 'split-complementary':
-          newPalette = generateSplitComplementaryPalette(
-            primaryColor,
-            isDarkMode,
-          );
-          break;
-        case 'tetradic':
-          newPalette = generateTetradicPalette(primaryColor, isDarkMode);
-          break;
-        case 'monochromatic':
-          newPalette = generateMonochromaticPalette(primaryColor, isDarkMode);
-          break;
-        case 'square':
-          newPalette = generateSquarePalette(primaryColor, isDarkMode);
-          break;
-        case 'double-split complementary':
-          newPalette = generateDoubleSplitComplementaryPalette(
-            primaryColor,
-            isDarkMode,
-          );
-          break;
-        default:
-          newPalette = generatePalette(primaryColor, isDarkMode);
-      }
-    }
-    dispatch(setPalette(newPalette));
-  }, [primaryColor, harmony, isDarkMode, dispatch]);
+    const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;
 
-  return (
-    <div className="App">
-      {/* Header */}
-      <header className="app-header fade-in">
-        <h1 className="title">Color Palette Generator</h1>
-        <p className="subtitle">
-          Create beautiful, accessible color palettes for your design projects
-        </p>
-      </header>
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+            {/* Notifications */}
+            {notifications.length > 0 && (
+                <div className="fixed top-4 right-4 z-50 space-y-2">
+                    {notifications.map((notification) => (
+                        <div
+                            key={notification.id}
+                            className={`max-w-sm p-4 rounded-lg shadow-lg backdrop-blur-sm border transition-all duration-300 ${notification.type === 'success'
+                                ? 'bg-green-500/20 border-green-500/40 text-green-100'
+                                : notification.type === 'error'
+                                    ? 'bg-red-500/20 border-red-500/40 text-red-100'
+                                    : notification.type === 'warning'
+                                        ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-100'
+                                        : 'bg-blue-500/20 border-blue-500/40 text-blue-100'
+                                }`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium">{notification.message}</p>
+                                    {notification.details && (
+                                        <p className="text-xs opacity-80 mt-1">{notification.details}</p>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => dispatch(dismissNotification(notification.id))}
+                                    className="ml-3 text-current opacity-60 hover:opacity-100 transition-opacity"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-      {/* Left Sidebar - Controls */}
-      <aside className="app-sidebar">
-        <div className="glass-card slide-up">
-          <h2 className="section-header">Color Controls</h2>
-          <div className="space-y-4">
-            <ThemeToggle
-              isDarkMode={isDarkMode}
-              setIsDarkMode={(value) => dispatch(setIsDarkMode(value))}
-            />
-            <ColorInput
-              setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
-              primaryColor={primaryColor}
-            />
-            <ImageUpload onImageUpload={handleImageUpload} />
-          </div>
-        </div>
+            <div className="container mx-auto px-4 py-8">
+                {/* Header */}
+                <header className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-white mb-2">
+                        Color Palette Generator
+                    </h1>
+                    <p className="text-white/70">
+                        Create beautiful, accessible color palettes with AI-powered suggestions
+                    </p>
+                </header>
 
-        <div className="glass-card slide-up">
-          <HarmonySelector
-            currentHarmony={harmony}
-            setHarmony={(value) => dispatch(setHarmony(value))}
-          />
-        </div>
-
-        <Suspense fallback={<div className="glass-card animate-pulse">Loading...</div>}>
-          {palette && (
-            <div className="glass-card slide-up">
-              <PaletteManager
-                palette={palette}
-                updatePalette={setPalette}
-                setPrimaryColor={(value) => dispatch(setPrimaryColor(value))}
-              />
-            </div>
-          )}
-        </Suspense>
-      </aside>
-
-      {/* Main Preview Area */}
-      <main className="app-preview">
-        <div className="glass-card slide-up">
-          {palette && <Preview palette={palette} />}
-        </div>
-      </main>
-
-      {/* Right Sidebar - Tools */}
-      <aside className="app-tools">
-        {palette && (
-          <div className="glass-card slide-up">
-            <Suspense fallback={<div className="animate-pulse">Loading tools...</div>}>
-              <ElementColorList
-                elements={elements}
-                palette={palette}
-                colors={Object.fromEntries(
-                  Object.keys(elements).map((key) => [
-                    key,
-                    getElementColor(key, palette, {}),
-                  ]),
+                {/* Quick Palette Overview */}
+                {palette.colors && palette.colors.length > 0 && (
+                    <div className="mb-6">
+                        <Card title="Current Palette" className="overflow-hidden">
+                            <div className="flex h-16 -m-4">
+                                {palette.colors.map((color, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex-1 relative group cursor-pointer transition-all duration-200 hover:scale-105 hover:z-10"
+                                        style={{ backgroundColor: color }}
+                                        onClick={() => navigator.clipboard.writeText(color)}
+                                        title={`${color} - Click to copy`}
+                                    >
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <span className="text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">
+                                                Copy
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                    </div>
                 )}
-                onElementClick={(element) =>
-                  handleElementClick(element, setSelectedElement)
-                }
-              />
-            </Suspense>
-          </div>
-        )}
-      </aside>
 
-      {/* Floating Toolbar */}
-      <Suspense fallback={null}>
-        <Toolbar palette={palette} />
-      </Suspense>
+                {/* Tab Navigation */}
+                <div className="mb-6">
+                    <div className="flex justify-center">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-1 border border-white/20">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${activeTab === tab.id
+                                        ? 'bg-white/20 text-white shadow-lg'
+                                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                                        }`}
+                                >
+                                    <span>{tab.icon}</span>
+                                    <span className="hidden sm:inline">{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
 
-      {/* Footer */}
-      <footer className="app-footer">
-        <Footer />
-      </footer>
-    </div>
-  );
-}
+                {/* Main Content */}
+                <div className="max-w-4xl mx-auto">
+                    {ActiveComponent && <ActiveComponent />}
+                </div>
+
+                {/* Footer Stats */}
+                {palette.colors && palette.colors.length > 0 && (
+                    <footer className="mt-8 text-center">
+                        <Card className="inline-block">
+                            <div className="flex items-center gap-6 text-sm">
+                                <div className="text-white/70">
+                                    <span className="font-medium text-white">{palette.colors.length}</span> colors
+                                </div>
+                                <div className="text-white/70">
+                                    Harmony: <span className="font-medium text-white">{palette.harmonyType || 'Complementary'}</span>
+                                </div>
+                                {palette.colors.length > 1 && (
+                                    <div className="text-white/70">
+                                        Contrast: <span className="font-medium text-white">
+                                            {checkContrast(palette.colors[0], palette.colors[1]).toFixed(1)}:1
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="text-white/70">
+                                    Generated: <span className="font-medium text-white">
+                                        {new Date(palette.timestamp || Date.now()).toLocaleTimeString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </Card>
+                    </footer>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Main App component with Provider
+const App = () => {
+    return (
+        <Provider store={store}>
+            <PaletteGeneratorApp />
+        </Provider>
+    );
+};
 
 export default App;

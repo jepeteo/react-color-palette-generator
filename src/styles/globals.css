@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --bg-primary: #0f0f23;
+        --bg-secondary: #1a1a2e;
+        --bg-card: rgba(255, 255, 255, 0.05);
+        --bg-card-hover: rgba(255, 255, 255, 0.08);
+        --text-primary: #ffffff;
+        --text-secondary: #a0a0a0;
+        --text-accent: #6366f1;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --shadow-primary: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        @apply antialiased;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    * {
+        @apply transition-all duration-300 ease-out;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+}
+
+@layer components {
+
+    /* Glass Card Effects */
+    .glass-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        @apply rounded-2xl border border-white border-opacity-10 p-6;
+        box-shadow: var(--shadow-card);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-card:hover {
+        background: var(--bg-card-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Modern Inputs */
+    .modern-input {
+        @apply w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-3 py-2 text-white placeholder-white placeholder-opacity-40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 focus:border-blue-500 focus:border-opacity-50 transition-all duration-200;
+    }
+
+    /* Color Picker Specific */
+    .color-picker input[type="color"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+        border: none;
+        border-radius: inherit;
+    }
+
+    .color-picker input[type="color"]::-webkit-color-swatch {
+        border: none;
+        border-radius: inherit;
+    }
+
+    .color-picker input[type="color"]::-moz-color-swatch {
+        border: none;
+        border-radius: inherit;
+    }
+
+    /* Animations */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .slide-up {
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .scale-in {
+        animation: scaleIn 0.3s ease-out;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+        @apply animate-spin h-5 w-5 border-2 border-white border-opacity-30 border-t-white rounded-full;
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Status Indicators */
+    .status-excellent {
+        @apply bg-green-500 bg-opacity-20 text-green-400 border border-green-500 border-opacity-30;
+    }
+
+    .status-good {
+        @apply bg-yellow-500 bg-opacity-20 text-yellow-400 border border-yellow-500 border-opacity-30;
+    }
+
+    .status-fair {
+        @apply bg-orange-500 bg-opacity-20 text-orange-400 border border-orange-500 border-opacity-30;
+    }
+
+    .status-poor {
+        @apply bg-red-500 bg-opacity-20 text-red-400 border border-red-500 border-opacity-30;
+    }
+}
+
+@layer utilities {
+
+    /* Custom Utilities */
+    .bg-gradient-primary {
+        background: var(--gradient-primary);
+    }
+
+    .bg-gradient-accent {
+        background: var(--gradient-accent);
+    }
+
+    .shadow-glow {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .border-gradient {
+        border-image: var(--gradient-primary) 1;
+    }
+
+    /* Accessibility Helpers */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Focus Styles */
+    .focus-ring {
+        @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 focus:ring-offset-2 focus:ring-offset-transparent;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design Helpers */
+@media (max-width: 768px) {
+    .glass-card {
+        @apply p-4;
+    }
+
+    .modern-input {
+        @apply text-base;
+        /* Prevent zoom on iOS */
+    }
+}
+
+/* Dark Mode Overrides (if needed) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #1a1a1a;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .glass-card {
+        @apply border-2 border-white;
+    }
+
+    .modern-input {
+        @apply border-2 border-white;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
