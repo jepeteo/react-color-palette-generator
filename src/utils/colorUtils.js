@@ -310,4 +310,96 @@ export class ColorUtils {
             return { tints: [], shades: [], base: baseColor };
         }
     }
+
+    /**
+     * Convert hex color to HSL
+     */
+    static hexToHsl(hex) {
+        try {
+            const c = chroma(hex);
+            const [h, s, l] = c.hsl();
+            return {
+                h: isNaN(h) ? 0 : h,
+                s: isNaN(s) ? 0 : s * 100,
+                l: isNaN(l) ? 0 : l * 100
+            };
+        } catch (error) {
+            console.error('Error converting hex to HSL:', error);
+            return { h: 0, s: 0, l: 0 };
+        }
+    }
+
+    /**
+     * Convert hex color to RGB
+     */
+    static hexToRgb(hex) {
+        try {
+            const c = chroma(hex);
+            const [r, g, b] = c.rgb();
+            return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
+        } catch (error) {
+            console.error('Error converting hex to RGB:', error);
+            return { r: 0, g: 0, b: 0 };
+        }
+    }
+
+    /**
+     * Get luminance of a color (0-1)
+     */
+    static getLuminance(color) {
+        try {
+            return chroma(color).luminance();
+        } catch (error) {
+            console.error('Error getting luminance:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Check if a color is considered light
+     */
+    static isLightColor(color) {
+        try {
+            return this.getLuminance(color) > 0.5;
+        } catch (error) {
+            console.error('Error checking if color is light:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Convert RGB to hex
+     */
+    static rgbToHex({ r, g, b }) {
+        try {
+            return chroma.rgb(r, g, b).hex();
+        } catch (error) {
+            console.error('Error converting RGB to hex:', error);
+            return '#000000';
+        }
+    }
+
+    /**
+     * Convert HSL to hex
+     */
+    static hslToHex({ h, s, l }) {
+        try {
+            return chroma.hsl(h, s / 100, l / 100).hex();
+        } catch (error) {
+            console.error('Error converting HSL to hex:', error);
+            return '#000000';
+        }
+    }
+
+    /**
+     * Calculate contrast ratio between two colors
+     */
+    static getContrastRatio(color1, color2) {
+        try {
+            return chroma.contrast(color1, color2);
+        } catch (error) {
+            console.error('Error calculating contrast ratio:', error);
+            return 1;
+        }
+    }
 }
