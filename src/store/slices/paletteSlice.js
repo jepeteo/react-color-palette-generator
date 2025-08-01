@@ -94,29 +94,37 @@ const paletteSlice = createSlice({
 
             state.isGenerating = true;
 
-            // Generate random base color if not locked
-            if (!preserveLocked || !state.lockedColors.has(PALETTE_ROLES.PRIMARY)) {
-                state.baseColor = ColorUtils.generateRandomColor();
+            try {
+                // Generate random base color if not locked
+                if (!preserveLocked || !state.lockedColors.has(PALETTE_ROLES.PRIMARY)) {
+                    state.baseColor = ColorUtils.generateRandomColor();
+                }
+
+                // Generate new palette
+                const newPalette = ColorUtils.generateHarmony(
+                    state.baseColor,
+                    state.harmony,
+                    false, // TODO: Get isDarkMode from settings
+                );
+
+                // Preserve locked colors
+                if (preserveLocked) {
+                    Object.keys(newPalette).forEach((role) => {
+                        if (state.lockedColors.has(role)) {
+                            newPalette[role] = state.palette[role];
+                        }
+                    });
+                }
+
+                state.palette = {
+                    ...newPalette,
+                    timestamp: Date.now()
+                };
+            } catch (error) {
+                console.error('Error in randomizePalette:', error);
+            } finally {
+                state.isGenerating = false;
             }
-
-            // Generate new palette
-            const newPalette = ColorUtils.generateHarmony(
-                state.baseColor,
-                state.harmony,
-                false, // TODO: Get isDarkMode from settings
-            );
-
-            // Preserve locked colors
-            if (preserveLocked) {
-                Object.keys(newPalette).forEach((role) => {
-                    if (state.lockedColors.has(role)) {
-                        newPalette[role] = state.palette[role];
-                    }
-                });
-            }
-
-            state.palette = newPalette;
-            state.isGenerating = false;
         },
 
         undo: (state) => {

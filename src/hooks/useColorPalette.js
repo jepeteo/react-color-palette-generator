@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   selectPalette,
@@ -39,6 +39,13 @@ export const useColorPalette = () => {
   const canRedo = useSelector(selectCanRedo);
   const isGenerating = useSelector(selectIsGenerating);
   const isDarkMode = useSelector(selectIsDarkMode);
+
+  // Ensure isGenerating is reset on mount
+  useEffect(() => {
+    if (isGenerating) {
+      dispatch(setIsGenerating(false));
+    }
+  }, []); // Only run on mount
 
   // Generate new palette with current settings
   const generatePalette = useCallback(
