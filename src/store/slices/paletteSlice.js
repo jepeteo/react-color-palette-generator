@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { ColorUtils } from '../../utils/colorUtils';
 import { HARMONY_TYPES, PALETTE_ROLES } from '../../utils/constants';
 
@@ -18,7 +18,11 @@ const paletteSlice = createSlice({
     initialState,
     reducers: {
         setPalette: (state, action) => {
-            state.palette = action.payload;
+            const paletteWithTimestamp = {
+                ...action.payload,
+                timestamp: Date.now()
+            };
+            state.palette = paletteWithTimestamp;
 
             // Add to history if it's different from current
             if (
@@ -205,53 +209,55 @@ const paletteSlice = createSlice({
     }
 });
 
-// Selectors
-export const selectPalette = (state) => {
-    const palette = state.palette.palette;
+// Base selectors
+const selectPaletteState = (state) => state.palette.palette;
+const selectHarmonyState = (state) => state.palette.harmony;
 
-    // Convert object-based palette to array format for compatibility
-    if (palette && !palette.colors) {
-        const colors = [];
+// Memoized selectors
+export const selectPalette = createSelector(
+    [selectPaletteState, selectHarmonyState],
+    (palette, harmony) => {
+        if (!palette) return null;
 
-        // Extract colors in a consistent order
-        if (palette[PALETTE_ROLES.PRIMARY]) colors.push(palette[PALETTE_ROLES.PRIMARY]);
-        if (palette[PALETTE_ROLES.SECONDARY]) colors.push(palette[PALETTE_ROLES.SECONDARY]);
-        if (palette[PALETTE_ROLES.ACCENT]) colors.push(palette[PALETTE_ROLES.ACCENT]);
-        if (palette[PALETTE_ROLES.SURFACE]) colors.push(palette[PALETTE_ROLES.SURFACE]);
-        if (palette[PALETTE_ROLES.BACKGROUND]) colors.push(palette[PALETTE_ROLES.BACKGROUND]);
-        if (palette[PALETTE_ROLES.TEXT]) colors.push(palette[PALETTE_ROLES.TEXT]);
+        // Convert object-based palette to array format for compatibility
+        if (!palette.colors) {
+            const colors = [];
+
+            // Extract colors in a consistent order
+            if (palette[PALETTE_ROLES.PRIMARY]) colors.push(palette[PALETTE_ROLES.PRIMARY]);
+            if (palette[PALETTE_ROLES.SECONDARY]) colors.push(palette[PALETTE_ROLES.SECONDARY]);
+            if (palette[PALETTE_ROLES.ACCENT]) colors.push(palette[PALETTE_ROLES.ACCENT]);
+            if (palette[PALETTE_ROLES.SURFACE]) colors.push(palette[PALETTE_ROLES.SURFACE]);
+            if (palette[PALETTE_ROLES.BACKGROUND]) colors.push(palette[PALETTE_ROLES.BACKGROUND]);
+            if (palette[PALETTE_ROLES.TEXT]) colors.push(palette[PALETTE_ROLES.TEXT]);
+
+            return {
+                ...palette,
+                colors,
+                harmonyType: harmony,
+                harmony: harmony,
+                timestamp: palette.timestamp || Date.now()
+            };
+        }
 
         return {
             ...palette,
-            colors,
-            harmonyType: state.palette.harmony,
-            timestamp: Date.now()
+            harmonyType: harmony,
+            harmony: harmony,
+            timestamp: palette.timestamp || Date.now()
         };
     }
+);
 
-    return {
-        ...palette,
-        harmonyType: state.palette.harmony,
-        timestamp: Date.now()
-    };
-};
-export const selectBaseColor = (state) => state.palette.baseColor;
-export const selectPrimaryColor = (state) => state.palette.baseColor; // Alias for baseColor
-export const selectHarmony = (state) => state.palette.harmony;
-export const selectHarmonyType = (state) => state.palette.harmony; // Alias for harmony
-export const selectLockedColors = (state) => state.palette.lockedColors;
-export const selectCanUndo = (state) => state.palette.historyIndex > 0;
-export const selectCanRedo = (state) =>
-    state.palette.historyIndex < state.palette.history.length - 1;
-export const selectIsGenerating = (state) => state.palette.isGenerating;
-export const selectColorsArray = (state) => {
-    const palette = state.palette.palette;
+export const selectColorsArray = createSelector(
+    [selectPaletteState],
+    (palette) => {
+        if (!palette) return [];
 
-    if (palette && palette.colors && Array.isArray(palette.colors)) {
-        return palette.colors;
-    }
+        if (palette.colors && Array.isArray(palette.colors)) {
+            return palette.colors;
+        }
 
-    if (palette) {
         const colors = [];
         // Extract colors in a consistent order
         if (palette[PALETTE_ROLES.PRIMARY]) colors.push(palette[PALETTE_ROLES.PRIMARY]);
@@ -262,14 +268,22 @@ export const selectColorsArray = (state) => {
         if (palette[PALETTE_ROLES.TEXT]) colors.push(palette[PALETTE_ROLES.TEXT]);
         return colors;
     }
+);
 
-    return [];
-};
+export const selectColorCount = createSelector(
+    [selectColorsArray],
+    (colors) => colors.length
+);
 
-export const selectColorCount = (state) => {
-    const colors = selectColorsArray(state);
-    return colors.length;
-};
+export const selectBaseColor = (state) => state.palette.baseColor;
+export const selectPrimaryColor = (state) => state.palette.baseColor; // Alias for baseColor
+export const selectHarmony = (state) => state.palette.harmony;
+export const selectHarmonyType = (state) => state.palette.harmony; // Alias for harmony
+export const selectLockedColors = (state) => state.palette.lockedColors;
+export const selectCanUndo = (state) => state.palette.historyIndex > 0;
+export const selectCanRedo = (state) =>
+    state.palette.historyIndex < state.palette.history.length - 1;
+export const selectIsGenerating = (state) => state.palette.isGenerating;
 
 export const {
     setPalette,
