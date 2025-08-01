@@ -11,6 +11,7 @@ import {
   setPalette,
   setBaseColor,
   setHarmony,
+  setIsGenerating,
   updatePaletteColor,
   toggleColorLock,
   randomizePalette,
@@ -45,7 +46,7 @@ export const useColorPalette = () => {
       const colorToUse = newBaseColor || baseColor;
       const harmonyToUse = newHarmony || harmony;
 
-      dispatch({ type: 'palette/setIsGenerating', payload: true });
+      dispatch(setIsGenerating(true));
 
       try {
         const newPalette = ColorUtils.generateHarmony(
@@ -74,7 +75,7 @@ export const useColorPalette = () => {
       } catch (error) {
         console.error('Error generating palette:', error);
       } finally {
-        dispatch({ type: 'palette/setIsGenerating', payload: false });
+        dispatch(setIsGenerating(false));
       }
     },
     [dispatch, palette, baseColor, harmony, lockedColors, isDarkMode],
@@ -143,11 +144,11 @@ export const useColorPalette = () => {
   // Get all colors as an array for easy iteration
   const colorsArray = useMemo(
     () => Object.entries(palette).map(([role, color]) => ({
-        role,
-        color,
-        locked: lockedColors.has(role),
-        label: role.charAt(0).toUpperCase() + role.slice(1),
-      })),
+      role,
+      color,
+      locked: lockedColors.has(role),
+      label: role.charAt(0).toUpperCase() + role.slice(1),
+    })),
     [palette, lockedColors],
   );
 

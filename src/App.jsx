@@ -5,7 +5,7 @@ import Card from './components/ui/Card';
 import ColorGenerator from './components/features/ColorGenerator/ColorGenerator';
 import ImageUpload from './components/features/ImageUpload/ImageUpload';
 import PalettePreview from './components/features/PalettePreview/PalettePreview';
-// import PaletteManager from './components/features/PaletteManager/PaletteManager';
+import PaletteManager from './components/features/PaletteManager/PaletteManager';
 import AccessibilityChecker from './components/features/AccessibilityChecker/AccessibilityChecker';
 import ExportTools from './components/features/ExportTools/ExportTools';
 import ColorWheel from './components/features/ColorWheel/ColorWheel';
@@ -15,20 +15,21 @@ import ColorTrends from './components/features/ColorTrends/ColorTrends';
 import PaletteLibrary from './components/features/PaletteLibrary/PaletteLibrary';
 import GradientGenerator from './components/features/GradientGenerator/GradientGenerator';
 import AIColorAssistant from './components/features/AIColorAssistant/AIColorAssistant';
-// import PaletteSharing from './components/features/PaletteSharing/PaletteSharing';
+import PaletteSharing from './components/features/PaletteSharing/PaletteSharing';
 import { useColorPalette } from './hooks/useColorPalette';
-// import { useAccessibility } from './hooks/useAccessibility';
+import { useAccessibility } from './hooks/useAccessibility';
 // import { useUrlSharing } from './hooks/useUrlSharing';
-import { selectPalette } from './store/slices/paletteSlice';
+import { selectPalette, selectColorsArray } from './store/slices/paletteSlice';
 import { selectNotifications, dismissNotification } from './store/slices/uiSlice';
 
 // Main Palette Generator Component
 const PaletteGeneratorApp = () => {
     const dispatch = useDispatch();
     const palette = useSelector(selectPalette);
+    const colorsArray = useSelector(selectColorsArray);
     const notifications = useSelector(selectNotifications);
 
-    const { checkContrast } = useColorPalette();
+    const { checkContrast } = useAccessibility();
     // useUrlSharing(); // Initialize URL sharing functionality
 
     const [activeTab, setActiveTab] = useState('generate');
@@ -43,12 +44,12 @@ const PaletteGeneratorApp = () => {
         { id: 'gradients', label: 'Gradients', icon: '🌈', component: GradientGenerator },
         { id: 'designs', label: 'Designs', icon: '🎪', component: DesignPreview },
         { id: 'trends', label: 'Trends', icon: '📊', component: ColorTrends },
-        // { id: 'manage', label: 'Manage', icon: '⚙️', component: PaletteManager },
+        { id: 'manage', label: 'Manage', icon: '⚙️', component: PaletteManager },
         { id: 'ai', label: 'AI Assistant', icon: '🤖', component: AIColorAssistant },
         { id: 'accessibility', label: 'A11y', icon: '♿', component: AccessibilityChecker },
         { id: 'export', label: 'Export', icon: '📦', component: ExportTools },
         { id: 'library', label: 'Library', icon: '📚', component: PaletteLibrary },
-        // { id: 'share', label: 'Share', icon: '🔗', component: PaletteSharing }
+        { id: 'share', label: 'Share', icon: '🔗', component: PaletteSharing }
     ];
 
     return (
@@ -99,11 +100,11 @@ const PaletteGeneratorApp = () => {
                 </header>
 
                 {/* Quick Palette Overview */}
-                {palette.colors && palette.colors.length > 0 && (
+                {colorsArray && colorsArray.length > 0 && (
                     <div className="mb-6">
                         <Card title="Current Palette" className="overflow-hidden">
                             <div className="flex h-16 -m-4">
-                                {palette.colors.map((color, index) => (
+                                {colorsArray.map((color, index) => (
                                     <div
                                         key={index}
                                         className="flex-1 relative group cursor-pointer transition-all duration-200 hover:scale-105 hover:z-10"
@@ -153,7 +154,7 @@ const PaletteGeneratorApp = () => {
                             <div className="space-y-6">
                                 {activeTab === 'generate' && <ColorGenerator />}
                                 {activeTab === 'upload' && <ImageUpload />}
-                                {/* <PaletteManager /> */}
+                                <PaletteManager />
                             </div>
                             <div>
                                 <PalettePreview />
@@ -163,7 +164,13 @@ const PaletteGeneratorApp = () => {
                         // Other tabs: Full width
                         <div className="max-w-4xl mx-auto">
                             {activeTab === 'preview' && <PalettePreview />}
+                            {activeTab === 'picker' && <AdvancedColorPicker />}
+                            {activeTab === 'wheel' && <ColorWheel />}
+                            {activeTab === 'gradients' && <GradientGenerator />}
+                            {activeTab === 'designs' && <DesignPreview />}
+                            {activeTab === 'trends' && <ColorTrends />}
                             {activeTab === 'manage' && <PaletteManager />}
+                            {activeTab === 'ai' && <AIColorAssistant />}
                             {activeTab === 'accessibility' && <AccessibilityChecker />}
                             {activeTab === 'export' && <ExportTools />}
                             {activeTab === 'library' && <PaletteLibrary />}
@@ -173,20 +180,20 @@ const PaletteGeneratorApp = () => {
                 </div>
 
                 {/* Footer Stats */}
-                {palette.colors && palette.colors.length > 0 && (
+                {colorsArray && colorsArray.length > 0 && (
                     <footer className="mt-8 text-center">
                         <Card className="inline-block">
                             <div className="flex items-center gap-6 text-sm">
                                 <div className="text-white/70">
-                                    <span className="font-medium text-white">{palette.colors.length}</span> colors
+                                    <span className="font-medium text-white">{colorsArray.length}</span> colors
                                 </div>
                                 <div className="text-white/70">
-                                    Harmony: <span className="font-medium text-white">{palette.harmonyType || 'Complementary'}</span>
+                                    Harmony: <span className="font-medium text-white">{palette.harmony || 'Triadic'}</span>
                                 </div>
-                                {palette.colors.length > 1 && (
+                                {colorsArray && colorsArray.length > 1 && (
                                     <div className="text-white/70">
                                         Contrast: <span className="font-medium text-white">
-                                            {checkContrast(palette.colors[0], palette.colors[1]).toFixed(1)}:1
+                                            {checkContrast(colorsArray[0], colorsArray[1]).toFixed(1)}:1
                                         </span>
                                     </div>
                                 )}

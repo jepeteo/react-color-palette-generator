@@ -88,6 +88,8 @@ const paletteSlice = createSlice({
         randomizePalette: (state, action) => {
             const { preserveLocked = true } = action.payload || {};
 
+            state.isGenerating = true;
+
             // Generate random base color if not locked
             if (!preserveLocked || !state.lockedColors.has(PALETTE_ROLES.PRIMARY)) {
                 state.baseColor = ColorUtils.generateRandomColor();
@@ -110,6 +112,7 @@ const paletteSlice = createSlice({
             }
 
             state.palette = newPalette;
+            state.isGenerating = false;
         },
 
         undo: (state) => {
@@ -203,7 +206,35 @@ const paletteSlice = createSlice({
 });
 
 // Selectors
-export const selectPalette = (state) => state.palette.palette;
+export const selectPalette = (state) => {
+    const palette = state.palette.palette;
+
+    // Convert object-based palette to array format for compatibility
+    if (palette && !palette.colors) {
+        const colors = [];
+
+        // Extract colors in a consistent order
+        if (palette[PALETTE_ROLES.PRIMARY]) colors.push(palette[PALETTE_ROLES.PRIMARY]);
+        if (palette[PALETTE_ROLES.SECONDARY]) colors.push(palette[PALETTE_ROLES.SECONDARY]);
+        if (palette[PALETTE_ROLES.ACCENT]) colors.push(palette[PALETTE_ROLES.ACCENT]);
+        if (palette[PALETTE_ROLES.SURFACE]) colors.push(palette[PALETTE_ROLES.SURFACE]);
+        if (palette[PALETTE_ROLES.BACKGROUND]) colors.push(palette[PALETTE_ROLES.BACKGROUND]);
+        if (palette[PALETTE_ROLES.TEXT]) colors.push(palette[PALETTE_ROLES.TEXT]);
+
+        return {
+            ...palette,
+            colors,
+            harmonyType: state.palette.harmony,
+            timestamp: Date.now()
+        };
+    }
+
+    return {
+        ...palette,
+        harmonyType: state.palette.harmony,
+        timestamp: Date.now()
+    };
+};
 export const selectBaseColor = (state) => state.palette.baseColor;
 export const selectPrimaryColor = (state) => state.palette.baseColor; // Alias for baseColor
 export const selectHarmony = (state) => state.palette.harmony;
@@ -213,14 +244,31 @@ export const selectCanUndo = (state) => state.palette.historyIndex > 0;
 export const selectCanRedo = (state) =>
     state.palette.historyIndex < state.palette.history.length - 1;
 export const selectIsGenerating = (state) => state.palette.isGenerating;
-export const selectColorCount = (state) => {
-    const { palette } = state.palette;
-    if (!palette) return 0;
-    if (palette.colors && Array.isArray(palette.colors)) {
-        return palette.colors.length;
+export const selectColorsArray = (state) => {
+    const palette = state.palette.palette;
+
+    if (palette && palette.colors && Array.isArray(palette.colors)) {
+        return palette.colors;
     }
-    // Count non-empty color properties for object-based palettes
-    return Object.values(palette).filter((color) => color && typeof color === 'string').length;
+
+    if (palette) {
+        const colors = [];
+        // Extract colors in a consistent order
+        if (palette[PALETTE_ROLES.PRIMARY]) colors.push(palette[PALETTE_ROLES.PRIMARY]);
+        if (palette[PALETTE_ROLES.SECONDARY]) colors.push(palette[PALETTE_ROLES.SECONDARY]);
+        if (palette[PALETTE_ROLES.ACCENT]) colors.push(palette[PALETTE_ROLES.ACCENT]);
+        if (palette[PALETTE_ROLES.SURFACE]) colors.push(palette[PALETTE_ROLES.SURFACE]);
+        if (palette[PALETTE_ROLES.BACKGROUND]) colors.push(palette[PALETTE_ROLES.BACKGROUND]);
+        if (palette[PALETTE_ROLES.TEXT]) colors.push(palette[PALETTE_ROLES.TEXT]);
+        return colors;
+    }
+
+    return [];
+};
+
+export const selectColorCount = (state) => {
+    const colors = selectColorsArray(state);
+    return colors.length;
 };
 
 export const {

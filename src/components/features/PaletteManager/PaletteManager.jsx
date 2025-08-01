@@ -92,7 +92,7 @@ function PaletteManager() {
   const handleLockToggle = useCallback(
     (index) => {
       dispatch(toggleColorLock(index));
-      const isLocked = lockedColors.includes(index);
+      const isLocked = lockedColors.has(index);
       dispatch(addNotification({
         type: 'info',
         message: `Color ${index + 1} ${isLocked ? 'unlocked' : 'locked'}`,
@@ -194,7 +194,7 @@ function PaletteManager() {
         // Shuffle unlocked colors only
         const unlockedIndices = palette.colors
           .map((_, index) => index)
-          .filter((index) => !lockedColors.includes(index));
+          .filter((index) => !lockedColors.has(index));
 
         if (unlockedIndices.length > 1) {
           // Simple shuffle implementation
@@ -217,7 +217,7 @@ function PaletteManager() {
         // Sort by hue
         const sortedByHue = palette.colors
           .map((color, index) => ({ color, index, hue: ColorUtils.hexToHsl(color).h }))
-          .filter((item) => !lockedColors.includes(item.index))
+          .filter((item) => !lockedColors.has(item.index))
           .sort((a, b) => a.hue - b.hue);
 
         sortedByHue.forEach((item, newIndex) => {
@@ -237,7 +237,7 @@ function PaletteManager() {
         // Sort by lightness
         const sortedByLightness = palette.colors
           .map((color, index) => ({ color, index, lightness: ColorUtils.hexToHsl(color).l }))
-          .filter((item) => !lockedColors.includes(item.index))
+          .filter((item) => !lockedColors.has(item.index))
           .sort((a, b) => a.lightness - b.lightness);
 
         sortedByLightness.forEach((item, newIndex) => {
@@ -301,7 +301,7 @@ function PaletteManager() {
         <div className="grid grid-cols-1 gap-3">
           {palette.colors?.map((color, index) => {
             const colorInfo = getColorInfo(color);
-            const isLocked = lockedColors.includes(index);
+            const isLocked = lockedColors.has(index);
             const isDragging = draggedIndex === index;
             const isDragTarget = dragOverIndex === index;
             const isEditing = editingIndex === index;
