@@ -1,7 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { enableMapSet } from 'immer';
 import paletteReducer from './slices/paletteSlice';
 import settingsReducer from './slices/settingsSlice';
 import uiReducer from './slices/uiSlice';
+
+// Enable MapSet plugin for Immer to handle Set objects
+enableMapSet();
 
 // Load persisted state from localStorage
 const loadPersistedState = () => {
