@@ -29,8 +29,8 @@ const initialState = {
       randomize: 'ctrl+r',
       export: 'ctrl+e',
       save: 'ctrl+s',
-    }
-  }
+    },
+  },
 };
 
 const settingsSlice = createSlice({
@@ -78,7 +78,7 @@ const settingsSlice = createSlice({
       state.keyboard.shortcuts[actionName] = shortcut;
     },
 
-    resetSettings: (state) => initialState,
+    resetSettings: (_state) => initialState,
 
     importSettings: (state, action) => {
       const { settings } = action.payload;
@@ -96,7 +96,7 @@ const settingsSlice = createSlice({
         }
       });
     },
-  }
+  },
 });
 
 // Selectors

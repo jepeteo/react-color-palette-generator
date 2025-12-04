@@ -36,11 +36,11 @@ function Card({
   const hoverClasses = hoverable
     ? [
         'hover:bg-white/8',
-      'hover:border-white/20',
-      'hover:shadow-2xl',
-      'hover:transform',
-      'hover:-translate-y-1',
-    ]
+        'hover:border-white/20',
+        'hover:shadow-2xl',
+        'hover:transform',
+        'hover:-translate-y-1',
+      ]
     : [];
 
   const combinedClasses = [

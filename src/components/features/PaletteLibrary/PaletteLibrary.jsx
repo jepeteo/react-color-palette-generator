@@ -2,17 +2,13 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Card from '../../ui/Card';
 import Button from '../../ui/Button';
-import { useColorPalette } from '../../../hooks/useColorPalette';
 import {
   selectPalette,
   selectPrimaryColor,
   selectHarmonyType,
   setPalette,
 } from '../../../store/slices/paletteSlice';
-import {
-  addNotification,
-  setError,
-} from '../../../store/slices/uiSlice';
+import { addNotification, setError } from '../../../store/slices/uiSlice';
 
 /**
  * Comprehensive PaletteLibrary component for saving and managing color palettes
@@ -23,13 +19,10 @@ function PaletteLibrary() {
   const primaryColor = useSelector(selectPrimaryColor);
   const harmonyType = useSelector(selectHarmonyType);
 
-  const { generatePalette } = useColorPalette();
-
   const [savedPalettes, setSavedPalettes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [filterBy, setFilterBy] = useState('all');
-  const [isLoading, setIsLoading] = useState(false);
   const [editingPalette, setEditingPalette] = useState(null);
   const [newPaletteName, setNewPaletteName] = useState('');
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -49,165 +42,214 @@ function PaletteLibrary() {
       }
     } catch (error) {
       console.error('Error loading saved palettes:', error);
-      dispatch(setError({
-        message: 'Failed to load saved palettes',
-        details: error.message,
-      }));
+      dispatch(
+        setError({
+          message: 'Failed to load saved palettes',
+          details: error.message,
+        }),
+      );
     }
   }, [dispatch]);
 
   // Save palettes to localStorage
-  const savePalettesToStorage = useCallback((palettes) => {
-    try {
-      localStorage.setItem('colorPalettes', JSON.stringify(palettes));
-    } catch (error) {
-      console.error('Error saving palettes:', error);
-      dispatch(setError({
-        message: 'Failed to save palettes',
-        details: 'Local storage may be full or unavailable',
-      }));
-    }
-  }, [dispatch]);
+  const savePalettesToStorage = useCallback(
+    (palettes) => {
+      try {
+        localStorage.setItem('colorPalettes', JSON.stringify(palettes));
+      } catch (error) {
+        console.error('Error saving palettes:', error);
+        dispatch(
+          setError({
+            message: 'Failed to save palettes',
+            details: 'Local storage may be full or unavailable',
+          }),
+        );
+      }
+    },
+    [dispatch],
+  );
 
   // Save current palette
-  const saveCurrentPalette = useCallback((name) => {
-    if (!palette.colors || palette.colors.length === 0) {
-      dispatch(setError({
-        message: 'No palette to save',
-        details: 'Generate a color palette first',
-      }));
-      return;
-    }
-
-    if (!name || name.trim() === '') {
-      dispatch(setError({
-        message: 'Please enter a palette name',
-        details: 'A name is required to save the palette',
-      }));
-      return;
-    }
-
-    const newPalette = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      colors: [...palette.colors],
-      primaryColor,
-      harmonyType: harmonyType || 'complementary',
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-      tags: [harmonyType || 'complementary'],
-      metadata: {
-        colorCount: palette.colors.length,
-        dominantHue: getDominantHue(palette.colors),
-        averageLightness: getAverageLightness(palette.colors),
+  const saveCurrentPalette = useCallback(
+    (name) => {
+      if (!palette.colors || palette.colors.length === 0) {
+        dispatch(
+          setError({
+            message: 'No palette to save',
+            details: 'Generate a color palette first',
+          }),
+        );
+        return;
       }
-    };
 
-    const updatedPalettes = [newPalette, ...savedPalettes];
-    setSavedPalettes(updatedPalettes);
-    savePalettesToStorage(updatedPalettes);
+      if (!name || name.trim() === '') {
+        dispatch(
+          setError({
+            message: 'Please enter a palette name',
+            details: 'A name is required to save the palette',
+          }),
+        );
+        return;
+      }
 
-    dispatch(addNotification({
-      type: 'success',
-      message: `Palette "${name}" saved successfully`,
-      duration: 3000,
-    }));
+      const newPalette = {
+        id: Date.now().toString(),
+        name: name.trim(),
+        colors: [...palette.colors],
+        primaryColor,
+        harmonyType: harmonyType || 'complementary',
+        createdAt: new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+        tags: [harmonyType || 'complementary'],
+        metadata: {
+          colorCount: palette.colors.length,
+          dominantHue: getDominantHue(palette.colors),
+          averageLightness: getAverageLightness(palette.colors),
+        },
+      };
 
-    setShowSaveDialog(false);
-    setNewPaletteName('');
-  }, [palette, primaryColor, harmonyType, savedPalettes, savePalettesToStorage, dispatch]);
+      const updatedPalettes = [newPalette, ...savedPalettes];
+      setSavedPalettes(updatedPalettes);
+      savePalettesToStorage(updatedPalettes);
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          message: `Palette "${name}" saved successfully`,
+          duration: 3000,
+        }),
+      );
+
+      setShowSaveDialog(false);
+      setNewPaletteName('');
+    },
+    [
+      palette,
+      primaryColor,
+      harmonyType,
+      savedPalettes,
+      savePalettesToStorage,
+      dispatch,
+    ],
+  );
 
   // Load a saved palette
-  const loadPalette = useCallback((savedPalette) => {
-    try {
-      dispatch(setPalette({
-        colors: savedPalette.colors,
-        timestamp: Date.now(),
-      }));
+  const loadPalette = useCallback(
+    (savedPalette) => {
+      try {
+        dispatch(
+          setPalette({
+            colors: savedPalette.colors,
+            timestamp: Date.now(),
+          }),
+        );
 
-      dispatch(addNotification({
-        type: 'success',
-        message: `Loaded palette "${savedPalette.name}"`,
-        duration: 2000,
-      }));
-    } catch (error) {
-      console.error('Error loading palette:', error);
-      dispatch(setError({
-        message: 'Failed to load palette',
-        details: error.message,
-      }));
-    }
-  }, [dispatch]);
+        dispatch(
+          addNotification({
+            type: 'success',
+            message: `Loaded palette "${savedPalette.name}"`,
+            duration: 2000,
+          }),
+        );
+      } catch (error) {
+        console.error('Error loading palette:', error);
+        dispatch(
+          setError({
+            message: 'Failed to load palette',
+            details: error.message,
+          }),
+        );
+      }
+    },
+    [dispatch],
+  );
 
   // Delete a saved palette
-  const deletePalette = useCallback((paletteId) => {
-    const paletteToDelete = savedPalettes.find((p) => p.id === paletteId);
-    if (!paletteToDelete) return;
+  const deletePalette = useCallback(
+    (paletteId) => {
+      const paletteToDelete = savedPalettes.find((p) => p.id === paletteId);
+      if (!paletteToDelete) return;
 
-    const updatedPalettes = savedPalettes.filter((p) => p.id !== paletteId);
-    setSavedPalettes(updatedPalettes);
-    savePalettesToStorage(updatedPalettes);
+      const updatedPalettes = savedPalettes.filter((p) => p.id !== paletteId);
+      setSavedPalettes(updatedPalettes);
+      savePalettesToStorage(updatedPalettes);
 
-    dispatch(addNotification({
-      type: 'success',
-      message: `Deleted palette "${paletteToDelete.name}"`,
-      duration: 2000,
-    }));
-  }, [savedPalettes, savePalettesToStorage, dispatch]);
+      dispatch(
+        addNotification({
+          type: 'success',
+          message: `Deleted palette "${paletteToDelete.name}"`,
+          duration: 2000,
+        }),
+      );
+    },
+    [savedPalettes, savePalettesToStorage, dispatch],
+  );
 
   // Duplicate a palette
-  const duplicatePalette = useCallback((paletteId) => {
-    const originalPalette = savedPalettes.find((p) => p.id === paletteId);
-    if (!originalPalette) return;
+  const duplicatePalette = useCallback(
+    (paletteId) => {
+      const originalPalette = savedPalettes.find((p) => p.id === paletteId);
+      if (!originalPalette) return;
 
-    const duplicatedPalette = {
-      ...originalPalette,
-      id: Date.now().toString(),
-      name: `${originalPalette.name} (Copy)`,
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    };
+      const duplicatedPalette = {
+        ...originalPalette,
+        id: Date.now().toString(),
+        name: `${originalPalette.name} (Copy)`,
+        createdAt: new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+      };
 
-    const updatedPalettes = [duplicatedPalette, ...savedPalettes];
-    setSavedPalettes(updatedPalettes);
-    savePalettesToStorage(updatedPalettes);
+      const updatedPalettes = [duplicatedPalette, ...savedPalettes];
+      setSavedPalettes(updatedPalettes);
+      savePalettesToStorage(updatedPalettes);
 
-    dispatch(addNotification({
-      type: 'success',
-      message: `Duplicated palette "${originalPalette.name}"`,
-      duration: 2000,
-    }));
-  }, [savedPalettes, savePalettesToStorage, dispatch]);
+      dispatch(
+        addNotification({
+          type: 'success',
+          message: `Duplicated palette "${originalPalette.name}"`,
+          duration: 2000,
+        }),
+      );
+    },
+    [savedPalettes, savePalettesToStorage, dispatch],
+  );
 
   // Update palette name
-  const updatePaletteName = useCallback((paletteId, newName) => {
-    if (!newName || newName.trim() === '') return;
+  const updatePaletteName = useCallback(
+    (paletteId, newName) => {
+      if (!newName || newName.trim() === '') return;
 
-    const updatedPalettes = savedPalettes.map((p) =>
-      p.id === paletteId
-        ? { ...p, name: newName.trim(), modifiedAt: new Date().toISOString() }
-        : p
-    );
+      const updatedPalettes = savedPalettes.map((p) =>
+        p.id === paletteId
+          ? { ...p, name: newName.trim(), modifiedAt: new Date().toISOString() }
+          : p,
+      );
 
-    setSavedPalettes(updatedPalettes);
-    savePalettesToStorage(updatedPalettes);
-    setEditingPalette(null);
+      setSavedPalettes(updatedPalettes);
+      savePalettesToStorage(updatedPalettes);
+      setEditingPalette(null);
 
-    dispatch(addNotification({
-      type: 'success',
-      message: 'Palette name updated',
-      duration: 2000,
-    }));
-  }, [savedPalettes, savePalettesToStorage, dispatch]);
+      dispatch(
+        addNotification({
+          type: 'success',
+          message: 'Palette name updated',
+          duration: 2000,
+        }),
+      );
+    },
+    [savedPalettes, savePalettesToStorage, dispatch],
+  );
 
   // Export all palettes
   const exportAllPalettes = useCallback(() => {
     if (savedPalettes.length === 0) {
-      dispatch(addNotification({
-        type: 'warning',
-        message: 'No palettes to export',
-        duration: 2000,
-      }));
+      dispatch(
+        addNotification({
+          type: 'warning',
+          message: 'No palettes to export',
+          duration: 2000,
+        }),
+      );
       return;
     }
 
@@ -218,7 +260,9 @@ function PaletteLibrary() {
       palettes: savedPalettes,
     };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -228,56 +272,65 @@ function PaletteLibrary() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    dispatch(addNotification({
-      type: 'success',
-      message: `Exported ${savedPalettes.length} palettes`,
-      duration: 2000,
-    }));
+    dispatch(
+      addNotification({
+        type: 'success',
+        message: `Exported ${savedPalettes.length} palettes`,
+        duration: 2000,
+      }),
+    );
   }, [savedPalettes, dispatch]);
 
   // Import palettes
-  const importPalettes = useCallback((event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  const importPalettes = useCallback(
+    (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const importData = JSON.parse(e.target.result);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importData = JSON.parse(e.target.result);
 
-        if (!importData.palettes || !Array.isArray(importData.palettes)) {
-          throw new Error('Invalid file format');
+          if (!importData.palettes || !Array.isArray(importData.palettes)) {
+            throw new Error('Invalid file format');
+          }
+
+          const importedPalettes = importData.palettes.map((p) => ({
+            ...p,
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            name: `${p.name} (Imported)`,
+            createdAt: new Date().toISOString(),
+          }));
+
+          const updatedPalettes = [...importedPalettes, ...savedPalettes];
+          setSavedPalettes(updatedPalettes);
+          savePalettesToStorage(updatedPalettes);
+
+          dispatch(
+            addNotification({
+              type: 'success',
+              message: `Imported ${importedPalettes.length} palettes`,
+              duration: 3000,
+            }),
+          );
+        } catch (error) {
+          console.error('Import error:', error);
+          dispatch(
+            setError({
+              message: 'Failed to import palettes',
+              details: 'Please check the file format',
+            }),
+          );
         }
+      };
+      reader.readAsText(file);
 
-        const importedPalettes = importData.palettes.map((p) => ({
-          ...p,
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          name: `${p.name} (Imported)`,
-          createdAt: new Date().toISOString(),
-        }));
-
-        const updatedPalettes = [...importedPalettes, ...savedPalettes];
-        setSavedPalettes(updatedPalettes);
-        savePalettesToStorage(updatedPalettes);
-
-        dispatch(addNotification({
-          type: 'success',
-          message: `Imported ${importedPalettes.length} palettes`,
-          duration: 3000,
-        }));
-      } catch (error) {
-        console.error('Import error:', error);
-        dispatch(setError({
-          message: 'Failed to import palettes',
-          details: 'Please check the file format',
-        }));
-      }
-    };
-    reader.readAsText(file);
-
-    // Reset input
-    event.target.value = '';
-  }, [savedPalettes, savePalettesToStorage, dispatch]);
+      // Reset input
+      event.target.value = '';
+    },
+    [savedPalettes, savePalettesToStorage, dispatch],
+  );
 
   // Helper functions
   const getDominantHue = useCallback((colors) => {
@@ -303,7 +356,7 @@ function PaletteLibrary() {
       });
 
       return Math.round(hues.reduce((a, b) => a + b, 0) / hues.length);
-    } catch (error) {
+    } catch {
       return 0;
     }
   }, []);
@@ -318,8 +371,10 @@ function PaletteLibrary() {
         return (r + g + b) / 3;
       });
 
-      return Math.round(lightnesses.reduce((a, b) => a + b, 0) / lightnesses.length);
-    } catch (error) {
+      return Math.round(
+        lightnesses.reduce((a, b) => a + b, 0) / lightnesses.length,
+      );
+    } catch {
       return 128;
     }
   }, []);
@@ -333,8 +388,12 @@ function PaletteLibrary() {
       filtered = filtered.filter(
         (palette) =>
           palette.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          palette.harmonyType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          palette.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          palette.harmonyType
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          palette.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase()),
+          ),
       );
     }
 
@@ -369,12 +428,17 @@ function PaletteLibrary() {
   }, [savedPalettes]);
 
   return (
-    <Card title="Palette Library" subtitle="Save, organize, and manage your color palettes">
+    <Card
+      title="Palette Library"
+      subtitle="Save, organize, and manage your color palettes"
+    >
       <div className="space-y-6">
         {/* Save Current Palette */}
         <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-blue-400">Save Current Palette</h3>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-blue-400">
+              Save Current Palette
+            </h3>
           </div>
           <Button
             onClick={() => setShowSaveDialog(true)}
@@ -387,7 +451,7 @@ function PaletteLibrary() {
           </Button>
 
           {palette.colors && palette.colors.length > 0 ? (
-            <div className="flex h-12 rounded overflow-hidden mt-3">
+            <div className="mt-3 flex h-12 overflow-hidden rounded">
               {palette.colors.map((color, index) => (
                 <div
                   key={index}
@@ -398,7 +462,7 @@ function PaletteLibrary() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-4 text-blue-300/60">
+            <div className="py-4 text-center text-blue-300/60">
               <p>Generate a palette to save it</p>
             </div>
           )}
@@ -407,14 +471,14 @@ function PaletteLibrary() {
         {/* Save Dialog */}
         {showSaveDialog && (
           <div className="rounded-lg border border-white/20 bg-white/10 p-4">
-            <h4 className="text-white/90 font-medium mb-3">Save Palette</h4>
+            <h4 className="mb-3 font-medium text-white/90">Save Palette</h4>
             <div className="flex gap-3">
               <input
                 type="text"
                 placeholder="Enter palette name..."
                 value={newPaletteName}
                 onChange={(e) => setNewPaletteName(e.target.value)}
-                className="flex-1 bg-white/10 border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                className="flex-1 rounded border border-white/20 bg-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     saveCurrentPalette(newPaletteName);
@@ -451,32 +515,42 @@ function PaletteLibrary() {
         {savedPalettes.length > 0 && (
           <div className="space-y-4">
             {/* Search and Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
               <input
                 type="text"
                 placeholder="Search palettes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/10 border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                className="rounded border border-white/20 bg-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
 
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white/10 border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                className="rounded border border-white/20 bg-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               >
-                <option value="newest" className="bg-gray-800">Newest First</option>
-                <option value="oldest" className="bg-gray-800">Oldest First</option>
-                <option value="name" className="bg-gray-800">Name A-Z</option>
-                <option value="harmony" className="bg-gray-800">Harmony Type</option>
+                <option value="newest" className="bg-gray-800">
+                  Newest First
+                </option>
+                <option value="oldest" className="bg-gray-800">
+                  Oldest First
+                </option>
+                <option value="name" className="bg-gray-800">
+                  Name A-Z
+                </option>
+                <option value="harmony" className="bg-gray-800">
+                  Harmony Type
+                </option>
               </select>
 
               <select
                 value={filterBy}
                 onChange={(e) => setFilterBy(e.target.value)}
-                className="bg-white/10 border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                className="rounded border border-white/20 bg-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               >
-                <option value="all" className="bg-gray-800">All Harmonies</option>
+                <option value="all" className="bg-gray-800">
+                  All Harmonies
+                </option>
                 {availableHarmonyTypes.map((type) => (
                   <option key={type} value={type} className="bg-gray-800">
                     {type}
@@ -524,20 +598,22 @@ function PaletteLibrary() {
 
         {/* Saved Palettes Grid */}
         {filteredAndSortedPalettes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {filteredAndSortedPalettes.map((savedPalette) => (
               <div
                 key={savedPalette.id}
-                className="bg-white/5 border border-white/20 rounded-lg p-4 hover:bg-white/10 transition-colors"
+                className="rounded-lg border border-white/20 bg-white/5 p-4 transition-colors hover:bg-white/10"
               >
                 {/* Palette Header */}
-                <div className="flex items-center justify-between mb-3">
+                <div className="mb-3 flex items-center justify-between">
                   {editingPalette === savedPalette.id ? (
                     <input
                       type="text"
                       defaultValue={savedPalette.name}
-                      className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                      onBlur={(e) => updatePaletteName(savedPalette.id, e.target.value)}
+                      className="rounded border border-white/20 bg-white/10 px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      onBlur={(e) =>
+                        updatePaletteName(savedPalette.id, e.target.value)
+                      }
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           updatePaletteName(savedPalette.id, e.target.value);
@@ -549,7 +625,7 @@ function PaletteLibrary() {
                     />
                   ) : (
                     <h4
-                      className="font-medium text-white/90 cursor-pointer hover:text-white transition-colors"
+                      className="cursor-pointer font-medium text-white/90 transition-colors hover:text-white"
                       onClick={() => setEditingPalette(savedPalette.id)}
                       title="Click to edit name"
                     >
@@ -560,21 +636,21 @@ function PaletteLibrary() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => loadPalette(savedPalette)}
-                      className="p-1 rounded hover:bg-white/10 transition-colors text-white/60 hover:text-white/90"
+                      className="rounded p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white/90"
                       title="Load palette"
                     >
                       📂
                     </button>
                     <button
                       onClick={() => duplicatePalette(savedPalette.id)}
-                      className="p-1 rounded hover:bg-white/10 transition-colors text-white/60 hover:text-white/90"
+                      className="rounded p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white/90"
                       title="Duplicate palette"
                     >
                       📄
                     </button>
                     <button
                       onClick={() => deletePalette(savedPalette.id)}
-                      className="p-1 rounded hover:bg-red-500/20 transition-colors text-white/60 hover:text-red-400"
+                      className="rounded p-1 text-white/60 transition-colors hover:bg-red-500/20 hover:text-red-400"
                       title="Delete palette"
                     >
                       🗑️
@@ -590,7 +666,7 @@ function PaletteLibrary() {
                   {savedPalette.colors.map((color, index) => (
                     <div
                       key={index}
-                      className="flex-1 hover:scale-105 transition-transform"
+                      className="flex-1 transition-transform hover:scale-105"
                       style={{ backgroundColor: color }}
                       title={`${color} - Click to load palette`}
                     />
@@ -604,7 +680,10 @@ function PaletteLibrary() {
                     <span>{savedPalette.colors.length} colors</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Created: {new Date(savedPalette.createdAt).toLocaleDateString()}</span>
+                    <span>
+                      Created:{' '}
+                      {new Date(savedPalette.createdAt).toLocaleDateString()}
+                    </span>
                     {savedPalette.primaryColor && (
                       <span style={{ color: savedPalette.primaryColor }}>
                         ● Primary: {savedPalette.primaryColor}
@@ -616,17 +695,17 @@ function PaletteLibrary() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-white/60">
+          <div className="py-12 text-center text-white/60">
             {savedPalettes.length === 0 ? (
               <div>
-                <div className="text-6xl mb-4">🎨</div>
-                <p className="text-lg mb-2">No saved palettes yet</p>
+                <div className="mb-4 text-6xl">🎨</div>
+                <p className="mb-2 text-lg">No saved palettes yet</p>
                 <p>Create and save your first color palette to get started</p>
               </div>
             ) : (
               <div>
-                <div className="text-6xl mb-4">🔍</div>
-                <p className="text-lg mb-2">No palettes match your search</p>
+                <div className="mb-4 text-6xl">🔍</div>
+                <p className="mb-2 text-lg">No palettes match your search</p>
                 <p>Try adjusting your search or filter criteria</p>
               </div>
             )}
@@ -634,8 +713,10 @@ function PaletteLibrary() {
         )}
 
         {/* Tips */}
-        <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
-          <h5 className="text-sm font-medium text-purple-400 mb-1">💡 Library Tips</h5>
+        <div className="rounded-lg border border-purple-500/20 bg-purple-500/10 p-3">
+          <h5 className="mb-1 text-sm font-medium text-purple-400">
+            💡 Library Tips
+          </h5>
           <ul className="space-y-1 text-xs text-purple-300/80">
             <li>• Click on palette names to edit them</li>
             <li>• Click on color swatches to load a palette</li>

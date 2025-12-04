@@ -235,16 +235,21 @@ const uiSlice = createSlice({
 // Selectors
 export const selectIsLibraryOpen = (state) => state.ui.isLibraryOpen;
 export const selectIsExportModalOpen = (state) => state.ui.isExportModalOpen;
-export const selectIsSettingsModalOpen = (state) => state.ui.isSettingsModalOpen;
-export const selectIsImageUploadModalOpen = (state) => state.ui.isImageUploadModalOpen;
-export const selectIsAccessibilityPanelOpen = (state) => state.ui.isAccessibilityPanelOpen;
+export const selectIsSettingsModalOpen = (state) =>
+  state.ui.isSettingsModalOpen;
+export const selectIsImageUploadModalOpen = (state) =>
+  state.ui.isImageUploadModalOpen;
+export const selectIsAccessibilityPanelOpen = (state) =>
+  state.ui.isAccessibilityPanelOpen;
 export const selectShowModal = (state) => state.ui.showModal;
 export const selectSelectedElement = (state) => state.ui.selectedElement;
-export const selectSelectedPaletteRole = (state) => state.ui.selectedPaletteRole;
+export const selectSelectedPaletteRole = (state) =>
+  state.ui.selectedPaletteRole;
 export const selectSelectedColor = (state) => state.ui.selectedColor;
 export const selectShowColorPicker = (state) => state.ui.showColorPicker;
 export const selectUploadedImage = (state) => state.ui.uploadedImage;
-export const selectImageExtractionProgress = (state) => state.ui.imageExtractionProgress;
+export const selectImageExtractionProgress = (state) =>
+  state.ui.imageExtractionProgress;
 export const selectIsExtractingColors = (state) => state.ui.isExtractingColors;
 export const selectIsLoading = (state) => state.ui.isLoading;
 export const selectLoadingMessage = (state) => state.ui.loadingMessage;

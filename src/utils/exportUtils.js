@@ -13,14 +13,14 @@ export class ExportUtils {
       prefix = '--color',
       includeRoot = true,
       minify = false,
-        } = options;
+    } = options;
 
     const properties = Object.entries(palette).map(([key, value]) => {
-        const property = useVariables
-          ? `${prefix}-${key}: ${value};`
-          : `.${key} { color: ${value}; }`;
+      const property = useVariables
+        ? `${prefix}-${key}: ${value};`
+        : `.${key} { color: ${value}; }`;
       return minify ? property : `  ${property}`;
-      });
+    });
 
     if (useVariables && includeRoot) {
       const content = properties.join(minify ? '' : '\n');
@@ -37,7 +37,8 @@ export class ExportUtils {
     const { prefix = 'color', minify = false } = options;
 
     const variables = Object.entries(palette).map(
-      .map(([key, value]) => `$${prefix}-${key}: ${value};`);
+      ([key, value]) => `$${prefix}-${key}: ${value};`,
+    );
 
     return variables.join(minify ? '' : '\n');
   }
@@ -49,7 +50,8 @@ export class ExportUtils {
     const { prefix = 'color', minify = false } = options;
 
     const variables = Object.entries(palette).map(
-      .map(([key, value]) => `@${prefix}-${key}: ${value};`);
+      ([key, value]) => `@${prefix}-${key}: ${value};`,
+    );
 
     return variables.join(minify ? '' : '\n');
   }
@@ -65,7 +67,7 @@ export class ExportUtils {
         version: '1.0',
         generator: 'Color Palette Generator',
         ...metadata,
-            },
+      },
     };
 
     return JSON.stringify(exportData, null, 2);
@@ -86,8 +88,8 @@ export class ExportUtils {
       theme: {
         extend: {
           [configKey]: colors,
-                },
-      }
+        },
+      },
     };
 
     return `module.exports = ${JSON.stringify(config, null, minify ? 0 : 2)};`;
@@ -97,7 +99,11 @@ export class ExportUtils {
    * Export palette as JavaScript object
    */
   static exportAsJS(palette, options = {}) {
-    const { exportType = 'const', variableName = 'colorPalette', minify = false } = options;
+    const {
+      exportType = 'const',
+      variableName = 'colorPalette',
+      minify = false,
+    } = options;
 
     const jsonString = JSON.stringify(palette, null, minify ? 0 : 2);
     return `${exportType} ${variableName} = ${jsonString};`;
@@ -113,12 +119,12 @@ export class ExportUtils {
       name,
       color,
       type: 'color',
-        }));
+    }));
 
     return {
       version: '1.0',
       swatches,
-        };
+    };
   }
 
   /**
@@ -170,7 +176,7 @@ export class ExportUtils {
       blob: new Blob([content], { type: mimeType }),
       filename,
       content,
-        };
+    };
   }
 
   /**
@@ -178,7 +184,11 @@ export class ExportUtils {
    */
   static downloadPalette(palette, format = EXPORT_FORMATS.JSON, options = {}) {
     try {
-      const { blob, filename } = this.generateDownloadBlob(palette, format, options);
+      const { blob, filename } = this.generateDownloadBlob(
+        palette,
+        format,
+        options,
+      );
 
       // Create download link
       const url = URL.createObjectURL(blob);
@@ -208,28 +218,29 @@ export class ExportUtils {
     palette,
     format = EXPORT_FORMATS.JSON,
     options = {},
+  ) {
     try {
-            const { content } = this.generateDownloadBlob(palette, format, options);
+      const { content } = this.generateDownloadBlob(palette, format, options);
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
-                await navigator.clipboard.writeText(content);
-                return true;
-            }
+        await navigator.clipboard.writeText(content);
+        return true;
+      }
       // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = content;
-                textArea.style.position = 'fixed';
+      const textArea = document.createElement('textarea');
+      textArea.value = content;
+      textArea.style.position = 'fixed';
       textArea.style.opacity = '0';
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
-                document.body.removeChild(textArea);
-                return true;
+      document.body.removeChild(textArea);
+      return true;
     } catch (error) {
       console.error('Error copying to clipboard:', error);
-            return false;
-        }
+      return false;
     }
+  }
 
   /**
    * Generate shareable URL with palette data
@@ -282,31 +293,31 @@ export class ExportUtils {
         label: 'CSS Custom Properties',
         description: 'CSS variables for use in web projects',
         extension: '.css',
-            },
+      },
       {
         value: EXPORT_FORMATS.SCSS,
         label: 'SCSS Variables',
         description: 'Sass variables for SCSS projects',
         extension: '.scss',
-            },
+      },
       {
         value: EXPORT_FORMATS.LESS,
         label: 'LESS Variables',
         description: 'LESS variables for LESS projects',
         extension: '.less',
-            },
+      },
       {
         value: EXPORT_FORMATS.JSON,
         label: 'JSON Data',
         description: 'JSON format for programmatic use',
         extension: '.json',
-            },
+      },
       {
         value: EXPORT_FORMATS.TAILWIND,
         label: 'Tailwind Config',
         description: 'Tailwind CSS configuration file',
         extension: '.js',
       },
-        ];
+    ];
   }
 }

@@ -35,96 +35,113 @@ function ImageUpload() {
   const [imagePreview, setImagePreview] = useState(null);
 
   // Handle file selection
-  const handleFileSelect = useCallback(async (file) => {
-    if (!file || !file.type.startsWith('image/')) {
-      dispatch(setError({
-        message: 'Please select a valid image file',
-        details: 'Supported formats: JPG, PNG, GIF, WebP',
-      }));
-      return;
-    }
-
-    // Check file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      dispatch(setError({
-        message: 'Image file is too large',
-        details: 'Please select an image smaller than 10MB',
-      }));
-      return;
-    }
-
-    try {
-      dispatch(setIsExtractingColors(true));
-      dispatch(setImageExtractionProgress(0));
-
-      // Create image preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-        dispatch(setUploadedImage({
-          file,
-          preview: e.target.result,
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          timestamp: Date.now(),
-        }));
-      };
-      reader.readAsDataURL(file);
-
-      // Simulate progress for UX
-      const progressInterval = setInterval(() => {
-        dispatch(setImageExtractionProgress((prev) => {
-          const newProgress = Math.min(prev + 10, 90);
-          if (newProgress >= 90) {
-            clearInterval(progressInterval);
-          }
-          return newProgress;
-        }));
-      }, 200);
-
-      // Extract colors
-      const colors = await extractColors(file, {
-        pixels: 64000, // Reduce for performance
-        distance: 0.22,
-        splitPower: 10,
-        colorValidator: (red, green, blue, alpha = 255) => alpha > 128,
-        saturationDistance: 0.2,
-        lightnessDistance: 0.2,
-        hueDistance: 0.083333333,
-      });
-
-      clearInterval(progressInterval);
-      dispatch(setImageExtractionProgress(100));
-
-      if (colors && colors.length > 0) {
-        setExtractedColors(colors);
-
-        // Automatically set the most prominent color as primary
-        const primaryColor = colors[0].hex;
-        generatePalette(primaryColor);
-
-        dispatch(addNotification({
-          type: 'success',
-          message: `Extracted ${colors.length} colors from image`,
-          duration: 3000,
-        }));
-      } else {
-        dispatch(setError({
-          message: 'Could not extract colors from image',
-          details: 'Try an image with more distinct colors',
-        }));
+  const handleFileSelect = useCallback(
+    async (file) => {
+      if (!file || !file.type.startsWith('image/')) {
+        dispatch(
+          setError({
+            message: 'Please select a valid image file',
+            details: 'Supported formats: JPG, PNG, GIF, WebP',
+          }),
+        );
+        return;
       }
-    } catch (error) {
-      console.error('Error extracting colors:', error);
-      dispatch(setError({
-        message: 'Failed to process image',
-        details: error.message,
-      }));
-    } finally {
-      dispatch(setIsExtractingColors(false));
-    }
-  }, [dispatch, generatePalette]);
+
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        dispatch(
+          setError({
+            message: 'Image file is too large',
+            details: 'Please select an image smaller than 10MB',
+          }),
+        );
+        return;
+      }
+
+      try {
+        dispatch(setIsExtractingColors(true));
+        dispatch(setImageExtractionProgress(0));
+
+        // Create image preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImagePreview(e.target.result);
+          dispatch(
+            setUploadedImage({
+              file,
+              preview: e.target.result,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              timestamp: Date.now(),
+            }),
+          );
+        };
+        reader.readAsDataURL(file);
+
+        // Simulate progress for UX
+        const progressInterval = setInterval(() => {
+          dispatch(
+            setImageExtractionProgress((prev) => {
+              const newProgress = Math.min(prev + 10, 90);
+              if (newProgress >= 90) {
+                clearInterval(progressInterval);
+              }
+              return newProgress;
+            }),
+          );
+        }, 200);
+
+        // Extract colors
+        const colors = await extractColors(file, {
+          pixels: 64000, // Reduce for performance
+          distance: 0.22,
+          splitPower: 10,
+          colorValidator: (red, green, blue, alpha = 255) => alpha > 128,
+          saturationDistance: 0.2,
+          lightnessDistance: 0.2,
+          hueDistance: 0.083333333,
+        });
+
+        clearInterval(progressInterval);
+        dispatch(setImageExtractionProgress(100));
+
+        if (colors && colors.length > 0) {
+          setExtractedColors(colors);
+
+          // Automatically set the most prominent color as primary
+          const primaryColor = colors[0].hex;
+          generatePalette(primaryColor);
+
+          dispatch(
+            addNotification({
+              type: 'success',
+              message: `Extracted ${colors.length} colors from image`,
+              duration: 3000,
+            }),
+          );
+        } else {
+          dispatch(
+            setError({
+              message: 'Could not extract colors from image',
+              details: 'Try an image with more distinct colors',
+            }),
+          );
+        }
+      } catch (error) {
+        console.error('Error extracting colors:', error);
+        dispatch(
+          setError({
+            message: 'Failed to process image',
+            details: error.message,
+          }),
+        );
+      } finally {
+        dispatch(setIsExtractingColors(false));
+      }
+    },
+    [dispatch, generatePalette],
+  );
 
   // Handle file input change
   const handleFileChange = useCallback(
@@ -148,16 +165,17 @@ function ImageUpload() {
     }
   }, []);
 
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
 
-    const { files } = e.dataTransfer;
-    if (files && files[0]) {
-      handleFileSelect(files[0]);
-    }
-  },
+      const { files } = e.dataTransfer;
+      if (files && files[0]) {
+        handleFileSelect(files[0]);
+      }
+    },
     [handleFileSelect],
   );
 
@@ -172,24 +190,27 @@ function ImageUpload() {
       fileInputRef.current.value = '';
     }
 
-    dispatch(addNotification({
-      type: 'info',
-      message: 'Image cleared',
-      duration: 2000,
-    }));
-  }, [dispatch]);
-
-  // Use specific extracted color
-  const useExtractedColor = useCallback((color) => {
-    generatePalette(color.hex);
     dispatch(
       addNotification({
-        type: 'success',
-        message: `Applied color ${color.hex}`,
+        type: 'info',
+        message: 'Image cleared',
         duration: 2000,
       }),
     );
-  },
+  }, [dispatch]);
+
+  // Apply specific extracted color
+  const applyExtractedColor = useCallback(
+    (color) => {
+      generatePalette(color.hex);
+      dispatch(
+        addNotification({
+          type: 'success',
+          message: `Applied color ${color.hex}`,
+          duration: 2000,
+        }),
+      );
+    },
     [generatePalette, dispatch],
   );
 
@@ -199,14 +220,18 @@ function ImageUpload() {
   }, []);
 
   return (
-    <Card title="Image Color Extraction" subtitle="Extract colors from inspiration images">
+    <Card
+      title="Image Color Extraction"
+      subtitle="Extract colors from inspiration images"
+    >
       <div className="space-y-4">
         {/* Upload Area */}
         <div
-          className={`relative border-2 border-dashed rounded-lg p-6 transition-all duration-200 cursor-pointer ${dragActive
+          className={`relative cursor-pointer rounded-lg border-2 border-dashed p-6 transition-all duration-200 ${
+            dragActive
               ? 'border-blue-500 bg-blue-500/10'
               : 'border-white/20 hover:border-white/40 hover:bg-white/5'
-            } ${isExtracting ? 'pointer-events-none opacity-50' : ''}`}
+          } ${isExtracting ? 'pointer-events-none opacity-50' : ''}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
@@ -227,14 +252,13 @@ function ImageUpload() {
               <div className="space-y-2">
                 <div className="text-2xl">⏳</div>
                 <p className="text-white/80">Extracting colors...</p>
-                <div className="w-full bg-white/10 rounded-full h-2">
+                <div className="h-2 w-full rounded-full bg-white/10">
                   <div
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    className="h-2 rounded-full bg-blue-500 transition-all duration-300"
                     style={{ width: `${extractionProgress}%` }}
                   />
                 </div>
-                <p className="text-xs text-white/60">
-                  {extractionProgress}%</p>
+                <p className="text-xs text-white/60">{extractionProgress}%</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -254,23 +278,23 @@ function ImageUpload() {
 
         {/* Image Preview */}
         {imagePreview && (
-          <div className="relative group">
+          <div className="group relative">
             <img
               src={imagePreview}
               alt="Uploaded preview"
-              className="w-full h-32 object-cover rounded-lg"
+              className="h-32 w-full rounded-lg object-cover"
             />
             <Button
               onClick={clearImage}
               variant="danger"
               size="sm"
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
               icon={<span>✕</span>}
             >
               Remove
             </Button>
             {uploadedImage && (
-              <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm rounded px-2 py-1">
+              <div className="absolute bottom-2 left-2 rounded bg-black/50 px-2 py-1 backdrop-blur-sm">
                 <p className="text-xs text-white">{uploadedImage.name}</p>
                 <p className="text-xs text-white/60">
                   {(uploadedImage.size / 1024 / 1024).toFixed(1)}
@@ -285,20 +309,19 @@ function ImageUpload() {
         {extractedColors.length > 0 && (
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-white/90">
-              Extracted Colors (
-              {extractedColors.length})
+              Extracted Colors ({extractedColors.length})
             </h4>
             <div className="grid grid-cols-6 gap-2">
               {extractedColors.slice(0, 12).map((color, index) => (
                 <button
                   key={index}
-                  onClick={() => useExtractedColor(color)}
-                  className="group relative aspect-square rounded-lg overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-200 hover:scale-105"
+                  onClick={() => applyExtractedColor(color)}
+                  className="group relative aspect-square overflow-hidden rounded-lg border border-white/20 transition-all duration-200 hover:scale-105 hover:border-white/40"
                   style={{ backgroundColor: color.hex }}
                   title={`${color.hex} (${Math.round(color.area * 100)}% of image)`}
                 >
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-                    <span className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/20">
+                    <span className="text-xs text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                       Use
                     </span>
                   </div>
@@ -307,7 +330,7 @@ function ImageUpload() {
             </div>
 
             {/* Color Details */}
-            <div className="text-xs text-white/60 space-y-1">
+            <div className="space-y-1 text-xs text-white/60">
               <p>
                 Primary color:{' '}
                 <span className="font-mono">{extractedColors[0]?.hex}</span>
@@ -318,7 +341,7 @@ function ImageUpload() {
             {/* Actions */}
             <div className="flex gap-2">
               <Button
-                onClick={() => useExtractedColor(extractedColors[0])}
+                onClick={() => applyExtractedColor(extractedColors[0])}
                 variant="primary"
                 size="sm"
                 icon={<span>🎨</span>}
@@ -338,8 +361,8 @@ function ImageUpload() {
         )}
 
         {/* Tips */}
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-          <h5 className="text-sm font-medium text-blue-400 mb-1">💡 Tips</h5>
+        <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-3">
+          <h5 className="mb-1 text-sm font-medium text-blue-400">💡 Tips</h5>
           <ul className="space-y-1 text-xs text-blue-300/80">
             <li>• Use high-contrast images for better color extraction</li>
             <li>• The most prominent color will be automatically selected</li>

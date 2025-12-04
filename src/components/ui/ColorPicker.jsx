@@ -24,31 +24,33 @@ function ColorPicker({
   const textInputRef = useRef(null);
 
   // Handle color input change
-  const handleColorChange = useCallback((event) => {
-    const newColor = event.target.value;
-    setInputValue(newColor);
-    setIsValid(true);
+  const handleColorChange = useCallback(
+    (event) => {
+      const newColor = event.target.value;
+      setInputValue(newColor);
+      setIsValid(true);
 
-    if (onChange) {
-      onChange(newColor);
-    }
-  },
+      if (onChange) {
+        onChange(newColor);
+      }
+    },
     [onChange],
   );
 
   // Handle text input change with validation
-  const handleTextChange = useCallback((event) => {
-    const newValue = event.target.value;
-    setInputValue(newValue);
+  const handleTextChange = useCallback(
+    (event) => {
+      const newValue = event.target.value;
+      setInputValue(newValue);
 
-    // Validate color format
-    const valid = ColorUtils.isValidColor(newValue);
-    setIsValid(valid);
+      // Validate color format
+      const valid = ColorUtils.isValidColor(newValue);
+      setIsValid(valid);
 
-    if (valid && onChange) {
-      onChange(newValue);
-    }
-  },
+      if (valid && onChange) {
+        onChange(newValue);
+      }
+    },
     [onChange],
   );
 
@@ -90,7 +92,7 @@ function ColorPicker({
       picker: 'w-16 h-16',
       text: 'text-base px-4 py-3',
       lock: 'w-10 h-10 text-base',
-    }
+    },
   };
 
   const sizeClasses = sizes[size] || sizes.md;
@@ -117,7 +119,9 @@ function ColorPicker({
     'focus:ring-2',
     'focus:ring-blue-500/50',
     'focus:border-blue-500/50',
-    ...(disabled ? ['opacity-50', 'cursor-not-allowed', 'hover:scale-100'] : []),
+    ...(disabled
+      ? ['opacity-50', 'cursor-not-allowed', 'hover:scale-100']
+      : []),
     ...(locked ? ['ring-2', 'ring-yellow-400/50'] : []),
   ].join(' ');
 
@@ -158,13 +162,15 @@ function ColorPicker({
     'focus:outline-none',
     'focus:ring-2',
     'focus:ring-blue-500/50',
-    ...(locked ? ['bg-yellow-400/20', 'border-yellow-400/50', 'text-yellow-400'] : []),
+    ...(locked
+      ? ['bg-yellow-400/20', 'border-yellow-400/50', 'text-yellow-400']
+      : []),
   ].join(' ');
 
   return (
     <div className={containerClasses}>
       {label && (
-        <label className="block text-sm font-medium text-white/80 mb-1">
+        <label className="mb-1 block text-sm font-medium text-white/80">
           {label}
           {locked && <span className="ml-1 text-yellow-400">🔒</span>}
         </label>
@@ -184,8 +190,8 @@ function ColorPicker({
             {...props}
           />
           {locked && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-xl pointer-events-none">
-              <span className="text-yellow-400 text-lg">🔒</span>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/20">
+              <span className="text-lg text-yellow-400">🔒</span>
             </div>
           )}
         </div>
@@ -207,9 +213,7 @@ function ColorPicker({
               maxLength={7}
             />
             {!isValid && (
-              <p className="mt-1 text-xs text-red-400">
-                Invalid color format
-              </p>
+              <p className="mt-1 text-xs text-red-400">Invalid color format</p>
             )}
           </div>
         )}
@@ -222,7 +226,11 @@ function ColorPicker({
             disabled={disabled}
             className={lockButtonClasses}
             aria-label={locked ? 'Unlock color' : 'Lock color'}
-            title={locked ? 'Click to unlock this color' : 'Click to lock this color during randomization'}
+            title={
+              locked
+                ? 'Click to unlock this color'
+                : 'Click to lock this color during randomization'
+            }
           >
             {locked ? '🔒' : '🔓'}
           </button>

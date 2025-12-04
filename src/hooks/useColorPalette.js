@@ -150,12 +150,13 @@ export const useColorPalette = () => {
 
   // Get all colors as an array for easy iteration
   const colorsArray = useMemo(
-    () => Object.entries(palette).map(([role, color]) => ({
-      role,
-      color,
-      locked: lockedColors.has(role),
-      label: role.charAt(0).toUpperCase() + role.slice(1),
-    })),
+    () =>
+      Object.entries(palette).map(([role, color]) => ({
+        role,
+        color,
+        locked: lockedColors.has(role),
+        label: role.charAt(0).toUpperCase() + role.slice(1),
+      })),
     [palette, lockedColors],
   );
 

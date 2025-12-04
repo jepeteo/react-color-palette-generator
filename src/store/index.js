@@ -18,7 +18,9 @@ const loadPersistedState = () => {
 
     // Convert lockedColors back to Set
     if (persistedState.palette && persistedState.palette.lockedColors) {
-      persistedState.palette.lockedColors = new Set(persistedState.palette.lockedColors);
+      persistedState.palette.lockedColors = new Set(
+        persistedState.palette.lockedColors,
+      );
     }
 
     return persistedState;
@@ -37,7 +39,7 @@ const saveState = (state) => {
         ...state.palette,
         // Convert Set to Array for JSON serialization
         lockedColors: Array.from(state.palette.lockedColors),
-      }
+      },
     };
 
     const serializedState = JSON.stringify(stateToSave);
@@ -66,7 +68,11 @@ const persistenceMiddleware = (store) => (next) => (action) => {
     'settings/updateKeyboardSettings',
   ];
 
-  if (persistedActions.some((actionType) => action.type.includes(actionType.split('/')[1]))) {
+  if (
+    persistedActions.some((actionType) =>
+      action.type.includes(actionType.split('/')[1]),
+    )
+  ) {
     saveState(store.getState());
   }
 
@@ -86,7 +92,7 @@ const errorHandlingMiddleware = (store) => (next) => (action) => {
       payload: {
         message: 'An unexpected error occurred',
         details: error.message,
-      }
+      },
     });
 
     return { type: 'ERROR', error };
@@ -129,7 +135,7 @@ export const store = configureStore({
         ignoredActions: ['palette/toggleColorLock'],
         // Ignore these field paths in the state
         ignoredPaths: ['palette.lockedColors'],
-      }
+      },
     }).concat(
       persistenceMiddleware,
       errorHandlingMiddleware,
@@ -140,7 +146,7 @@ export const store = configureStore({
     name: 'Color Palette Generator',
     trace: true,
     traceLimit: 25,
-  }
+  },
 });
 
 // Export helper functions for type inference (for future TypeScript migration)
@@ -172,7 +178,7 @@ export const initializeApp = () => (dispatch, getState) => {
       type: 'success',
       message: 'Color Palette Generator loaded successfully!',
       duration: 2000,
-    }
+    },
   });
 };
 

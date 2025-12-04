@@ -11,7 +11,6 @@ import { ColorUtils } from '../../../utils/colorUtils';
  */
 function ColorGenerator() {
   const {
-    palette,
     baseColor,
     harmony,
     generatePalette,
@@ -37,7 +36,13 @@ function ColorGenerator() {
       lightnessRange,
     );
     generatePalette(randomColor, harmony);
-  }, [customHueRange, saturationRange, lightnessRange, harmony, generatePalette]);
+  }, [
+    customHueRange,
+    saturationRange,
+    lightnessRange,
+    harmony,
+    generatePalette,
+  ]);
 
   // Handle harmony change
   const handleHarmonyChange = useCallback(
@@ -68,7 +73,11 @@ function ColorGenerator() {
 
     harmonies.forEach((harmonyType) => {
       if (harmonyType !== harmony) {
-        const suggestedPalette = ColorUtils.generateHarmony(baseColor, harmonyType, false);
+        const suggestedPalette = ColorUtils.generateHarmony(
+          baseColor,
+          harmonyType,
+          false,
+        );
         suggestions.push({
           harmony: harmonyType,
           label: HARMONY_LABELS[harmonyType],
@@ -140,7 +149,7 @@ function ColorGenerator() {
     <Card
       title="Color Generator"
       subtitle="Create harmonious color palettes"
-      headerAction={(
+      headerAction={
         <Button
           onClick={() => setAdvancedMode(!advancedMode)}
           variant="ghost"
@@ -148,7 +157,7 @@ function ColorGenerator() {
         >
           {advancedMode ? 'Simple' : 'Advanced'}
         </Button>
-      )}
+      }
     >
       <div className="space-y-6">
         {/* Base Color Selection */}
@@ -160,21 +169,21 @@ function ColorGenerator() {
             showLockButton={false}
             disabled={isGenerating}
           />
-          <p className="text-xs text-white/60 mt-1">
+          <p className="mt-1 text-xs text-white/60">
             This will be used as the foundation for generating harmonious colors
           </p>
         </div>
 
         {/* Harmony Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-white/80 mb-2">
+          <label className="mb-2 block text-sm font-medium text-white/80">
             Color Harmony Type
           </label>
           <select
             value={harmony}
             onChange={(e) => handleHarmonyChange(e.target.value)}
             disabled={isGenerating}
-            className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50"
           >
             {Object.entries(HARMONY_TYPES).map(([key, value]) => (
               <option key={key} value={value} className="bg-gray-800">
@@ -182,19 +191,21 @@ function ColorGenerator() {
               </option>
             ))}
           </select>
-          <p className="text-xs text-white/60 mt-1">
+          <p className="mt-1 text-xs text-white/60">
             Different harmony types create different color relationships
           </p>
         </div>
 
         {/* Advanced Controls */}
         {advancedMode && (
-          <div className="space-y-4 p-4 bg-white/5 rounded-lg border border-white/10">
-            <h4 className="text-sm font-medium text-white/90">Advanced Settings</h4>
+          <div className="space-y-4 rounded-lg border border-white/10 bg-white/5 p-4">
+            <h4 className="text-sm font-medium text-white/90">
+              Advanced Settings
+            </h4>
 
             {/* Hue Range */}
             <div>
-              <label className="block text-xs font-medium text-white/80 mb-2">
+              <label className="mb-2 block text-xs font-medium text-white/80">
                 Hue Range ({customHueRange[0]}° - {customHueRange[1]}°)
               </label>
               <div className="flex gap-2">
@@ -229,8 +240,9 @@ function ColorGenerator() {
 
             {/* Saturation Range */}
             <div>
-              <label className="block text-xs font-medium text-white/80 mb-2">
-                Saturation Range ({Math.round(saturationRange[0] * 100)}% - {Math.round(saturationRange[1] * 100)}%)
+              <label className="mb-2 block text-xs font-medium text-white/80">
+                Saturation Range ({Math.round(saturationRange[0] * 100)}% -{' '}
+                {Math.round(saturationRange[1] * 100)}%)
               </label>
               <div className="flex gap-2">
                 <input
@@ -266,8 +278,9 @@ function ColorGenerator() {
 
             {/* Lightness Range */}
             <div>
-              <label className="block text-xs font-medium text-white/80 mb-2">
-                Lightness Range ({Math.round(lightnessRange[0] * 100)}% - {Math.round(lightnessRange[1] * 100)}%)
+              <label className="mb-2 block text-xs font-medium text-white/80">
+                Lightness Range ({Math.round(lightnessRange[0] * 100)}% -{' '}
+                {Math.round(lightnessRange[1] * 100)}%)
               </label>
               <div className="flex gap-2">
                 <input
@@ -309,18 +322,20 @@ function ColorGenerator() {
         {/* Harmony Suggestions */}
         {suggestions.length > 0 && (
           <div className="space-y-3">
-            <h4 className="text-sm font-medium text-white/90">Try Different Harmonies</h4>
+            <h4 className="text-sm font-medium text-white/90">
+              Try Different Harmonies
+            </h4>
             <div className="grid grid-cols-2 gap-2">
               {suggestions.map((suggestion) => (
                 <button
                   key={suggestion.harmony}
                   onClick={() => handleHarmonyChange(suggestion.harmony)}
-                  className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all duration-200 text-left"
+                  className="rounded-lg border border-white/10 bg-white/5 p-3 text-left transition-all duration-200 hover:bg-white/10"
                   disabled={isGenerating}
                 >
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2 flex items-center gap-2">
                     <div
-                      className="w-4 h-4 rounded"
+                      className="h-4 w-4 rounded"
                       style={{ backgroundColor: suggestion.primaryColor }}
                     />
                     <span className="text-xs font-medium text-white/90">
@@ -328,13 +343,15 @@ function ColorGenerator() {
                     </span>
                   </div>
                   <div className="flex gap-1">
-                    {Object.values(suggestion.palette).slice(0, 4).map((color, index) => (
-                      <div
-                        key={index}
-                        className="w-3 h-3 rounded-sm"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
+                    {Object.values(suggestion.palette)
+                      .slice(0, 4)
+                      .map((color, index) => (
+                        <div
+                          key={index}
+                          className="h-3 w-3 rounded-sm"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
                   </div>
                 </button>
               ))}

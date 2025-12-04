@@ -43,25 +43,43 @@ function PaletteGeneratorApp() {
       label: 'Generate',
       icon: '🎨',
       component: ColorGenerator,
+    },
     {
- id: 'upload', label: 'Extract', icon: '📁', component: ImageUpload 
-},
-        {
- id: 'preview', label: 'Preview', icon: '👁️', component: PalettePreview 
-},
-        {
- id: 'manage', label: 'Manage', icon: '⚙️', component: PaletteManager 
-},
+      id: 'upload',
+      label: 'Extract',
+      icon: '📁',
+      component: ImageUpload,
+    },
+    {
+      id: 'preview',
+      label: 'Preview',
+      icon: '👁️',
+      component: PalettePreview,
+    },
+    {
+      id: 'manage',
+      label: 'Manage',
+      icon: '⚙️',
+      component: PaletteManager,
+    },
+    {
       id: 'accessibility',
       label: 'A11y',
       icon: '♿',
       component: AccessibilityChecker,
+    },
     {
- id: 'export', label: 'Export', icon: '📦', component: ExportTools 
-},
-        {
- id: 'library', label: 'Library', icon: '📚', component: PaletteLibrary 
-},
+      id: 'export',
+      label: 'Export',
+      icon: '📦',
+      component: ExportTools,
+    },
+    {
+      id: 'library',
+      label: 'Library',
+      icon: '📚',
+      component: PaletteLibrary,
+    },
     { id: 'share', label: 'Share', icon: '🔗', component: PaletteSharing },
   ];
 
